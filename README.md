@@ -61,6 +61,25 @@ Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição v
 
 Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\`v1x * v2x, v1y * v2y, v1z * v2z \`$
 
+## Tarefa 1 
+Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
+Como já definimos os pontos, precisamos nos preocupar apenas com o loop do projeto para pintar os pixels
+cada pixel possui coordenadas P(xp, yp, zp), zp é constante e sempre será zp = -dJanela, yp = PSE.y - deltinhay * 0.5 - i * deltinhay , xp = xp = PSE.x + deltinhax * 0.5 + j * deltinhax;
+
+SENDO PSE = { -wJanela * 0.5, hJanela * 0.5, -dJanela };
+
+Verificamos se as retas de luz interceptam a esfera e verificamos o delta, visto que precisamos igualar uma equação de segundo grau com a de primeiro grau.
+
+Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, verde
+
+Se não a gente pinta da cor do Background.
+
+Dessa forma obtemos:
+
+
+<img src = "https://lh3.googleusercontent.com/pw/AP1GczNvS1MePpnp4cwV74iyfh5o90bNHSefxCZbVmqI9pmsKPvuy0DroYwdVXBM8yl3t9gYpEcFzCPE1BB2d9ncI9vLlk5ZfE6C7Ypt1LnMIcBuMsjNwh5oskMtVCgqeXtym2ZT0eiODNmPMYj2eVM0F5ET=w799-h603-s-no-gm?authuser=0" height = "250px">
+
+
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
 
