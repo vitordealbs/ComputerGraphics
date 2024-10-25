@@ -22,27 +22,45 @@ Tomamos orientação o olho do observador de lado, sendo o eixo X o que entra no
 Breve imagem de como funciona:
 
 
-![Eixo Coordenados nos olhos](https://lh3.googleusercontent.com/pw/AP1GczNHu23zcwkk2Jkhdx_4BHyKi4BxKXt1nqfTmTv11qCAnOqxrNHKXh14lzl_2dnwtO8_T3gkYOAXTSCq2FrdAV90tP1rklFyvUkOlPtnt3-DqudSK0vnZr3ov83WsS3_cjoIDP9J8vm7hj_4QkHAMhAk=w799-h793-s-no-gm?authuser=0)
+![Eixo Coordenados nos olhos](https://lh3.googleusercontent.com/pw/AP1GczNHu23zcwkk2Jkhdx_4BHyKi4BxKXt1nqfTmTv11qCAnOqxrNHKXh14lzl_2dnwtO8_T3gkYOAXTSCq2FrdAV90tP1rklFyvUkOlPtnt3-DqudSK0vnZr3ov83WsS3_cjoIDP9J8vm7hj_4QkHAMhAk=w799-h793-s-no-gm?authuser=0=100x110)
 
 
 Além disso, construímos algumas equações que vão ser utilizadas no cenário e algumas percepções interessantes sobre CG.
 
 O Centro da esfera, denominado cEsfera terá coordenadas (0,0,Ze) sendo Ze a distância do Centro da esfera para o olho do observador, Lcol e Llin são as dimensões da matriz que foi proposta. Além de H e w as dimensões reais do frame, em metros! Além disso temos dJanela que seria a distância do olho para a Janela.
 
-Para início dos cálculos definiremos deltinha_x = $ w/Lcol $ e deltinha_y = $ h/Llin $. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ( $ -w/2$ , $h/2$ , -d).
+Para início dos cálculos definiremos deltinha_x = $\` w/Lcol\`$  e deltinha_y = $\` h/Llin\`$. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ($\` w/2\`$ , $\` h/2\`$ , -d).
 
 equações de raio e esfera:
 $(x-x_centro)^2 + (y - y_centro)^2 + (z - z_centro)^2 = R^2$
 
-$P(t) = Po + t * dr$
+$\`P(t) = Po + t * dr\`$ 
 
-P(t), dr são vetores!
+$\`P(t)\`$ , $\`dr\`$ são vetores!
 
-Da equação da Esfera temos: $a*ti^2$ + $b*ti$ + c = 0
+Da equação da Esfera temos: $\`a(ti^2)  + b(ti) + c = 0 \`$
 
-sendo a = drx^2 + dry^2 + drz^2
-b = drx(xo - x_centro) + dry(yo - y_centro) + drz(zo - z_centro) 
-c = $(xo-x_centro)^2 + (yo-y_centro)^2 + (zo - z_centro)^2 + R^2$
+coeficientes:
+a = $\`drx^2 + dry^2 + drz^2\`$
+b = $\`drx(xo - x_centro) + dry(yo - y_centro) + drz(zo - z_centro)\`$ 
+c = $\`(xo-x_centro)^2 + (yo-y_centro)^2 + (zo - z_centro)^2 + R^2\`$
+
+## Preparação para as Tarefas (Funções Auxiliares)
+Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
+
+Vetor3d_escala(Vetor3d v, float scalar): Recebe um vetor e um número escalar para fazer uma multiplicação escalar com o vetor, aplicando a fórmula $\` vx * scalar, vy * scalar, vz * scalar \`$
+
+Vetor3DotProduct(Vetor3d v1, Vetor3d v2): ecebe dois vetores e faz o produto de pontos entre eles, aplicando a fórmula $\` (v1x * v2x + v1y * v2y + v1z * v2z) \`$
+
+Vetor3_tamanho(Vetor3d v): Recebe um vetor e calcula o tamanho dele, aplicando a fórmula $\` sqrt(vx * vx + vy * vy + vz * vz) \`$
+
+Vetor3dNormalizado(Vetor3d v): Recebe um vetor e normaliza o tamanho dele para ser 1, mantendo a direção original, comparando se ele é menor ou igual a 1
+
+Vetor3d_Subtrai(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a subtração vetorial entre eles, aplicando a fórmula $\` v1x - v2x, v1y - v2y, v1z - v2z \`$
+
+Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição vetorial entre eles, aplicando a fórmula $\` v1x + v2x, v1y + v2y, v1z + v2z \`$
+
+Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\`v1x * v2x, v1y * v2y, v1z * v2z \`$
 
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
