@@ -29,7 +29,7 @@ Além disso, construímos algumas equações que vão ser utilizadas no cenário
 
 O Centro da esfera, denominado cEsfera terá coordenadas (0,0,Ze) sendo Ze a distância do Centro da esfera para o olho do observador, Lcol e Llin são as dimensões da matriz que foi proposta. Além de H e w as dimensões reais do frame, em metros! Além disso temos dJanela que seria a distância do olho para a Janela.
 
-Para início dos cálculos definiremos deltinha_x = $w/Lcol$ e deltinha_y = $ h/Llin $. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ( $-w/2$ , $h/2$ , -d).
+Para início dos cálculos definiremos deltinha_x = $ w/Lcol $ e deltinha_y = $ h/Llin $. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ( $ -w/2$ , $h/2$ , -d).
 
 equações de raio e esfera:
 $(x-x_centro)^2 + (y - y_centro)^2 + (z - z_centro)^2 = R^2$
