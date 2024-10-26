@@ -11,28 +11,20 @@ const int nLin = 600;
 const int nCol = 800;
 float dJanela = 2.0;
 float rEsfera = 6.0;
-Vetor3d centro_esfera = { 0.0, 0.0, dJanela+rEsfera };
+Vetor3d centro_esfera = { 0.0, 0.0, -(dJanela+rEsfera) };
+Vetor3d esfColor = {255.0, 0.0, 0.0};
+Vetor3d bgColor = {100.0, 100.0, 100.0};
 
 int
 main(void)
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raytracing");
-    // Shader shader = LoadShader(0, "aula1.fs");
-    // RenderTexture2D texture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Tarefa 01");
     SetTargetFPS(60);
 
     double deltinhax = wJanela / nCol, deltinhay = hJanela / nLin;
     int Deltax = SCREEN_WIDTH / nCol, Deltay = SCREEN_HEIGHT / nLin;
 
     while (!WindowShouldClose()) {
-        /*
-    BeginTextureMode(texture);
-    {
-      ClearBackground(BLACK);
-      DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
-    }
-    EndTextureMode();
-        */
 
         if (IsKeyDown(KEY_W)) {
             dJanela += 0.05;
@@ -54,7 +46,7 @@ main(void)
 
         BeginDrawing();
         {
-            ClearBackground(GRAY);
+            ClearBackground(BLACK);
 
             for (int i = 0; i < nLin; ++i) {
                 double yp = PSE.y - deltinhay * 0.5 - i * deltinhay;
@@ -65,17 +57,23 @@ main(void)
                     double a = funcoes_auxiliares::Vetor3DotProduct(dr, dr);
                     double b = funcoes_auxiliares::Vetor3DotProduct(dr, v);
                     double c = funcoes_auxiliares::Vetor3DotProduct(v, v) - rEsfera * rEsfera;
-                    if (b * b - a * c >= 0.0) {
-                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, RED);
+                    double delta = b * b - a * c;
+                    if(delta < 0.0) {
+                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { bgColor.x, bgColor.y, bgColor.z, 255 });
+                        continue;
                     }
+                    double t = (-b - sqrt(delta)) / a;
+                    if(t < 0.0) {
+                        t = (-b + sqrt(delta)) / a;
+                    }
+                    if (t < 0.0) {
+                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { bgColor.x, bgColor.y, bgColor.z, 255 });
+                        continue;
+                    }
+                    DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { esfColor.x, esfColor.y, esfColor.z, 255 });
                 }
             }
 
-            /*
-                  BeginShaderMode(shader);
-                  DrawTexture(texture.texture, 0, 0, WHITE);
-                  EndShaderMode();
-                      */
         }
         EndDrawing();
     }
