@@ -59,7 +59,7 @@ int main(void) {
     // inicializacao do dx e do dy
     double deltinhax = width / col, deltinhay = height / lin;
 
-    // determinacao de quantos pixels correspondem a cada quadrado do fram
+    // determinacao de quantos pixels correspondem a cada quadrado do frame
     int Deltax = SCREEN_WIDTH / col, Deltay = SCREEN_HEIGHT / lin;
 
     // loop de renderizacao
@@ -116,7 +116,7 @@ int main(void) {
                 // como a e sempre nao negativo e a raiz qudrada tambem
                 // esse e o menor valor de t
                 double t = (-b - sqrt(deltaQuadratico)) / (2 * a);
-                // se esse t nao e negativo, tentamos o outro
+                // se esse t e negativo, tentamos o outro
                 if(t < 0.0) {
                     t = (-b + sqrt(deltaQuadratico)) / (2 * a);
                 }
