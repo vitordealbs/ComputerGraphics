@@ -70,7 +70,7 @@ SENDO PSE = { -wJanela * 0.5, hJanela * 0.5, -dJanela };
 
 Verificamos se as retas de luz interceptam a esfera e verificamos o delta, visto que precisamos igualar uma equação de segundo grau com a de primeiro grau.
 
-Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, verde
+Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, vermelha
 
 Se não a gente pinta da cor do Background.
 
