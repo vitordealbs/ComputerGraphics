@@ -49,7 +49,7 @@ main(void)
         // definicao do ponto superior esquerdo do frame
         Vetor3d PSE = { -wJanela * 0.5, hJanela * 0.5, -dJanela };
         // definicao da coordenada z dos pontos do frame
-        double zp = -dJanela;
+        float zp = -dJanela;
         // definicao do vetor v que vai do centro da esfera ao olho do observador
         Vetor3d v = funcoes_auxiliares::Vetor3d_escala(centro_esfera, -1);
 
@@ -61,11 +61,11 @@ main(void)
             // loop sobre as linhas
             for (int i = 0; i < nLin; ++i) {
                 // calculo do y do centro dos pontos da linha i
-                double yp = PSE.y - deltinhay * 0.5 - i * deltinhay;
+                float yp = PSE.y - deltinhay * 0.5 - i * deltinhay;
                 // loop sobre as colunas
                 for (int j = 0; j < nCol; ++j) {
                     // calculo do x do centro do ponto da coluna j
-                    double xp = PSE.x + deltinhax * 0.5 + j * deltinhax;
+                    float xp = PSE.x + deltinhax * 0.5 + j * deltinhax;
                     // construcao do ponto P que representa o centro do quadrado i, j do frame
                     Vetor3d P = { xp, yp, zp };
                     // vetor dr normalizado que aponta do olho do observador
@@ -81,7 +81,7 @@ main(void)
                     double delta = b * b - a * c;
                     // se o delta for menor que zero, nao ha intersecao 
                     if(delta < 0.0) {
-                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { bgColor.x, bgColor.y, bgColor.z, 255 });
+                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { (unsigned char)bgColor.x, (unsigned char)bgColor.y, (unsigned char)bgColor.z, 255 });
                         continue;
                     }
 
@@ -95,13 +95,13 @@ main(void)
                     // se esse t tambem e negativo a intersecao ocorreu
                     // atras do campo de visao, logo nao e contabilizada
                     if (t < 0.0) {
-                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { bgColor.x, bgColor.y, bgColor.z, 255 });
+                        DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { (unsigned char)bgColor.x, (unsigned char)bgColor.y, (unsigned char)bgColor.z, 255 });
                         continue;
                     }
 
                     // caso chegemos a esse ponto, ou intersecao
                     // logo, colorimos o pixel com a cor da esfera
-                    DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { esfColor.x, esfColor.y, esfColor.z, 255 });
+                    DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { (unsigned char)esfColor.x, (unsigned char)esfColor.y, (unsigned char)esfColor.z, 255 });
                 }
             }
 
