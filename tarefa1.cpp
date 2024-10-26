@@ -13,6 +13,26 @@ float dJanela = 2.0;
 float rEsfera = 6.0;
 Vetor3d centro_esfera = { 0.0, 0.0, dJanela+rEsfera };
 
+// retorna o menor t positvo de intersecao
+// caso não haja intersecao, retorna -1
+// caso ambos os valores de t sejam negativos, retorna
+// um numero negativo.
+float intersecao_raio_esfera(Raio raio, Esfera esfera) {
+    Vetor3d v = funcoes_auxiliares::Vetor3d_Subtrai(raio.P0, esfera.centro);
+    float a = funcoes_auxiliares::Vetor3DotProduct(dr, dr);
+    float b = funcoes_auxiliares::Vetor3DotProduct(dr, v);
+    float c = funcoes_auxiliares::Vetor3DotProduct(v, v) - rEsfera * rEsfera;
+    float delta = b * b - a * c;
+    if(delta < 0.0f) {
+        return -1.0f;
+    }
+    float t = (-b - sqrtf(delta)) / a;
+    if(t < 0.0f) {
+        t = (-b + sqrtf(delta)) / a;
+    }
+    return t;
+}
+
 int
 main(void)
 {

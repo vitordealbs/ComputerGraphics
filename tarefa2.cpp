@@ -23,6 +23,12 @@ max(double a, double b)
     return a + (b - a) * (a < b);
 }
 
+double
+min(double a, double b)
+{
+    return a + (b - a) * (a > b);
+}
+
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raytracing");
     // Shader shader = LoadShader(0, "aula1.fs");
@@ -95,18 +101,14 @@ int main(void) {
                     Vetor3d I_especular = funcoes_auxiliares::Vetor3d_escala(funcoes_auxiliares::Vetor3d_Multiplica(K, I_F), max(pow(funcoes_auxiliares::Vetor3DotProduct(v_inverso,r), alpha), 0));
 
 
-                    Vetor3d I_total = funcoes_auxiliares::Vetor3d_escala(funcoes_auxiliares::Vetor3d_Adiciona(I_difusa, I_especular),1.0/(1.0+0.07*dist_ao_quadro+0.017*dist_ao_quadro*dist_ao_quadro));
-
-
-
-
+                    Vetor3d I_total = funcoes_auxiliares::Vetor3d_Adiciona(I_difusa, I_especular);
 
                     DrawRectangle(
               Deltax * j,
               Deltay * i,
               Deltax,
               Deltay,
-              (Color){ I_total.x * 255.0, I_total.y * 0.0, I_total.z * 0.0, 255 });
+              (Color){ min(I_total.x * 255.0, 255.0), min(I_total.y * 255.0, 255.0), min(I_total.z * 255.0, 255.0), 255 });
                     }
             }
         }

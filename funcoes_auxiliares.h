@@ -12,6 +12,21 @@ struct Vetor3d {
     float z; // componente z
 };
 
+struct Raio {
+    Vetor3d P0;
+    Vetor3d dr;
+
+    static Raio construir2Pontos(Vetor3d P0, Vetor3d P);
+    Raio(Vetor3d P0, Vetor3d dr);
+};
+
+struct Esfera {
+    Vetor3d centro;
+    float raio;
+
+    Esfera(Vetor3d centro, float raio);
+};
+
 // Declaração da classe com métodos auxiliares
 class funcoes_auxiliares {
 public:

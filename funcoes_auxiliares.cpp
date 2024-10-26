@@ -6,6 +6,14 @@
 #include <math.h>
 #include <iostream>
 
+Raio construir2Pontos(Vetor3d P0, Vetor3d P) {
+    Vetor3d dr = funcoes_auxiliares::Vetor3dNormalizado(funcoes_auxiliares::Vetor3d_Subtrai(P, P0));
+    return Raio(P0, dr);
+}
+
+Raio::Raio(Vetor3d P0, Vetor3d dr) : P0(P0), dr(dr) {}
+
+Esfera::Esfera(Vetor3d centro, float raio) : centro(centro), raio(raio) {}
 
 Vetor3d funcoes_auxiliares::Vetor3d_escala (Vetor3d v, float scalar)
 {
