@@ -78,7 +78,7 @@ main(void)
                     double c = funcoes_auxiliares::Vetor3DotProduct(v, v) - rEsfera * rEsfera;
 
                     // delta da equacao 
-                    double delta = b * b - 4 * a * c;
+                    double delta = b * b - a * c;
                     // se o delta for menor que zero, nao ha intersecao 
                     if(delta < 0.0) {
                         DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { bgColor.x, bgColor.y, bgColor.z, 255 });
