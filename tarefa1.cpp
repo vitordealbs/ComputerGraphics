@@ -99,7 +99,7 @@ main(void)
                         continue;
                     }
 
-                    // caso chegemos a esse ponto, ou intersecao
+                    // caso chegemos a esse ponto, ouve intersecao
                     // logo, colorimos o pixel com a cor da esfera
                     DrawRectangle(Deltax * j, Deltax * i, Deltax, Deltay, (Color) { (unsigned char)esfColor.x, (unsigned char)esfColor.y, (unsigned char)esfColor.z, 255 });
                 }
