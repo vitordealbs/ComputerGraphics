@@ -31,7 +31,7 @@ O Centro da esfera, denominado cEsfera terá coordenadas (0,0,Ze) sendo Ze a dis
 Para início dos cálculos definiremos deltinha_x = $\` w/Lcol\`$  e deltinha_y = $\` h/Llin\`$. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ($\` w/2\`$ , $\` h/2\`$ , -d).
 
 equações de raio e esfera:
-$(x-x_centro)^2 + (y - y_centro)^2 + (z - z_centro)^2 = R^2$
+$(x-x_{centro})^2 + (y - y_{centro})^2 + (z - z_{centro})^2 = R^2$
 
 $\`P(t) = Po + t * dr\`$ 
 
@@ -41,8 +41,8 @@ Da equação da Esfera temos: $\`a(ti^2)  + b(ti) + c = 0 \`$
 
 coeficientes:
 a = $\`drx^2 + dry^2 + drz^2\`$
-b = $\`drx(xo - x_centro) + dry(yo - y_centro) + drz(zo - z_centro)\`$ 
-c = $\`(xo-x_centro)^2 + (yo-y_centro)^2 + (zo - z_centro)^2 + R^2\`$
+b = $\`drx(xo - x_{centro}) + dry(yo - y_{centro}) + drz(zo - z_{centro})\`$ 
+c = $\`(xo-x_{centro})^2 + (yo-y_{centro})^2 + (zo - z_{centro})^2 + R^2\`$
 
 ## Preparação para as Tarefas (Funções Auxiliares)
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
@@ -70,7 +70,7 @@ SENDO PSE = { -wJanela * 0.5, hJanela * 0.5, -dJanela };
 
 Verificamos se as retas de luz interceptam a esfera e verificamos o delta, visto que precisamos igualar uma equação de segundo grau com a de primeiro grau.
 
-Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, verde
+Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, vermelho
 
 Se não a gente pinta da cor do Background.
 
