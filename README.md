@@ -31,31 +31,33 @@ O Centro da esfera, denominado cEsfera terá coordenadas (0,0,Ze) sendo Ze a dis
 Para início dos cálculos definiremos $\delta$ _x = $\frac{W}{Lcol}$  e $\delta$ _y = $\frac{H}{Llin}$. E definiremos o Ponto Superior Esquerdo como nosso ponto de partida, identificando com PSE = ($\frac{W}{2}$ , $\frac{H}{2}$ , -d).
 
 equações de raio e esfera:
-$(x-x_centro)^2 + (y - y_centro)^2 + (z - z_centro)^2 = R^2$
+$(x-x_c)^2 + (y - y_c)^2 + (z - z_c)^2 = R^2$
 
-$\`P(t) = Po + t * dr\`$ 
+$\vec{P(t)} = Po + t * \vec{dr}$ 
 
-$\`P(t)\`$ , $\`dr\`$ são vetores!
 
-Da equação da Esfera temos: $\`a(ti^2)  + b(ti) + c = 0 \`$
+Da equação da Esfera temos: $a* t_i^2  + b*t_i + c = 0$
 
 coeficientes:
-a = $\`drx^2 + dry^2 + drz^2\`$
-b = $\`drx(xo - x_centro) + dry(yo - y_centro) + drz(zo - z_centro)\`$ 
-c = $\`(xo-x_centro)^2 + (yo-y_centro)^2 + (zo - z_centro)^2 + R^2\`$
+
+$a = dr_x^2 + dr_y^2 + dr_z^2$
+
+$b = dr_x(x_o - x_c) + dr_y(y_o - y_c) + dr_z(z_o - z_c)$
+
+$c = (x_o-x_c)^2 + (y_o-y_c)^2 + (z_o - z_c)^2 + R^2$
 
 ## Preparação para as Tarefas (Funções Auxiliares)
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
 
 Vetor3d_escala(Vetor3d v, float scalar): Recebe um vetor e um número escalar para fazer uma multiplicação escalar com o vetor, aplicando a fórmula $\` vx * scalar, vy * scalar, vz * scalar \`$
 
-Vetor3DotProduct(Vetor3d v1, Vetor3d v2): ecebe dois vetores e faz o produto de pontos entre eles, aplicando a fórmula $\` (v1x * v2x + v1y * v2y + v1z * v2z) \`$
+Vetor3DotProduct(Vetor3d v1, Vetor3d v2): ecebe dois vetores e faz o produto de pontos entre eles, aplicando a fórmula de subtração de vetores $ (v1x * v2x + v1y * v2y + v1z * v2z) $ 
 
 Vetor3_tamanho(Vetor3d v): Recebe um vetor e calcula o tamanho dele, aplicando a fórmula $\` sqrt(vx * vx + vy * vy + vz * vz) \`$
 
 Vetor3dNormalizado(Vetor3d v): Recebe um vetor e normaliza o tamanho dele para ser 1, mantendo a direção original, comparando se ele é menor ou igual a 1
 
-Vetor3d_Subtrai(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a subtração vetorial entre eles, aplicando a fórmula $\` v1x - v2x, v1y - v2y, v1z - v2z \`$
+Vetor3d_Subtrai(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a subtração vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x - \vec{v}_2x, \vec{v}_1y - \vec{v}_2y, \vec{v}_1z - \vec{v}_2z $
 
 Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição vetorial entre eles, aplicando a fórmula $\` v1x + v2x, v1y + v2y, v1z + v2z \`$
 
