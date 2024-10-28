@@ -1,7 +1,7 @@
 #include <math.h>
 #include <raylib.h>
 #include "funcoes_auxiliares.h"
-
+using namespace funcoes_auxiliares;
 // definicao das dimensoes da janela
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -79,7 +79,7 @@ int main(void) {
         // definicao da coordenada z dos pontos do frame
         double zp = -dist_ao_quadro;
         // definicao do vetor v que vai do centro da esfera ao olho do observador
-        Vetor3d v = funcoes_auxiliares::Vetor3d_escala(centro_esfera, -1);
+        Vetor3d v = Auxiliares::Vetor3d_escala(centro_esfera, -1);
 
         // inicio do codigo de desenho
         BeginDrawing();
@@ -98,12 +98,12 @@ int main(void) {
                 
                 // vetor dr normalizado que aponta do olho do observador
                 // ao ponto P
-                Vetor3d dr = funcoes_auxiliares::Vetor3dNormalizado(P);
+                Vetor3d dr = Auxiliares::Vetor3dNormalizado(P);
 
                 // calculo dos coeficientes da equacao de intersecao entre a esfera e o raio
-                double a = funcoes_auxiliares::Vetor3DotProduct(dr, dr);
-                double b = 2 * funcoes_auxiliares::Vetor3DotProduct(dr, v);
-                double c = funcoes_auxiliares::Vetor3DotProduct(v, v) - raio * raio;
+                double a = Auxiliares::Vetor3DotProduct(dr, dr);
+                double b = 2 * Auxiliares::Vetor3DotProduct(dr, v);
+                double c = Auxiliares::Vetor3DotProduct(v, v) - raio * raio;
 
                 // delta da equacao 
                 double deltaQuadratico = b * b - 4 * a * c;
@@ -127,26 +127,26 @@ int main(void) {
                 }
 
                 // calculo do ponto de intersecao a partir de t
-                Vetor3d Pt = funcoes_auxiliares::Vetor3d_escala(dr, t);
+                Vetor3d Pt = Auxiliares::Vetor3d_escala(dr, t);
                 // calculo da normal a esfera no ponto de intersecao
-                Vetor3d normal = funcoes_auxiliares::Vetor3dNormalizado(funcoes_auxiliares::Vetor3d_Subtrai(Pt, centro_esfera));
+                Vetor3d normal = Auxiliares::Vetor3dNormalizado(Auxiliares::Vetor3d_Subtrai(Pt, centro_esfera));
                 // vetor na direcao inversa de dt
-                Vetor3d v_inverso = funcoes_auxiliares::Vetor3d_escala(dr, -1);
+                Vetor3d v_inverso = Auxiliares::Vetor3d_escala(dr, -1);
                 // vetor do ponto de intersecao a fonte de luz
-                Vetor3d vetor_luminoso = funcoes_auxiliares::Vetor3dNormalizado(funcoes_auxiliares::Vetor3d_Subtrai(P_F, Pt));
+                Vetor3d vetor_luminoso = Auxiliares::Vetor3dNormalizado(Auxiliares::Vetor3d_Subtrai(P_F, Pt));
                 // vetor representando a direcao do raio refletido
-                Vetor3d r = funcoes_auxiliares::Vetor3d_Subtrai(funcoes_auxiliares::Vetor3d_escala(normal, 2 * funcoes_auxiliares::Vetor3DotProduct(normal, vetor_luminoso)), vetor_luminoso);
+                Vetor3d r = Auxiliares::Vetor3d_Subtrai(Auxiliares::Vetor3d_escala(normal, 2 * Auxiliares::Vetor3DotProduct(normal, vetor_luminoso)), vetor_luminoso);
 
                 // calculo da intensidade da luz difusa
-                Vetor3d I_difusa = funcoes_auxiliares::Vetor3d_escala(funcoes_auxiliares::Vetor3d_Multiplica(K, I_F),
-                    max(funcoes_auxiliares::Vetor3DotProduct(vetor_luminoso,normal),
+                Vetor3d I_difusa = Auxiliares::Vetor3d_escala(Auxiliares::Vetor3d_Multiplica(K, I_F),
+                    max(Auxiliares::Vetor3DotProduct(vetor_luminoso,normal),
                         0));
 
                 // calculo da intensidade da luz especular
-                Vetor3d I_especular = funcoes_auxiliares::Vetor3d_escala(funcoes_auxiliares::Vetor3d_Multiplica(K, I_F), max(pow(funcoes_auxiliares::Vetor3DotProduct(v_inverso,r), alpha), 0));
+                Vetor3d I_especular = Auxiliares::Vetor3d_escala(Auxiliares::Vetor3d_Multiplica(K, I_F), max(pow(Auxiliares::Vetor3DotProduct(v_inverso,r), alpha), 0));
 
                 // calculo da intensidade da luz total
-                Vetor3d I_total = funcoes_auxiliares::Vetor3d_Adiciona(I_difusa, I_especular);
+                Vetor3d I_total = Auxiliares::Vetor3d_Adiciona(I_difusa, I_especular);
 
                 // desenho do pixel na tela
                 DrawRectangle(
