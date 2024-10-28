@@ -49,30 +49,30 @@ $c = (x_o-x_c)^2 + (y_o-y_c)^2 + (z_o - z_c)^2 + R^2$
 ## Preparação para as Tarefas (Funções Auxiliares)
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
 
-Vetor3d_escala(Vetor3d v, float scalar): Recebe um vetor e um número escalar para fazer uma multiplicação escalar com o vetor, aplicando a fórmula $\` vx * scalar, vy * scalar, vz * scalar \`$
+Vetor3d_escala(Vetor3d v, float scalar): Recebe um vetor e um número escalar para fazer uma multiplicação escalar com o vetor, aplicando a fórmula $\ \vec{v}_1x * scalar ; \vec{v}_1y * scalar ; \vec{v}_1z * scalar $
 
-Vetor3DotProduct(Vetor3d v1, Vetor3d v2): ecebe dois vetores e faz o produto de pontos entre eles, aplicando a fórmula de subtração de vetores $ (v1x * v2x + v1y * v2y + v1z * v2z) $ 
+Vetor3DotProduct(Vetor3d v1, Vetor3d v2): ecebe dois vetores e faz o produto de pontos entre eles, aplicando a fórmula de subtração de vetores $\ \vec{v}_1x * \vec{v}_2x + \vec{v}_1y * \vec{v}_2y + \vec{v}_1z * \vec{v}_2z $
 
-Vetor3_tamanho(Vetor3d v): Recebe um vetor e calcula o tamanho dele, aplicando a fórmula $\` sqrt(vx * vx + vy * vy + vz * vz) \`$
+Vetor3_tamanho(Vetor3d v): Recebe um vetor e calcula o tamanho dele, aplicando a fórmula $`\sqrt{\vec{v}_x * \vec{v}_x + \vec{v}_y * \vec{v}_y + \vec{v}_z * \vec{v}_z}`$
 
 Vetor3dNormalizado(Vetor3d v): Recebe um vetor e normaliza o tamanho dele para ser 1, mantendo a direção original, comparando se ele é menor ou igual a 1
 
 Vetor3d_Subtrai(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a subtração vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x - \vec{v}_2x, \vec{v}_1y - \vec{v}_2y, \vec{v}_1z - \vec{v}_2z $
 
-Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição vetorial entre eles, aplicando a fórmula $\` v1x + v2x, v1y + v2y, v1z + v2z \`$
+Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x + \vec{v}_2x, \vec{v}_1y + \vec{v}_2y, \vec{v}_1z + \vec{v}_2z $
 
-Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\`v1x * v2x, v1y * v2y, v1z * v2z \`$
+Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x * \vec{v}_2x, \vec{v}_1y * \vec{v}_2y, \vec{v}_1z * \vec{v}_2z $
 
 ## Tarefa 1 
 Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
 Como já definimos os pontos, precisamos nos preocupar apenas com o loop do projeto para pintar os pixels
-cada pixel possui coordenadas P(xp, yp, zp), zp é constante e sempre será zp = -dJanela, yp = PSE.y - deltinhay * 0.5 - i * deltinhay , xp = xp = PSE.x + deltinhax * 0.5 + j * deltinhax;
+cada pixel possui coordenadas P(x_p, y_p, z_p), z_p é constante e sempre será z_p = -dJanela, y_p = PSE_y - $\frac{Delta_y}{2}\$ - i * $\delta$ y , x_p = x_p = PSE _x + $\delta$ x * 0.5 + j * $\delta$ x;
 
-SENDO PSE = { -wJanela * 0.5, hJanela * 0.5, -dJanela };
+SENDO PSE = { $\frac{-wJanela}{2}$, $\frac{hJanela}{2}$, -dJanela };
 
 Verificamos se as retas de luz interceptam a esfera e verificamos o delta, visto que precisamos igualar uma equação de segundo grau com a de primeiro grau.
 
-Se o delta>=0 temos interceptações e pintamos da cor que o professor pediu, vermelha
+Se o $\Delta >= 0$ temos interceptações e pintamos da cor que o professor pediu, vermelha
 
 Se não a gente pinta da cor do Background.
 
