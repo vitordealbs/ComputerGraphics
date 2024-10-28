@@ -41,9 +41,9 @@ Da equação da Esfera temos: $a* t_i^2  + b*t_i + c = 0$
 
 coeficientes:
 
-$a = dr_x^2 + dr_y^2 + dr_z^2$
+$a = \vec{dr}_x^2 + \vec{dr}_y^2 + \vec{dr}_z^2$
 
-$b = dr_x(x_o - x_c) + dr_y(y_o - y_c) + dr_z(z_o - z_c)$
+$b = \vec{dr}_x(x_o - x_c) + \vec{dr}_y(y_o - y_c) + \vec{dr}_z(z_o - z_c)$
 
 $c = (x_o-x_c)^2 + (y_o-y_c)^2 + (z_o - z_c)^2 + R^2$
 
@@ -67,7 +67,7 @@ Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multipli
 ## Tarefa 1 
 Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
 Como já definimos os pontos, precisamos nos preocupar apenas com o loop do projeto para pintar os pixels
-cada pixel possui coordenadas P(x_p, y_p, z_p), z_p é constante e sempre será z_p = -dJanela, y_p = PSE_y - $\frac{Delta_y}{2}\$ - i * $\delta$ y , x_p = x_p = PSE _x + $\delta$ x * 0.5 + j * $\delta$ x;
+cada pixel possui coordenadas P($x_p, y_p, z_p$), z_p é constante e sempre será $z_p$ = -dJanela, $y_p$ = $PSE_y$ - $\frac{Delta_y}{2}\$ - i * $\delta$ y , $x_p$ = $x_p$ = $PSE_x$ + $\delta$ x * 0.5 + j * $\delta$ x;
 
 SENDO PSE = { $\frac{-wJanela}{2}$, $\frac{hJanela}{2}$, -dJanela };
 
