@@ -2,7 +2,8 @@
 
 - Vitor de Albuquerque - [@vitoralbq](https://www.github.com/vitoralbq)
 - Luis Antônio Lopes - [@luis-dot-lopes](https://www.github.com/luis-dot-lopes)
-
+  
+Trello do Projeto: https://trello.com/invite/b/671e3fdc7f2efb43632badae/ATTI92b2fb094770c151fbbd527004b91e271CF34B5F/computacao-grafica
 
 # Computação Gráfica - Um breve projeto
 
