@@ -4,7 +4,6 @@
 
 using namespace funcoes_auxiliares;
 
-
 // Definição das dimensões da janela
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -21,6 +20,9 @@ const int nCol = 800;
 
 // Distância do frame ao olho
 float dJanela = 2.0;
+
+// Posição do olho do observador
+Vetor3d E = {0.0f, 0.0f, 0.0f};
 
 // Raio da esfera
 float rEsfera = 6.0;
@@ -52,11 +54,10 @@ int main(void) {
         // Definição da coordenada z dos pontos do frame
         float zp = -dJanela;
         // Definição do vetor v que vai do centro da esfera ao olho do observador
-        Vetor3d v = Auxiliares::Vetor3d_escala(centro_esfera, -1);
+        Vetor3d v = E - centro_esfera;
 
         // Início do código de desenho
-        BeginDrawing();
-        {
+        BeginDrawing(); {
             ClearBackground(BLACK);
 
             // Loop sobre as linhas
@@ -70,12 +71,12 @@ int main(void) {
                     // Construção do ponto P que representa o centro do quadrado i, j do frame
                     Vetor3d P = { xp, yp, zp };
                     // Vetor dr normalizado que aponta do olho do observador ao ponto P
-                    Vetor3d dr = Auxiliares::Vetor3dNormalizado(P);
+                    Vetor3d dr = (P - E).normalizado();
 
                     // Cálculo dos coeficientes da equação de interseção entre a esfera e o raio
-                    double a = Auxiliares::Vetor3DotProduct(dr, dr);
-                    double b = Auxiliares::Vetor3DotProduct(dr, v);
-                    double c = Auxiliares::Vetor3DotProduct(v, v) - rEsfera * rEsfera;
+                    double a = dr.dot_product(dr);
+                    double b = dr.dot_product(v);
+                    double c = v.dot_product(v) - rEsfera * rEsfera;
 
                     // Delta da equação
                     double delta = b * b - a * c;
