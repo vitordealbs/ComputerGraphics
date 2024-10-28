@@ -40,7 +40,6 @@ $\vec{P(t)} = Po + t * \vec{dr}$
 Da equação da Esfera temos: $a* t_i^2  + b*t_i + c = 0$
 
 coeficientes:
-
 $a = \vec{dr}_x^2 + \vec{dr}_y^2 + \vec{dr}_z^2$
 
 $b = \vec{dr}_x(x_o - x_c) + \vec{dr}_y(y_o - y_c) + \vec{dr}_z(z_o - z_c)$
