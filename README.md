@@ -82,6 +82,7 @@ Dessa forma obtemos:
 
 <img src = "https://lh3.googleusercontent.com/pw/AP1GczNvS1MePpnp4cwV74iyfh5o90bNHSefxCZbVmqI9pmsKPvuy0DroYwdVXBM8yl3t9gYpEcFzCPE1BB2d9ncI9vLlk5ZfE6C7Ypt1LnMIcBuMsjNwh5oskMtVCgqeXtym2ZT0eiODNmPMYj2eVM0F5ET=w799-h603-s-no-gm?authuser=0" height = "250px">
 
+Para saber mais do código acesse nossa documentação https://docs.google.com/document/d/1fLCBMWdit_Z32bfVOdO8JX0UjuQu0ShCus9_v9Hmhl4/edit?usp=sharing
 
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
