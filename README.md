@@ -46,6 +46,32 @@ $b = \vec{dr}_x(x_o - x_c) + \vec{dr}_y(y_o - y_c) + \vec{dr}_z(z_o - z_c)$
 
 $c = (x_o-x_c)^2 + (y_o-y_c)^2 + (z_o - z_c)^2 + R^2$
 
+## Aula 2 - Iluminação
+Nessa aula tivemos uma breve revisão de Álgebra Linear, falando como poderíamos implementar Produto Escalar de vetores, Norma Euclidiana de um Vetor(Normalização) e a definição de Esfera vetorial e da equação geral da Reta.
+
+Da Esfera temos que: 
+$\ \vec{CP} * \vec{CP} = R^2$ 
+
+Do Raio temos que:
+$\ P_i = P_o + t_i * \vec{dr}$
+
+Se formos buscar a intersecção entre eles, precisamos abrir a equação vetorial da Esfera => $\ (P-C) * (P-C) = R^2 => (P_i - C) * (P_i - C) = R^2$
+
+$\ (P_o + t_i * \vec{dr} - C) * (P_o + t_i * \vec{dr} - C) = R^2 $ 
+
+Daí podemos definir que $\ \vec{V} = P_o - C$ 
+
+Chegando em $\ ( \vec{V}+ t_i * \vec{dr} ) *  ( \vec{V}+ t_i * \vec{dr} ) - R^2 = 0 $
+
+Distribuindo $\  \vec{V}^2- R^2 + 2 * \vec{V} * t_i * \vec{dr} +  \vec{dr}^2 * t_i^2= 0 $ entrando naquele lance de se o Delta>=0 tem interseção, se não a gente pintaria com o background que o professor pediu.
+
+Além dessa parte de Álgebrica, tivemos uma explicação sobre iluminação e um pouco sobre sombras
+
+Que pode ser descrita como a parte que tivemos uma explicação de como a luz chega ao olho do observador. Primeiro identificamos uma fonte luminosa denominando-a de L_p fazendo um \vec{l} refletir sobre o objeto criando a imagem para o olho humano. 
+Para ilustrar o desenho de como funciona, preste atenção na imagem abaixo:
+
+<img src = "https://photos.fife.usercontent.google.com/pw/AP1GczODddSM_xr4bumoWSSdL-_KlKzdVISp9lNoUXlXmItILIf33PxDeUkZ=w1346-h733-s-no-gm?authuser=0](https://lh3.googleusercontent.com/pw/AP1GczObPz-ctzJgqJvHC4HWqU4oExVFXXxfZ3TfOi29bJ79sk-sjYuwrCkpB-G_GbC-8OyYVrq1Fcawk8hDHmUf3hY5HLpoLEl11eHHRnhrMHA0Edv9z5EiWilt9xjQy_DhzH4Jsx7HGwFBxZvrdEPmMK8s=w1346-h733-s-no-gm?authuser=0" height = "250px">
+
 ## Preparação para as Tarefas (Funções Auxiliares)
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
 
