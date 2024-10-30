@@ -61,9 +61,9 @@ $\ (P_o + t_i * \vec{dr} - C) * (P_o + t_i * \vec{dr} - C) = R^2 $
 
 Daí podemos definir que $\ \vec{V} = P_o - C$ 
 
-Chegando em $\ ( \vec{V}+ t_i * \vec{dr} ) *  ( \vec{V}+ t_i * \vec{dr} ) - R^2 = 0 $
+Chegando em $\ ( \vec{V}+ t_i * \vec{dr} ) *  ( \vec{V}+ t_i * \vec{dr} ) - R^2 = 0$
 
-Distribuindo $\  \vec{V}^2- R^2 + 2 * \vec{V} * t_i * \vec{dr} +  \vec{dr}^2 * t_i^2= 0 $ entrando naquele lance de se o Delta>=0 tem interseção, se não a gente pintaria com o background que o professor pediu.
+Distribuindo $\\vec{V}^2- R^2 + 2 * \vec{V} * t_i * \vec{dr} +  \vec{dr}^2 * t_i^2= 0$ entrando naquele topico de se o $\Delta >= 0$ tem interseção, se não a gente pintaria com o background que o professor pediu.
 
 Além dessa parte de Álgebrica, tivemos uma explicação sobre iluminação e um pouco sobre sombras
 
