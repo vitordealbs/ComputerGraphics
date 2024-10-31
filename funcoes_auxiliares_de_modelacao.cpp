@@ -107,7 +107,9 @@ Raio::intersecao(Cilindro cilindro)
   if (t < 0.0) {
     t = (-b + sqrt(delta)) / (2 * a);
   }
-  if (no_ponto(t).dot_product(cilindro.direcao) > cilindro.altura) {
+  float altura_t =
+    (no_ponto(t) - cilindro.centro).dot_product(cilindro.direcao);
+  if (altura_t > cilindro.altura || altura_t < 0.0f) {
     return -1.0f;
   }
   return t;
@@ -116,6 +118,37 @@ Raio::intersecao(Cilindro cilindro)
 float
 Raio::intersecao(Cone cone)
 {
+  float R = cone.raio;
+  float h = cone.altura;
+  float fator = R * R / (h * h);
+  Vetor3d z = cone.direcao;
+  Vetor3d v = P0 - (cone.centro + z * h);
+  Vetor3d u = dr - dr.dot_product(z) * z;
+  Vetor3d w = v - (v.dot_product(z)) * z;
+  double a1 = u.dot_product(u);
+  double b1 = 2 * u.dot_product(w);
+  double c1 = w.dot_product(w);
+  double a2 = pow(dr.dot_product(z), 2.0) * fator;
+  double b2 = 2 * dr.dot_product(z) * (v.dot_product(z)) * fator;
+  double c2 = pow(v.dot_product(z), 2.0) * fator;
+  double a = a1 - a2;
+  double b = b1 - b2;
+  double c = c1 - c2;
+  double delta = b * b - 4 * a * c;
+  if (delta < 0.0) {
+    return -1.0f;
+  }
+  double t = (-b - sqrt(delta)) / (2 * a);
+  double menor_t = t;
+  if ((t = (-b + sqrt(delta)) / (2 * a)) > 0.0 &&
+      (menor_t < 0.0 || t < menor_t)) {
+    menor_t = t;
+  }
+  float altura_t = (no_ponto(menor_t) - cone.centro).dot_product(z);
+  if (altura_t > h || altura_t < 0.0f) {
+    return -1.0f;
+  }
+  return menor_t;
 }
 
 Plano::Plano(Vetor3d ponto,
@@ -208,6 +241,21 @@ Cone::calcular_iluminacao(Vetor3d Pt,
                           Vetor3d I_F,
                           Vetor3d I_A)
 {
+  Vetor3d z = direcao;
+  Vetor3d centro_Pt = Pt - centro;
+  Vetor3d normal = (centro_Pt - (centro_Pt.dot_product(z)) * z).normalizado();
+  Vetor3d v = dr * -1;
+  Vetor3d l = (P_F - Pt).normalizado();
+  float dotproduct_nl = normal.dot_product(l);
+  Vetor3d r = 2 * dotproduct_nl * normal - l;
+  float dotproduct_vr = v.dot_product(r);
+
+  Vetor3d I_a = K_a * I_A;
+  Vetor3d I_d = K_d * I_F * max(dotproduct_nl, 0.0);
+  Vetor3d I_e = K_e * I_F * pow(max(dotproduct_vr, 0.0), m);
+
+  Vetor3d I_total = I_d + I_e + I_a;
+  return I_total;
 }
 
 Cilindro::Cilindro(Vetor3d centro,
@@ -237,7 +285,8 @@ Cilindro::calcular_iluminacao(Vetor3d Pt,
                               Vetor3d I_A)
 {
   Vetor3d z = direcao;
-  Vetor3d normal = (Pt - (Pt.dot_product(z)) * z).normalizado();
+  Vetor3d centro_Pt = Pt - centro;
+  Vetor3d normal = (centro_Pt - (centro_Pt.dot_product(z)) * z).normalizado();
   Vetor3d v = dr * -1;
   Vetor3d l = (P_F - Pt).normalizado();
   float dotproduct_nl = normal.dot_product(l);
