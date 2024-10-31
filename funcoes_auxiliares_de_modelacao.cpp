@@ -52,7 +52,7 @@ Esfera::calcular_iluminacao(Vetor3d Pt,
   float dotproduct_vr = v.dot_product(r);
 
   Vetor3d I_d = K_d * I_F * max(dotproduct_nl, 0);
-  Vetor3d I_e = K_e * I_F * max(pow(dotproduct_vr, m), 0);
+  Vetor3d I_e = K_e * I_F * pow(max(dotproduct_vr, 0), m);
   Vetor3d I_a = K_a * I_A;
 
   Vetor3d I_total = I_d + I_e + I_a;
@@ -127,9 +127,9 @@ Plano::calcular_iluminacao(Vetor3d Pt,
   Vetor3d r = 2 * dotproduct_nl * normal - l;
   float dotproduct_vr = v.dot_product(r);
 
-  Vetor3d I_d = K_d * I_F * max(dotproduct_nl, 0);
-  Vetor3d I_e = K_e * I_F * max(pow(dotproduct_vr, m), 0);
   Vetor3d I_a = K_a * I_A;
+  Vetor3d I_d = K_d * I_F * max(dotproduct_nl, 0.0);
+  Vetor3d I_e = K_e * I_F * pow(max(dotproduct_vr, 0.0), m);
 
   Vetor3d I_total = I_d + I_e + I_a;
   return I_total;

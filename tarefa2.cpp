@@ -38,6 +38,9 @@ const double alpha = 50.0;
 Vetor3d I_F = { 0.7, 0.7, 0.7 };
 Vetor3d P_F = { 0.0, 5.0, 0.0 };
 
+// vetor representando a luz ambiente
+const Vetor3d I_A = { 0.1, 0.1, 0.1 };
+
 // funcao auxiliar que retorna o maximo
 // de dois numeros
 double
@@ -91,7 +94,7 @@ main(void)
                                         height * 0.5,
                                         -dist_ao_quadro };
     // definicao da coordenada z dos pontos do frame
-    double zp = -dist_ao_quadro;
+    float zp = -dist_ao_quadro;
     // definicao do vetor v que vai do centro da esfera ao olho do observador
     Vetor3d v = E - centro_esfera;
 
@@ -102,11 +105,11 @@ main(void)
     // loop sobre as linhas
     for (int i = 0; i < lin; ++i) {
       // calculo do y do centro dos pontos da linha i
-      double yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5 - i * deltinhay;
+      float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5 - i * deltinhay;
       // loop sobre as colunas
       for (int j = 0; j < col; ++j) {
         // calculo do x do centro do ponto da coluna j
-        double xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5 * deltinhax;
+        float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5 * deltinhax;
         // construcao do ponto P que representa o centro do quadrado i, j do
         // frame
         Vetor3d P = { xp, yp, zp };
@@ -154,24 +157,27 @@ main(void)
         Vetor3d r =
           2 * normal.dot_product(vetor_luminoso) * normal - vetor_luminoso;
 
+        // calculo da intensidade da luz ambiente
+        Vetor3d I_ambiente = K * I_A;
+
         // calculo da intensidade da luz difusa
         Vetor3d I_difusa = K * I_F * max(vetor_luminoso.dot_product(normal), 0);
 
         // calculo da intensidade da luz especular
         Vetor3d I_especular =
-          K * I_F * max(pow(v_inverso.dot_product(r), alpha), 0);
+          K * I_F * pow(max(v_inverso.dot_product(r), 0), alpha);
 
         // calculo da intensidade da luz total
-        Vetor3d I_total = I_difusa + I_especular;
+        Vetor3d I_total = I_ambiente + I_difusa + I_especular;
 
         // desenho do pixel na tela
         DrawRectangle(Deltax * j,
                       Deltay * i,
                       Deltax,
                       Deltay,
-                      (Color){ min(I_total.x * 255.0, 255.0),
-                               min(I_total.y * 255.0, 255.0),
-                               min(I_total.z * 255.0, 255.0),
+                      (Color){ (unsigned char)min(I_total.x * 255.0, 255.0),
+                               (unsigned char)min(I_total.y * 255.0, 255.0),
+                               (unsigned char)min(I_total.z * 255.0, 255.0),
                                255 });
       }
     }
