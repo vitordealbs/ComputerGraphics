@@ -46,7 +46,33 @@ $b = \vec{dr}_x(x_o - x_c) + \vec{dr}_y(y_o - y_c) + \vec{dr}_z(z_o - z_c)$
 
 $c = (x_o-x_c)^2 + (y_o-y_c)^2 + (z_o - z_c)^2 + R^2$
 
-## Preparação para as Tarefas (Funções Auxiliares)
+## Aula 2 - Iluminação
+Nessa aula tivemos uma breve revisão de Álgebra Linear, falando como poderíamos implementar Produto Escalar de vetores, Norma Euclidiana de um Vetor(Normalização) e a definição de Esfera vetorial e da equação geral da Reta.
+
+Da Esfera temos que: 
+$\ \vec{CP} * \vec{CP} = R^2$ 
+
+Do Raio temos que:
+$\ P_i = P_o + t_i * \vec{dr}$
+
+Se formos buscar a intersecção entre eles, precisamos abrir a equação vetorial da Esfera => $\ (P-C) * (P-C) = R^2 => (P_i - C) * (P_i - C) = R^2$
+
+$\ (P_o + t_i * \vec{dr} - C) * (P_o + t_i * \vec{dr} - C) = R^2 $ 
+
+Daí podemos definir que $\ \vec{V} = P_o - C$ 
+
+Chegando em $\ ( \vec{V}+ t_i * \vec{dr} ) *  ( \vec{V}+ t_i * \vec{dr} ) - R^2 = 0$
+
+Distribuindo $\\vec{V}^2- R^2 + 2 * \vec{V} * t_i * \vec{dr} +  \vec{dr}^2 * t_i^2= 0$ entrando naquele topico de se o $\Delta >= 0$ tem interseção, se não a gente pintaria com o background que o professor pediu.
+
+Além dessa parte de Álgebrica, tivemos uma explicação sobre iluminação e um pouco sobre sombras
+
+Que pode ser descrita como a parte que tivemos uma explicação de como a luz chega ao olho do observador. Primeiro identificamos uma fonte luminosa denominando-a de L_p fazendo um \vec{l} refletir sobre o objeto criando a imagem para o olho humano. 
+Para ilustrar o desenho de como funciona, preste atenção na imagem abaixo:
+
+<img src = "https://photos.fife.usercontent.google.com/pw/AP1GczODddSM_xr4bumoWSSdL-_KlKzdVISp9lNoUXlXmItILIf33PxDeUkZ=w1346-h733-s-no-gm?authuser=0](https://lh3.googleusercontent.com/pw/AP1GczObPz-ctzJgqJvHC4HWqU4oExVFXXxfZ3TfOi29bJ79sk-sjYuwrCkpB-G_GbC-8OyYVrq1Fcawk8hDHmUf3hY5HLpoLEl11eHHRnhrMHA0Edv9z5EiWilt9xjQy_DhzH4Jsx7HGwFBxZvrdEPmMK8s=w1346-h733-s-no-gm?authuser=0" height = "250px">
+
+## Preparação para as Tarefas: Funções Auxiliares e Funções Auxiliares de Modelação
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
 
 Vetor3d_escala(Vetor3d v, float scalar): Recebe um vetor e um número escalar para fazer uma multiplicação escalar com o vetor, aplicando a fórmula $\ \vec{v}_1x * scalar ; \vec{v}_1y * scalar ; \vec{v}_1z * scalar $
@@ -62,6 +88,9 @@ Vetor3d_Subtrai(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a subtração
 Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x + \vec{v}_2x, \vec{v}_1y + \vec{v}_2y, \vec{v}_1z + \vec{v}_2z $
 
 Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x * \vec{v}_2x, \vec{v}_1y * \vec{v}_2y, \vec{v}_1z * \vec{v}_2z $
+
+
+Além disso, para deixar o código o mais modularizado nós criamos nossas funções de modelação
 
 ## Tarefa 1 
 Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
@@ -81,6 +110,7 @@ Dessa forma obtemos:
 
 <img src = "https://lh3.googleusercontent.com/pw/AP1GczNvS1MePpnp4cwV74iyfh5o90bNHSefxCZbVmqI9pmsKPvuy0DroYwdVXBM8yl3t9gYpEcFzCPE1BB2d9ncI9vLlk5ZfE6C7Ypt1LnMIcBuMsjNwh5oskMtVCgqeXtym2ZT0eiODNmPMYj2eVM0F5ET=w799-h603-s-no-gm?authuser=0" height = "250px">
 
+Para saber mais do código acesse nossa documentação https://docs.google.com/document/d/1fLCBMWdit_Z32bfVOdO8JX0UjuQu0ShCus9_v9Hmhl4/edit?usp=sharing
 
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
