@@ -98,21 +98,21 @@ Circulo topo_cilindro(dir_cilindro * (3 * R) + centro_cilindro, R / 3.0f, dir_ci
 Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
 
 // definicao do cone
-Vetor3d K_d_cone = { 0.9, 0.9, 0.3 };
+Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
 Vetor3d K_e_cone = K_d_cone;
 Vetor3d K_a_cone = K_d_cone;
 float m_cone = 1;
-Vetor3d centro_cone = { 0.0f, R, -100.0f };
-Vetor3d dir_cone = { 0.0f, 1.0f, 0.0f };
+Vetor3d centro_cone = topo_cilindro.centro;
+Vetor3d dir_cone = cilindro.direcao;
 Cone cone(centro_cone,
-          R / 3.0f,
-          R / 2.0f,
+          R * 1.5f,
+          (R * 1.5f) / 3.0f,
           dir_cone,
           K_d_cone,
           K_e_cone,
           K_a_cone,
           m_cone);
-Circulo base_cone(centro_cone, R / 3.0f, dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
+Circulo base_cone(centro_cone, R / 3.0f, -1.0f * dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
