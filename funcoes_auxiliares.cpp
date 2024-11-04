@@ -9,6 +9,13 @@ namespace funcoes_auxiliares {
             return x * vetor.x + y * vetor.y + z * vetor.z;
         }
 
+        Vetor3d Vetor3d::cross_product(Vetor3d vetor) {
+          Vetor3d resultado = { y * vetor.z - z * vetor.y,
+                                z * vetor.x - x * vetor.z,
+                                x * vetor.y - y * vetor.x };
+          return resultado;
+        }
+
         float Vetor3d::tamanho() {
             return sqrtf(x * x + y * y + z * z);
         }

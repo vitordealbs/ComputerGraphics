@@ -3,6 +3,7 @@
 #include "funcoes_auxiliares_de_modelacao.h"
 #include "funcoes_auxiliares.h" // Incluindo as operações vetoriais
 #include <cmath>                // Para pow e sqrt
+#include <cstring>              // Para memset
 
 using namespace funcoes_auxiliares; // Usando o namespace "Auxiliares"
 using namespace Auxiliares_de_modelacao;
@@ -59,6 +60,12 @@ Esfera::calcular_iluminacao(Vetor3d Pt,
   return I_total;
 }
 
+Vetor3d
+Esfera::normal(Vetor3d Pt)
+{
+    return (Pt - centro).normalizado();
+}
+
 // Definição do construtor de Raio
 Raio::Raio(Vetor3d P0, Vetor3d dr)
   : P0(P0)
@@ -70,6 +77,31 @@ Vetor3d
 Raio::no_ponto(float t)
 {
   return P0 + dr * t;
+}
+
+float
+Raio::intersecao(Objeto objeto)
+{
+    switch(objeto.tipo) {
+        case OBJ_ESFERA: {
+            return intersecao(objeto.obj.esfera);
+        } break;
+        case OBJ_PLANO: {
+            return intersecao(objeto.obj.plano);
+        } break;
+        case OBJ_CILINDRO: {
+            return intersecao(objeto.obj.cilindro);
+        } break;
+        case OBJ_CONE: {
+            return intersecao(objeto.obj.cone);
+        } break;
+        case OBJ_CIRCULO: {
+            return intersecao(objeto.obj.circulo);
+        } break;
+        default: {
+            return -1.0f;
+        } break;
+    }
 }
 
 float
@@ -89,6 +121,19 @@ Raio::intersecao(Esfera esfera)
   }
   return t;
 }
+
+float
+Raio::intersecao(Plano plano)
+{
+  Vetor3d v = P0 - plano.ponto;
+  double a = dr.dot_product(plano.normal);
+  if (a == 0.0) {
+    return -1.0;
+  }
+  double b = v.dot_product(plano.normal);
+  return -b / a;
+}
+
 
 float
 Raio::intersecao(Cilindro cilindro)
@@ -151,6 +196,23 @@ Raio::intersecao(Cone cone)
   return menor_t;
 }
 
+float
+Raio::intersecao(Circulo circulo)
+{
+  Vetor3d v = P0 - circulo.centro;
+  double a = dr.dot_product(circulo.normal);
+  if (a == 0.0) {
+    return -1.0f;
+  }
+  double b = v.dot_product(circulo.normal);
+  double t = -b / a;
+  Vetor3d Pt = no_ponto(t);
+  if((Pt - circulo.centro).tamanho() > circulo.raio) {
+      return -1.0f;
+  }
+  return t;
+}
+
 Plano::Plano(Vetor3d ponto,
              Vetor3d normal,
              Vetor3d K_d,
@@ -180,18 +242,6 @@ Plano::tres_pontos(Vetor3d P1,
   Vetor3d w = v1.cross_product(v2);
   Vetor3d n = w.normalizado();
   return Plano(P1, n, K_d, K_e, K_a, m);
-}
-
-float
-Raio::intersecao(Plano plano)
-{
-  Vetor3d v = P0 - plano.ponto;
-  double a = dr.dot_product(plano.normal);
-  if (a == 0.0) {
-    return -1.0;
-  }
-  double b = v.dot_product(plano.normal);
-  return -b / a;
 }
 
 Vetor3d
@@ -258,6 +308,31 @@ Cone::calcular_iluminacao(Vetor3d Pt,
   return I_total;
 }
 
+Vetor3d
+Cone::normal(Vetor3d Pt)
+{
+  Vetor3d z = direcao;
+  Vetor3d centro_Pt = Pt - centro;
+  return (centro_Pt - centro_Pt.dot_product(z) * z).normalizado();
+}
+
+Circulo::Circulo(Vetor3d centro,
+                   float raio,
+                   Vetor3d normal,
+                   Vetor3d K_d,
+                   Vetor3d K_e,
+                   Vetor3d K_a,
+                   float m)
+  : centro(centro)
+  , raio(raio)
+  , normal(normal)
+  , K_d(K_d)
+  , K_e(K_e)
+  , K_a(K_a)
+  , m(m)
+{
+}
+
 Cilindro::Cilindro(Vetor3d centro,
                    float raio,
                    float altura,
@@ -286,7 +361,7 @@ Cilindro::calcular_iluminacao(Vetor3d Pt,
 {
   Vetor3d z = direcao;
   Vetor3d centro_Pt = Pt - centro;
-  Vetor3d normal = (centro_Pt - (centro_Pt.dot_product(z)) * z).normalizado();
+  Vetor3d normal = (centro_Pt - centro_Pt.dot_product(z) * z).normalizado();
   Vetor3d v = dr * -1;
   Vetor3d l = (P_F - Pt).normalizado();
   float dotproduct_nl = normal.dot_product(l);
@@ -299,6 +374,112 @@ Cilindro::calcular_iluminacao(Vetor3d Pt,
 
   Vetor3d I_total = I_d + I_e + I_a;
   return I_total;
+}
+
+Vetor3d
+Cilindro::normal(Vetor3d Pt)
+{
+    Vetor3d z = direcao;
+    Vetor3d centro_Pt = Pt - centro;
+    return (centro_Pt - centro_Pt.dot_product(z) * z).normalizado();
+}
+
+UnionObjeto::UnionObjeto()
+{
+    memset(this, 0, sizeof(UnionObjeto));
+}
+
+Objeto::Objeto(Esfera esfera)
+{
+    tipo = OBJ_ESFERA;
+    obj.esfera = esfera;
+
+    material = MaterialSimples(esfera.K_d, esfera.K_e, esfera.K_a, esfera.m);
+}
+
+Objeto::Objeto(Plano plano)
+{
+    tipo = OBJ_PLANO;
+    obj.plano = plano;
+
+    material = MaterialSimples(plano.K_d, plano.K_e, plano.K_a, plano.m);
+}
+
+Objeto::Objeto(Cilindro cilindro)
+{
+    tipo = OBJ_CILINDRO;
+    obj.cilindro = cilindro;
+
+    material = MaterialSimples(cilindro.K_d, cilindro.K_e, cilindro.K_a, cilindro.m);
+}
+
+Objeto::Objeto(Cone cone)
+{
+    tipo = OBJ_CONE;
+    obj.cone = cone;
+
+    material = MaterialSimples(cone.K_d, cone.K_e, cone.K_a, cone.m);
+}
+
+Objeto::Objeto(Circulo circulo)
+{
+    tipo = OBJ_CIRCULO;
+    obj.circulo = circulo;
+
+    material = MaterialSimples(circulo.K_d, circulo.K_e, circulo.K_a, circulo.m);
+}
+
+Vetor3d
+Objeto::normal(Vetor3d Pt)
+{
+    switch(tipo) {
+        case OBJ_ESFERA: {
+            return obj.esfera.normal(Pt);
+        } break;
+        case OBJ_PLANO: {
+            return obj.plano.normal;
+        } break;
+        case OBJ_CILINDRO: {
+            return obj.cilindro.normal(Pt);
+        } break;
+        case OBJ_CONE: {
+            return obj.cone.normal(Pt);
+        } break;
+        case OBJ_CIRCULO: {
+            return obj.circulo.normal;
+        } break;
+        default: {
+            return {0.0f, 0.0f, 0.0f};
+        } break;
+    }
+}
+
+FontePontual::FontePontual(Vetor3d posicao, Vetor3d intensidade) : posicao(posicao), intensidade(intensidade) {}
+
+MaterialSimples::MaterialSimples(Vetor3d K_d, Vetor3d K_e, Vetor3d K_a, float m) : K_d(K_d), K_e(K_e), K_a(K_a), m(m) {}
+
+Vetor3d
+iluminacao::modelo_phong(Vetor3d Pt, Vetor3d dr, Vetor3d n, FontePontual fonte, Vetor3d I_A, MaterialSimples material)
+{
+  Vetor3d v = dr * -1;
+  Vetor3d l = (fonte.posicao - Pt).normalizado();
+  float dotproduct_nl = n.dot_product(l);
+  Vetor3d r = 2 * dotproduct_nl * n - l;
+  float dotproduct_vr = v.dot_product(r);
+
+  Vetor3d E_a = material.K_a * I_A;
+  Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
+  Vetor3d E_e = material.K_e * fonte.intensidade * pow(max(dotproduct_vr, 0.0), material.m);
+
+  Vetor3d E_total = E_d + E_e + E_a;
+  return E_total;
+
+}
+
+Vetor3d
+iluminacao::luz_ambiente(Vetor3d I_A, Vetor3d K_a)
+{
+    return K_a * I_A;
 }
 
 }

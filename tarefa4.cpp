@@ -3,8 +3,27 @@
 #include <cstdio>
 #include <math.h>
 #include <raylib.h>
+#include <vector>
 using namespace funcoes_auxiliares;
 using namespace Auxiliares_de_modelacao;
+
+std::pair<float, int>
+calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
+{
+  int objeto = -1;
+  float menor_t = -1.0f;
+  float t;
+  for(int i = 0; i < objetos.size(); ++i) {
+      if(i == excluir) continue;
+      if ((t = raio.intersecao(objetos[i])) > 0.0f &&
+          (menor_t < 0.0f || t < menor_t)) {
+        menor_t = t;
+        objeto = i;
+      }
+  }
+
+  return {menor_t, objeto};
+}
 
 // definicao das dimensoes da janela
 const int W_C = 500;
@@ -65,30 +84,35 @@ Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
 Vetor3d K_e_cilindro = K_d_cilindro;
 Vetor3d K_a_cilindro = K_d_cilindro;
 float m_cilindro = 1;
+Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), -1.0f / sqrtf(3.0) };
+Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
 Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   R / 3.0f,
                   3 * R,
-                  { -1.0f / sqrtf(3.0),
-                    1.0f / sqrtf(3.0f),
-                    -1.0f / sqrtf(3.0) },
+                  dir_cilindro,
                   K_d_cilindro,
                   K_e_cilindro,
                   K_a_cilindro,
                   m_cilindro);
+Circulo topo_cilindro(dir_cilindro * (3 * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
+Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
 
 // definicao do cone
 Vetor3d K_d_cone = { 0.9, 0.9, 0.3 };
 Vetor3d K_e_cone = K_d_cone;
 Vetor3d K_a_cone = K_d_cone;
 float m_cone = 1;
-Cone cone({ 0.0f, R, -100.0f },
+Vetor3d centro_cone = { 0.0f, R, -100.0f };
+Vetor3d dir_cone = { 0.0f, 1.0f, 0.0f };
+Cone cone(centro_cone,
           R / 3.0f,
           R / 2.0f,
-          { 0.0f, 1.0f, 0.0f },
+          dir_cone,
           K_d_cone,
           K_e_cone,
           K_a_cone,
           m_cone);
+Circulo base_cone(centro_cone, R / 3.0f, dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
@@ -96,6 +120,8 @@ Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
 
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
+
+std::vector<Objeto> objetos = {Objeto(esfera), Objeto(plano_chao), Objeto(plano_fundo), Objeto(cilindro), Objeto(topo_cilindro), Objeto(base_cilindro), Objeto(cone), Objeto(base_cone)};
 
 int
 main(void)
@@ -122,66 +148,16 @@ main(void)
           Vetor3d P = { xp, yp, zp };
           Vetor3d dr = P.normalizado();
           Raio raio(P0, dr);
-          int objeto = -1;
-          float menor_t = -1.0f;
-          float t;
-          if ((t = raio.intersecao(esfera)) > 0.0f) {
-            menor_t = t;
-            objeto = 0;
-          }
-          if ((t = raio.intersecao(plano_chao)) > 0.0f &&
-              (menor_t < 0.0f || t < menor_t)) {
-            menor_t = t;
-            objeto = 1;
-          }
-          if ((t = raio.intersecao(plano_fundo)) > 0.0f &&
-              (menor_t < 0.0f || t < menor_t)) {
-            menor_t = t;
-            objeto = 2;
-          }
-          if ((t = raio.intersecao(cilindro)) > 0.0f &&
-              (menor_t < 0.0f || t < menor_t)) {
-            menor_t = t;
-            objeto = 3;
-          }
-          if ((t = raio.intersecao(cone)) > 0.0f &&
-              (menor_t < 0.0f || t < menor_t)) {
-            menor_t = t;
-            objeto = 4;
-          }
+          auto [t, objeto] = calcular_intersecao(raio, objetos);
           Vetor3d I_total = I_A;
-          if (objeto == 0) {
-            Vetor3d Pt = raio.no_ponto(menor_t);
-            I_total = esfera.calcular_iluminacao(Pt, raio.dr, P_F, I_F, I_A);
-          } else if (objeto == 1) {
-            Vetor3d Pt = raio.no_ponto(menor_t);
-            Vetor3d dr_luz = (P_F - Pt).normalizado();
-            Raio raio_luz(Pt, dr_luz);
-            if (raio_luz.intersecao(esfera) < 0.0) {
-              I_total =
-                plano_chao.calcular_iluminacao(Pt, raio.dr, P_F, I_F, I_A);
-            } else {
-              I_total = plano_chao.calcular_iluminacao(
-                Pt, raio.dr, P_F, { 0.0f, 0.0f, 0.0f }, I_A);
-            }
-
-          } else if (objeto == 2) {
-            Vetor3d Pt = raio.no_ponto(menor_t);
-            Vetor3d dr_luz = (P_F - Pt).normalizado();
-            Raio raio_luz(Pt, dr_luz);
-            if (raio_luz.intersecao(esfera) < 0.0) {
-              I_total =
-                plano_fundo.calcular_iluminacao(Pt, raio.dr, P_F, I_F, I_A);
-            } else {
-              I_total = plano_chao.calcular_iluminacao(
-                Pt, raio.dr, P_F, { 0.0f, 0.0f, 0.0f }, I_A);
-            }
-          } else if (objeto == 3) {
-            Vetor3d Pt = raio.no_ponto(menor_t);
-            I_total = cilindro.calcular_iluminacao(Pt, raio.dr, P_F, I_F, I_A);
-          } else if (objeto == 4) {
-            Vetor3d Pt = raio.no_ponto(menor_t);
-            I_total = cone.calcular_iluminacao(Pt, raio.dr, P_F, I_F, I_A);
+          Vetor3d Pt = raio.no_ponto(t);
+          Vetor3d dr_luz = (P_F - Pt).normalizado();
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if(t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
+              I_total = iluminacao::modelo_phong(Pt, raio.dr, objetos[objeto].normal(Pt), {P_F, I_F}, I_A, objetos[objeto].material);
+          } else {
+              I_total = iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
           }
 
           DrawRectangle(
