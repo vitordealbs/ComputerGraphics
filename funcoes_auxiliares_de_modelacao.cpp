@@ -98,6 +98,9 @@ Raio::intersecao(Objeto objeto)
         case OBJ_CIRCULO: {
             return intersecao(objeto.obj.circulo);
         } break;
+        case OBJ_TRIANGULO: {
+            return intersecao(objeto.obj.triangulo);
+        } break;
         default: {
             return -1.0f;
         } break;
@@ -209,6 +212,25 @@ Raio::intersecao(Circulo circulo)
   Vetor3d Pt = no_ponto(t);
   if((Pt - circulo.centro).tamanho() > circulo.raio) {
       return -1.0f;
+  }
+  return t;
+}
+
+float
+Raio::intersecao(Triangulo triangulo)
+{
+  Vetor3d v = P0 - triangulo.P0;
+  double a = dr.dot_product(triangulo.normal);
+  if (a == 0.0) {
+    return -1.0f;
+  }
+  double b = v.dot_product(triangulo.normal);
+  double t = -b / a;
+  Vetor3d Pt = no_ponto(t);
+  Vetor3d w = Pt - triangulo.P0;
+  Vetor3d u = Pt - triangulo.P1;
+  if(triangulo.altura1.dot_product(w) < 0.0f || triangulo.altura2.dot_product(w) < 0.0f || triangulo.altura3.dot_product(u) < 0.0f) {
+    return -1.0f;
   }
   return t;
 }
@@ -333,6 +355,30 @@ Circulo::Circulo(Vetor3d centro,
 {
 }
 
+Triangulo::Triangulo(Vetor3d P0,
+                   Vetor3d P1,
+                   Vetor3d P2,
+                   Vetor3d K_d,
+                   Vetor3d K_e,
+                   Vetor3d K_a,
+                   float m)
+  : P0(P0)
+  , P1(P1)
+  , P2(P2)
+  , K_d(K_d)
+  , K_e(K_e)
+  , K_a(K_a)
+  , m(m)
+{
+    lado1 = P1 - P0;
+    lado2 = P2 - P0;
+    lado3 = P2 - P1;
+    altura1 = lado2 - lado1.normalizado() * lado2.dot_product(lado1) * (1.0f / lado1.tamanho());
+    altura2 = lado1 - lado2.normalizado() * lado1.dot_product(lado2) * (1.0f / lado2.tamanho());
+    altura3 = lado3.normalizado() * lado3.dot_product(lado1) * (1.0f / lado3.tamanho()) - lado1;
+    normal = lado1.cross_product(lado2).normalizado();
+}
+
 Cilindro::Cilindro(Vetor3d centro,
                    float raio,
                    float altura,
@@ -429,6 +475,14 @@ Objeto::Objeto(Circulo circulo)
     material = MaterialSimples(circulo.K_d, circulo.K_e, circulo.K_a, circulo.m);
 }
 
+Objeto::Objeto(Triangulo triangulo)
+{
+    tipo = OBJ_TRIANGULO;
+    obj.triangulo = triangulo;
+
+    material = MaterialSimples(triangulo.K_d, triangulo.K_e, triangulo.K_a, triangulo.m);
+}
+
 Vetor3d
 Objeto::normal(Vetor3d Pt)
 {
@@ -447,6 +501,9 @@ Objeto::normal(Vetor3d Pt)
         } break;
         case OBJ_CIRCULO: {
             return obj.circulo.normal;
+        } break;
+        case OBJ_TRIANGULO: {
+            return obj.triangulo.normal;
         } break;
         default: {
             return {0.0f, 0.0f, 0.0f};

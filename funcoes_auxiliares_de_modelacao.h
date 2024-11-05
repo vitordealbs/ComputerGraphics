@@ -13,6 +13,7 @@ struct Plano; // Declaração antecipada de Plano
 struct Cilindro; // Declaração antecipada de Cilindro
 struct Cone; // Declaração antecipada de Cone
 struct Circulo; // Declaração antecipada de Circulo
+struct Triangulo; // Declaração antecipada de Triangulo
 struct Raio; // Declaração antecipada de Raio
 struct Objeto; // Declaração antecipada de Objeto
 struct MaterialSimples; // Declaração antecipada de MaterialSimples
@@ -157,6 +158,36 @@ struct Circulo
 
 };
 
+struct Triangulo
+{
+
+    Vetor3d P0;
+    Vetor3d P1;
+    Vetor3d P2;
+
+    Vetor3d normal;
+    Vetor3d lado1;
+    Vetor3d lado2;
+    Vetor3d lado3;
+    Vetor3d altura1;
+    Vetor3d altura2;
+    Vetor3d altura3;
+
+    Vetor3d K_d;
+    Vetor3d K_e;
+    Vetor3d K_a;
+    float m;
+
+    Triangulo(Vetor3d P0,
+         Vetor3d P1,
+         Vetor3d P2,
+         Vetor3d K_d,
+         Vetor3d K_e,
+         Vetor3d K_a,
+         float m);
+
+};
+
 struct Raio
 {
   Vetor3d P0;
@@ -170,6 +201,7 @@ struct Raio
   float intersecao(Cone cone);
   float intersecao(Cilindro cilindro);
   float intersecao(Circulo circulo);
+  float intersecao(Triangulo triangulo);
 };
 
 struct FontePontual
@@ -194,7 +226,7 @@ struct MaterialSimples
 
 enum TipoObjeto
 {
-    OBJ_ESFERA, OBJ_PLANO, OBJ_CILINDRO, OBJ_CONE, OBJ_CIRCULO
+    OBJ_ESFERA, OBJ_PLANO, OBJ_CILINDRO, OBJ_CONE, OBJ_CIRCULO, OBJ_TRIANGULO
 };
 
 union UnionObjeto
@@ -204,6 +236,7 @@ union UnionObjeto
     Cilindro cilindro;
     Cone cone;
     Circulo circulo;
+    Triangulo triangulo;
 
     UnionObjeto();
 };
@@ -220,6 +253,7 @@ struct Objeto
     Objeto(Cilindro cilindro);
     Objeto(Cone cone);
     Objeto(Circulo circulo);
+    Objeto(Triangulo triangulo);
 
     Vetor3d normal(Vetor3d Pt);
 };
