@@ -152,6 +152,8 @@ Dessa forma obtemos:
 <img src = "" height = "250px">
 
 Para saber mais do código acesse nossa documentação: 
+https://docs.google.com/document/d/1x1g6nV5bGbYMz0AxzaHW-9l0jfwA0VKwMapHyUWKlV4/edit?tab=t.0
+
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
 
