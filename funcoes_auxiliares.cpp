@@ -3,10 +3,17 @@
 #include "funcoes_auxiliares.h"
 #include <cmath> // Para sqrtf()
 
-    namespace funcoes_auxiliares {
+namespace funcoes_auxiliares {
 
         float Vetor3d::dot_product(Vetor3d vetor) {
             return x * vetor.x + y * vetor.y + z * vetor.z;
+        }
+
+        Vetor3d Vetor3d::cross_product(Vetor3d vetor) {
+          Vetor3d resultado = { y * vetor.z - z * vetor.y,
+                                z * vetor.x - x * vetor.z,
+                                x * vetor.y - y * vetor.x };
+          return resultado;
         }
 
         float Vetor3d::tamanho() {
@@ -43,4 +50,5 @@
             Vetor3d resultado = {vetor1.x - vetor2.x, vetor1.y - vetor2.y, vetor1.z - vetor2.z};
             return resultado;
         }
+
 }
