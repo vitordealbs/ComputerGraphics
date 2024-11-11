@@ -88,7 +88,7 @@ struct Cilindro
   Vetor3d K_e;
   Vetor3d K_a;
   float m;
-
+//Definição Do Cilindro
   Cilindro(Vetor3d centro,
            float raio,
            float altura,
@@ -106,7 +106,7 @@ struct Cilindro
 
   Vetor3d normal(Vetor3d Pt);
 };
-
+//Definição do Cone
 struct Cone
 {
   Vetor3d centro;
@@ -136,7 +136,7 @@ struct Cone
 
   Vetor3d normal(Vetor3d Pt);
 };
-
+//Circulo de auxilio para tapar cone e cilindro
 struct Circulo
 {
     Vetor3d centro;
@@ -157,7 +157,7 @@ struct Circulo
          float m);
 
 };
-
+//triangulo para simular o cone 2d
 struct Triangulo
 {
 
@@ -211,7 +211,7 @@ struct FontePontual
 
    FontePontual(Vetor3d posicao, Vetor3d intensidade);
 };
-
+//calculo do material para calcular iluminação
 struct MaterialSimples
 {
     Vetor3d K_d; 
