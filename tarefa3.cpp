@@ -91,11 +91,13 @@ main(void)
             Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5 * deltinhax;
           Vetor3d P = { xp, yp, zp };
           Vetor3d dr = P.normalizado();
+          //Criação da Esfera
           Raio raio(P0, dr);
           float t_esfera = raio.intersecao(esfera);
           float t_plano_chao = raio.intersecao(plano_chao);
           float t_plano_fundo = raio.intersecao(plano_fundo);
           Vetor3d I_total = I_A;
+          //Efeito de iluminação da Esfera
           if (t_esfera > 0.0f &&
               (t_esfera < t_plano_chao || t_plano_chao < 0.0f) &&
               (t_esfera < t_plano_fundo || t_plano_fundo < 0.0f)) {
