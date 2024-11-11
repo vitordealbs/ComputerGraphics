@@ -90,7 +90,7 @@ Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição v
 Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x * \vec{v}_2x, \vec{v}_1y * \vec{v}_2y, \vec{v}_1z * \vec{v}_2z $
 
 
-Além disso, para deixar o código o mais modularizado nós criamos nossas funções de modelação
+Além disso, para deixar o código o mais modularizado nós criamos nossas funções de modelação que contém: Cilindro, Esfera, Plano, Raio, Circulo, Triangulo, 
 
 ## Tarefa 1 
 Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
@@ -112,6 +112,46 @@ Dessa forma obtemos:
 
 Para saber mais do código acesse nossa documentação https://docs.google.com/document/d/1fLCBMWdit_Z32bfVOdO8JX0UjuQu0ShCus9_v9Hmhl4/edit?usp=sharing
 
+## Tarefa 2 e 3
+Requisitos: Renderizar a esfera com iluminação difusa e especular, além de incluir planos para o chão e fundo.
+
+### Especificações:
+- **Janela**: 60 cm x 60 cm.
+- **Canvas**: 500 x 500 pixels.
+- **Coordenada Z da Janela**: z = -30 cm.
+### Esfera:
+- **Raio** R = 40 cm.
+- **Centro** C = (0, 0, -100 cm).
+- **Reflectividade**: K_d = K_e = K_a = (0.7, 0.2, 0.2).
+- **Shininess**: m = 10.
+### Plano do Chão:
+- **Ponto P_pi** = (0, -R, 0).
+- **Vetor normal n_bar** = (0, 1, 0).
+- **Reflectividade:** K_d = K_a = (0.2, 0.7, 0.2), K_e = (0.0, 0.0, 0.0).
+- **Shininess**: m = 1.
+### Plano de Fundo:
+- **Ponto P_pi** = (0, 0, -200 cm).
+- **Vetor normal n_bar** = (0, 0, 1).
+- **Reflectividade:** K_d = K_a = (0.3, 0.3, 0.7), K_e = (0.0, 0.0, 0.0).
+- **Shininess:** m = 1.
+### Fonte de Luz:
+- **Intensidade**: I_F = (0.7, 0.7, 0.7).
+- **Posição**: P_F = (0, 60 cm, -30 cm).
+- **Luz Ambiente**: Intensidade I_A = (0.3, 0.3, 0.3).
+### Algoritmo:
+**Interseção com os Objetos**: Para cada raio lançado pela janela, verifica interseções com a esfera e os planos.
+A menor interseção positiva é usada para determinar o ponto visível.
+Iluminação Difusa e Especular:
+- **Difusa:** I_d = (I_F @ K_d) * (l . n).
+- **Especular:** I_e = (I_F @ K_e) * (v . r)^m.
+**Obstruções:** Verifica se o ponto de interseção com o chão ou o plano de fundo é obstruído pela esfera antes de calcular as contribuições difusa e especular.
+
+Dessa forma obtemos:
+
+
+<img src = "" height = "250px">
+
+Para saber mais do código acesse nossa documentação: 
 ## Rodando localmente
 Requisitos: *Raylib* e *C++*
 
