@@ -90,8 +90,24 @@ Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição v
 Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x * \vec{v}_2x, \vec{v}_1y * \vec{v}_2y, \vec{v}_1z * \vec{v}_2z $
 
 
-Além disso, para deixar o código o mais modularizado nós criamos nossas funções de modelação que contém: Cilindro, Esfera, Plano, Raio, Circulo, Triangulo, 
+1. Cálculo de Iluminação com o Modelo de Phong
+O modelo de iluminação de Phong define a luz em um ponto 𝑃𝑡
+𝑃𝑡 de um objeto, considerando três componentes: difusa, especular e ambiente.
 
+Componente Difusa (𝐼𝑑)
+Representa a luz que é dispersa igualmente em todas as direções e é calculada como:
+$I_d = K_d * I_f * max(n * l, 0)$
+onde:
+$K_d$ é o coeficiente de difusão do material.
+$I_f$ é a intensidade da luz da fonte.
+n é o vetor normal da superfície no ponto de interseção.
+l é o vetor da direção da luz até o ponto.
+
+Componente Especular (𝐼e)
+
+Componente Ambiente (𝐼a)
+
+Sendo a iluminacao total, portanto $I_t = I_a + I_e + I_d$
 ## Tarefa 1 
 Requisitos: Pintar uma esfera no Canvas, definir o tamanho do painel, raio da esfera deve ser armazenado em rEsfera, cor do background cinza (100,100,100) , esfera deve ser RGB (255,0,0)
 Como já definimos os pontos, precisamos nos preocupar apenas com o loop do projeto para pintar os pixels
