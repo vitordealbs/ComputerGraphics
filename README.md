@@ -149,7 +149,7 @@ Iluminação Difusa e Especular:
 Dessa forma obtemos:
 
 
-<img src = "" height = "250px">
+<img src = "https://lh3.googleusercontent.com/pw/AP1GczMO3ZVDN5Z2qcW8BPWcQK4Ts3iKj_BuJ7pJicHS6KevFUDTFYgnNMQI01uZuC12K5LUeJynjkpJ_XybKqUlOgNZ1ramku-tG9lubpgDACtoZZU0Oz9iwx8oWi-I7looiDTxju2yKnsxdnJQv19VZ7_3=w497-h495-s-no-gm?authuser=0" height = "250px">
 
 Para saber mais do código acesse nossa documentação: 
 https://docs.google.com/document/d/1x1g6nV5bGbYMz0AxzaHW-9l0jfwA0VKwMapHyUWKlV4/edit?tab=t.0
