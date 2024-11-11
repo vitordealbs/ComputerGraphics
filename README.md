@@ -70,7 +70,7 @@ Além dessa parte de Álgebrica, tivemos uma explicação sobre iluminação e u
 Que pode ser descrita como a parte que tivemos uma explicação de como a luz chega ao olho do observador. Primeiro identificamos uma fonte luminosa denominando-a de L_p fazendo um \vec{l} refletir sobre o objeto criando a imagem para o olho humano. 
 Para ilustrar o desenho de como funciona, preste atenção na imagem abaixo:
 
-<img src = "https://photos.fife.usercontent.google.com/pw/AP1GczODddSM_xr4bumoWSSdL-_KlKzdVISp9lNoUXlXmItILIf33PxDeUkZ=w1346-h733-s-no-gm?authuser=0](https://lh3.googleusercontent.com/pw/AP1GczObPz-ctzJgqJvHC4HWqU4oExVFXXxfZ3TfOi29bJ79sk-sjYuwrCkpB-G_GbC-8OyYVrq1Fcawk8hDHmUf3hY5HLpoLEl11eHHRnhrMHA0Edv9z5EiWilt9xjQy_DhzH4Jsx7HGwFBxZvrdEPmMK8s=w1346-h733-s-no-gm?authuser=0" height = "250px">
+<img src = "https://lh3.googleusercontent.com/pw/AP1GczObPz-ctzJgqJvHC4HWqU4oExVFXXxfZ3TfOi29bJ79sk-sjYuwrCkpB-G_GbC-8OyYVrq1Fcawk8hDHmUf3hY5HLpoLEl11eHHRnhrMHA0Edv9z5EiWilt9xjQy_DhzH4Jsx7HGwFBxZvrdEPmMK8s=w1346-h733-s-no-gm?authuser=0" height = "250px">
 
 ## Preparação para as Tarefas: Funções Auxiliares e Funções Auxiliares de Modelação
 Como dito anteriormente, Creto não deixou utilizar funções pré-prontas, por isso tivemos que implementar algumas funções vetoriais do zero e criar um Struct para vetores em 3 dimensões, denominado Vetor3d: 
@@ -90,11 +90,11 @@ Vetor3d_Adiciona(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a adição v
 Vetor3d_Multiplica(Vetor3d v1, Vetor3d v2): Recebe dois vetores e faz a multiplicação vetorial entre eles, aplicando a fórmula $\ \vec{v}_1x * \vec{v}_2x, \vec{v}_1y * \vec{v}_2y, \vec{v}_1z * \vec{v}_2z $
 
 
-1. Cálculo de Iluminação com o Modelo de Phong
+### Cálculo de Iluminação com o Modelo de Phong
 O modelo de iluminação de Phong define a luz em um ponto 𝑃𝑡
 𝑃𝑡 de um objeto, considerando três componentes: difusa, especular e ambiente.
 
-Componente Difusa (𝐼𝑑)
+- Componente Difusa (𝐼𝑑)
 Representa a luz que é dispersa igualmente em todas as direções e é calculada como:
 $I_d = K_d * I_f * max(n * l, 0)$
 onde:
@@ -103,9 +103,23 @@ $I_f$ é a intensidade da luz da fonte.
 n é o vetor normal da superfície no ponto de interseção.
 l é o vetor da direção da luz até o ponto.
 
-Componente Especular (𝐼e)
+- Componente Especular (𝐼e)
+Reflete a luz em ângulos específicos e depende do ângulo entre a visão e o vetor refletido da luz:
+$I_e = K_e * I_f  * max(v * r , 0)^m$
+onde: 
+$K_e$ é o coeficiente especular.
+v é o vetor da visão (inverso do vetor do raio incidente).
+r é o vetor de reflexão da luz em relação à normal.
+m é o expoente de brilho, que define a intensidade do reflexo especular.
 
-Componente Ambiente (𝐼a)
+- Componente Ambiente (𝐼a)
+
+Representa a luz ambiente constante no ambiente
+
+$I_a = K_a * I_A$
+
+$I_A$ é a intensidade da luz ambiente.
+$K_a$ é coeficiente de iluminação ambiente do material.
 
 Sendo a iluminacao total, portanto $I_t = I_a + I_e + I_d$
 ## Tarefa 1 
@@ -158,8 +172,8 @@ Requisitos: Renderizar a esfera com iluminação difusa e especular, além de in
 **Interseção com os Objetos**: Para cada raio lançado pela janela, verifica interseções com a esfera e os planos.
 A menor interseção positiva é usada para determinar o ponto visível.
 Iluminação Difusa e Especular:
-- **Difusa:** I_d = (I_F @ K_d) * (l . n).
-- **Especular:** I_e = (I_F @ K_e) * (v . r)^m.
+- **Difusa:** $I_d = (I_F @ K_d) * (l . n)$
+- **Especular:** $I_e = (I_F @ K_e) * (v . r)^m$
 **Obstruções:** Verifica se o ponto de interseção com o chão ou o plano de fundo é obstruído pela esfera antes de calcular as contribuições difusa e especular.
 
 Dessa forma obtemos:
