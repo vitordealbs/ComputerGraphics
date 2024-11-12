@@ -164,7 +164,7 @@ main(void)
             }
             // Do contrário, não calculamos
             else {
-              I_total = plano_chao.calcular_iluminacao(
+              I_total = plano_fundo.calcular_iluminacao(
                 Pt, raio.dr, P_F, { 0.0f, 0.0f, 0.0f }, I_A);
             }
           }
