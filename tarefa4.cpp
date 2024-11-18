@@ -84,17 +84,17 @@ Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
 Vetor3d K_e_cilindro = K_d_cilindro;
 Vetor3d K_a_cilindro = K_d_cilindro;
 float m_cilindro = 1;
-Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), -1.0f / sqrtf(3.0) };
+Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), 1.0f / sqrtf(3.0) };
 Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
 Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   R / 3.0f,
-                  3 * R,
+                  1.7f * R,
                   dir_cilindro,
                   K_d_cilindro,
                   K_e_cilindro,
                   K_a_cilindro,
                   m_cilindro);
-Circulo topo_cilindro(dir_cilindro * (3 * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
+Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
 Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
 
 // definicao do cone
@@ -105,7 +105,7 @@ float m_cone = 1;
 Vetor3d centro_cone = topo_cilindro.centro;
 Vetor3d dir_cone = cilindro.direcao;
 Cone cone(centro_cone,
-          R * 1.5f,
+          R * 1,
           (R * 1.5f) / 3.0f,
           dir_cone,
           K_d_cone,
@@ -141,10 +141,10 @@ main(void)
       ClearBackground(BLACK);
 
       for (int i = 0; i < nLin; ++i) {
-        float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5 - i * deltinhay;
+        float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
         for (int j = 0; j < nCol; ++j) {
           float xp =
-            Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5 * deltinhax;
+            Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
           Vetor3d P = { xp, yp, zp };
           Vetor3d dr = P.normalizado();
           Raio raio(P0, dr);
