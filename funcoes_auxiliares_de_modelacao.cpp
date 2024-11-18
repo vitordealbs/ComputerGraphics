@@ -182,6 +182,9 @@ Raio::intersecao(Cone cone)
   double a = a1 - a2;
   double b = b1 - b2;
   double c = c1 - c2;
+  if (a == 0.0) {
+    return b == 0.0 ? -1.0f : -c / b;
+  }
   double delta = b * b - 4 * a * c;
   if (delta < 0.0) {
     return -1.0f;
@@ -317,8 +320,8 @@ Cone::calcular_iluminacao(Vetor3d Pt,
                           Vetor3d I_A)
 {
   Vetor3d z = direcao;
-  Vetor3d centro_Pt = Pt - centro;
-  Vetor3d normal = (centro_Pt - (centro_Pt.dot_product(z)) * z).normalizado();
+  Vetor3d PV = centro + z * altura - Pt;
+  Vetor3d normal = PV.cross_product(z).cross_product(PV);
   Vetor3d v = dr * -1;
   Vetor3d l = (P_F - Pt).normalizado();
   float dotproduct_nl = normal.dot_product(l);
@@ -337,8 +340,8 @@ Vetor3d
 Cone::normal(Vetor3d Pt)
 {
   Vetor3d z = direcao;
-  Vetor3d centro_Pt = Pt - centro;
-  return (centro_Pt - centro_Pt.dot_product(z) * z).normalizado();
+  Vetor3d PV = centro + z * altura - Pt;
+  return PV.cross_product(z).cross_product(PV).normalizado();
 }
 
 Circulo::Circulo(Vetor3d centro,
