@@ -8,16 +8,16 @@ using namespace funcoes_auxiliares;
 
 namespace Auxiliares_de_modelacao {
 
-struct Esfera; // Declaração antecipada de Esfera
-struct Plano; // Declaração antecipada de Plano
-struct Cilindro; // Declaração antecipada de Cilindro
-struct Cone; // Declaração antecipada de Cone
-struct Circulo; // Declaração antecipada de Circulo
-struct Triangulo; // Declaração antecipada de Triangulo
-struct Raio; // Declaração antecipada de Raio
-struct Objeto; // Declaração antecipada de Objeto
+struct Esfera;          // Declaração antecipada de Esfera
+struct Plano;           // Declaração antecipada de Plano
+struct Cilindro;        // Declaração antecipada de Cilindro
+struct Cone;            // Declaração antecipada de Cone
+struct Circulo;         // Declaração antecipada de Circulo
+struct Triangulo;       // Declaração antecipada de Triangulo
+struct Raio;            // Declaração antecipada de Raio
+struct Objeto;          // Declaração antecipada de Objeto
 struct MaterialSimples; // Declaração antecipada de MaterialSimples
-struct FontePontual; // Declaração antecipada de FontePontual
+struct FontePontual;    // Declaração antecipada de FontePontual
 
 struct Esfera
 {
@@ -74,7 +74,6 @@ struct Plano
                               Vetor3d P_F,
                               Vetor3d I_F,
                               Vetor3d I_A);
-
 };
 
 struct Cilindro
@@ -88,7 +87,7 @@ struct Cilindro
   Vetor3d K_e;
   Vetor3d K_a;
   float m;
-//Definição Do Cilindro
+  // Definição Do Cilindro
   Cilindro(Vetor3d centro,
            float raio,
            float altura,
@@ -106,7 +105,7 @@ struct Cilindro
 
   Vetor3d normal(Vetor3d Pt);
 };
-//Definição do Cone
+// Definição do Cone
 struct Cone
 {
   Vetor3d centro;
@@ -136,56 +135,52 @@ struct Cone
 
   Vetor3d normal(Vetor3d Pt);
 };
-//Circulo de auxilio para tapar cone e cilindro
+// Circulo de auxilio para tapar cone e cilindro
 struct Circulo
 {
-    Vetor3d centro;
-    float raio;
-    Vetor3d normal;
+  Vetor3d centro;
+  float raio;
+  Vetor3d normal;
 
-    Vetor3d K_d;
-    Vetor3d K_e;
-    Vetor3d K_a;
-    float m;
+  Vetor3d K_d;
+  Vetor3d K_e;
+  Vetor3d K_a;
+  float m;
 
-    Circulo(Vetor3d centro,
-         float raio,
-         Vetor3d normal,
-         Vetor3d K_d,
-         Vetor3d K_e,
-         Vetor3d K_a,
-         float m);
-
+  Circulo(Vetor3d centro,
+          float raio,
+          Vetor3d normal,
+          Vetor3d K_d,
+          Vetor3d K_e,
+          Vetor3d K_a,
+          float m);
 };
-//triangulo para simular o cone 2d
+// triangulo para simular o cone 2d
 struct Triangulo
 {
 
-    Vetor3d P0;
-    Vetor3d P1;
-    Vetor3d P2;
+  Vetor3d P0;
+  Vetor3d P1;
+  Vetor3d P2;
 
-    Vetor3d normal;
-    Vetor3d lado1;
-    Vetor3d lado2;
-    Vetor3d lado3;
-    Vetor3d altura1;
-    Vetor3d altura2;
-    Vetor3d altura3;
+  Vetor3d normal;
+  float area2; // dobro da area
+  Vetor3d lado1;
+  Vetor3d lado2;
+  Vetor3d lado3;
 
-    Vetor3d K_d;
-    Vetor3d K_e;
-    Vetor3d K_a;
-    float m;
+  Vetor3d K_d;
+  Vetor3d K_e;
+  Vetor3d K_a;
+  float m;
 
-    Triangulo(Vetor3d P0,
-         Vetor3d P1,
-         Vetor3d P2,
-         Vetor3d K_d,
-         Vetor3d K_e,
-         Vetor3d K_a,
-         float m);
-
+  Triangulo(Vetor3d P0,
+            Vetor3d P1,
+            Vetor3d P2,
+            Vetor3d K_d,
+            Vetor3d K_e,
+            Vetor3d K_a,
+            float m);
 };
 
 struct Raio
@@ -206,61 +201,73 @@ struct Raio
 
 struct FontePontual
 {
-   Vetor3d posicao;
-   Vetor3d intensidade;
+  Vetor3d posicao;
+  Vetor3d intensidade;
 
-   FontePontual(Vetor3d posicao, Vetor3d intensidade);
+  FontePontual(Vetor3d posicao, Vetor3d intensidade);
 };
-//calculo do material para calcular iluminação
+// calculo do material para calcular iluminação
 struct MaterialSimples
 {
-    Vetor3d K_d; 
-    Vetor3d K_e;
-    Vetor3d K_a;
-    float m;
+  Vetor3d K_d;
+  Vetor3d K_e;
+  Vetor3d K_a;
+  float m;
 
-    MaterialSimples() {}
+  MaterialSimples() {}
 
-    MaterialSimples(Vetor3d K_d, Vetor3d K_e, Vetor3d K_a, float m);
+  MaterialSimples(Vetor3d K_d, Vetor3d K_e, Vetor3d K_a, float m);
 };
 
 enum TipoObjeto
 {
-    OBJ_ESFERA, OBJ_PLANO, OBJ_CILINDRO, OBJ_CONE, OBJ_CIRCULO, OBJ_TRIANGULO
+  OBJ_ESFERA,
+  OBJ_PLANO,
+  OBJ_CILINDRO,
+  OBJ_CONE,
+  OBJ_CIRCULO,
+  OBJ_TRIANGULO
 };
 
 union UnionObjeto
 {
-    Esfera esfera;
-    Plano plano;
-    Cilindro cilindro;
-    Cone cone;
-    Circulo circulo;
-    Triangulo triangulo;
+  Esfera esfera;
+  Plano plano;
+  Cilindro cilindro;
+  Cone cone;
+  Circulo circulo;
+  Triangulo triangulo;
 
-    UnionObjeto();
+  UnionObjeto();
 };
 
 struct Objeto
 {
-    TipoObjeto tipo;
-    UnionObjeto obj;
+  TipoObjeto tipo;
+  UnionObjeto obj;
 
-    MaterialSimples material;
+  MaterialSimples material;
 
-    Objeto(Esfera esfera);
-    Objeto(Plano plano);
-    Objeto(Cilindro cilindro);
-    Objeto(Cone cone);
-    Objeto(Circulo circulo);
-    Objeto(Triangulo triangulo);
+  Objeto(Esfera esfera);
+  Objeto(Plano plano);
+  Objeto(Cilindro cilindro);
+  Objeto(Cone cone);
+  Objeto(Circulo circulo);
+  Objeto(Triangulo triangulo);
 
-    Vetor3d normal(Vetor3d Pt);
+  Vetor3d normal(Vetor3d Pt);
 };
 
 namespace iluminacao {
-    Vetor3d modelo_phong(Vetor3d Pt, Vetor3d dr, Vetor3d n, FontePontual fonte, Vetor3d I_A, MaterialSimples material);
-    Vetor3d luz_ambiente(Vetor3d I_A, Vetor3d K_a);
+Vetor3d
+modelo_phong(Vetor3d Pt,
+             Vetor3d dr,
+             Vetor3d n,
+             FontePontual fonte,
+             Vetor3d I_A,
+             MaterialSimples material);
+Vetor3d
+luz_ambiente(Vetor3d I_A, Vetor3d K_a);
 }
 
 // Funções max e min

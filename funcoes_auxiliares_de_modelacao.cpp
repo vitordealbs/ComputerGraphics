@@ -231,13 +231,20 @@ Raio::intersecao(Triangulo triangulo)
   double b = v.dot_product(triangulo.normal);
   double t = -b / a;
   Vetor3d Pt = no_ponto(t);
-  Vetor3d w = Pt - triangulo.P0;
-  Vetor3d u = Pt - triangulo.P1;
-  if (triangulo.altura1.dot_product(w) < 0.0f ||
-      triangulo.altura2.dot_product(w) < 0.0f ||
-      triangulo.altura3.dot_product(u) < 0.0f) {
+  Vetor3d r1 = triangulo.P0 - Pt;
+  Vetor3d r2 = triangulo.P1 - Pt;
+  Vetor3d r3 = triangulo.P2 - Pt;
+  float s1 =
+    r3.cross_product(r1).dot_product(triangulo.normal) / triangulo.area2;
+  if (s1 < 0.0f)
     return -1.0f;
-  }
+  float s2 =
+    r1.cross_product(r2).dot_product(triangulo.normal) / triangulo.area2;
+  if (s2 < 0.0f)
+    return -1.0f;
+  float s3 = 1 - s1 - s2;
+  if (s3 < 0.0f)
+    return -1.0f;
   return t;
 }
 
@@ -379,14 +386,9 @@ Triangulo::Triangulo(Vetor3d P0,
   lado1 = P1 - P0;
   lado2 = P2 - P0;
   lado3 = P2 - P1;
-  altura1 = lado2 - lado1.normalizado() * lado2.dot_product(lado1) *
-                      (1.0f / lado1.tamanho());
-  altura2 = lado1 - lado2.normalizado() * lado1.dot_product(lado2) *
-                      (1.0f / lado2.tamanho());
-  altura3 =
-    lado3.normalizado() * lado3.dot_product(lado1) * (1.0f / lado3.tamanho()) -
-    lado1;
-  normal = lado1.cross_product(lado2).normalizado();
+  Vetor3d N = lado1.cross_product(lado2);
+  area2 = N.tamanho();
+  normal = N * (1.0f / area2);
 }
 
 Cilindro::Cilindro(Vetor3d centro,

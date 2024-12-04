@@ -6,6 +6,17 @@
 #define DIMENSAO_MAXIMA 4
 
 namespace funcoes_auxiliares {
+
+struct Matriz
+{
+  int lin;
+  int col;
+
+  float data[DIMENSAO_MAXIMA][DIMENSAO_MAXIMA];
+
+  Matriz transposta();
+};
+
 // Definição da estrutura Vetor3d
 struct Vetor3d
 {
@@ -30,16 +41,6 @@ Vetor3d
 operator+(Vetor3d vetor1, Vetor3d vetor2);
 Vetor3d
 operator-(Vetor3d vetor1, Vetor3d vetor2);
-
-struct Matriz
-{
-  int lin;
-  int col;
-
-  float data[DIMENSAO_MAXIMA][DIMENSAO_MAXIMA];
-
-  Matriz transposta();
-};
 
 Matriz
 operator+(Matriz matriz1, Matriz matriz2);
