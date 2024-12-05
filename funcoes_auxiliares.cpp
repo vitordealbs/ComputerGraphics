@@ -103,6 +103,51 @@ Matriz::transposta()
 }
 
 Matriz
+Matriz::identidade(int dimensao)
+{
+  Matriz res = { .lin = dimensao, .col = dimensao, .data = { 0 } };
+  for (int i = 0; i < dimensao; ++i) {
+    res.data[i][i] = 1.0f;
+  }
+  return res;
+}
+
+Matriz
+Matriz::nula(int lin, int col)
+{
+  return { .lin = lin, .col = col, .data = { 0 } };
+}
+
+Matriz
+Matriz::translacao(Vetor3d vetor_translacao)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][3] = vetor_translacao.x;
+  res.data[1][3] = vetor_translacao.y;
+  res.data[2][3] = vetor_translacao.z;
+  return res;
+}
+
+Matriz
+Matriz::escala(Vetor3d vetor_escala)
+{
+  Matriz res = Matriz::nula(4, 4);
+  res.data[0][0] = vetor_escala.x;
+  res.data[1][1] = vetor_escala.y;
+  res.data[2][2] = vetor_escala.z;
+  res.data[3][3] = 1.0f;
+  return res;
+}
+
+Matriz
+Matriz::escala(Vetor3d vetor_escala, Vetor3d ponto_fixo)
+{
+  Vetor3d origem = { 0.0f, 0.0f, 0.0f };
+  return Matriz::translacao(ponto_fixo - origem) *
+         Matriz::escala(vetor_escala) * Matriz::translacao(origem - ponto_fixo);
+}
+
+Matriz
 operator+(Matriz matriz1, Matriz matriz2)
 {
   assert(matriz1.lin == matriz2.lin && matriz1.col == matriz2.col);

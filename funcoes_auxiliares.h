@@ -7,6 +7,9 @@
 
 namespace funcoes_auxiliares {
 
+struct Matriz;
+struct Vetor3d;
+
 struct Matriz
 {
   int lin;
@@ -15,6 +18,12 @@ struct Matriz
   float data[DIMENSAO_MAXIMA][DIMENSAO_MAXIMA];
 
   Matriz transposta();
+
+  static Matriz identidade(int dimensao);
+  static Matriz nula(int lin, int col);
+  static Matriz translacao(Vetor3d vetor_translacao);
+  static Matriz escala(Vetor3d vetor_escala);
+  static Matriz escala(Vetor3d vetor_escala, Vetor3d ponto_fixo);
 };
 
 // Definição da estrutura Vetor3d
