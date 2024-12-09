@@ -148,6 +148,126 @@ Matriz::escala(Vetor3d vetor_escala, Vetor3d ponto_fixo)
 }
 
 Matriz
+Matriz::rotacao_x(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[1][1] = cos(angulo);
+  res.data[1][2] = -sin(angulo);
+  res.data[2][1] = sin(angulo);
+  res.data[2][2] = cos(angulo);
+  return res;
+}
+
+Matriz
+Matriz::rotacao_y(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][0] = cos(angulo);
+  res.data[2][0] = -sin(angulo);
+  res.data[0][2] = sin(angulo);
+  res.data[2][2] = cos(angulo);
+  return res;
+}
+
+Matriz
+Matriz::rotacao_z(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][0] = cos(angulo);
+  res.data[0][1] = -sin(angulo);
+  res.data[1][0] = sin(angulo);
+  res.data[1][1] = cos(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_xy_x(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][1] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_xy_y(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[1][0] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_xz_x(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][2] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_xz_z(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[2][0] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_yz_y(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[1][2] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::cisalhamento_yz_z(float angulo)
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[2][1] = tan(angulo);
+  return res;
+}
+
+Matriz
+Matriz::espelhamento_xy()
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[2][2] *= -1;
+  return res;
+}
+
+Matriz
+Matriz::espelhamento_xz()
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[1][1] *= -1;
+  return res;
+}
+
+Matriz
+Matriz::espelhamento_yz()
+{
+  Matriz res = Matriz::identidade(4);
+  res.data[0][0] *= -1;
+  return res;
+}
+
+Matriz
+Matriz::espelhamento(Vetor3d normal)
+{
+  Matriz n = normal.matriz();
+  return Matriz::identidade(4) - 2 * n * n.transposta();
+}
+
+Matriz
+Matriz::espelhamento(Vetor3d normal, Vetor3d ponto)
+{
+  Vetor3d origem = { 0.0f, 0.0f, 0.0f };
+  return Matriz::translacao(ponto - origem) *
+         Matriz::espelhamento(normal) * Matriz::translacao(origem);
+}
+
+Matriz
 operator+(Matriz matriz1, Matriz matriz2)
 {
   assert(matriz1.lin == matriz2.lin && matriz1.col == matriz2.col);

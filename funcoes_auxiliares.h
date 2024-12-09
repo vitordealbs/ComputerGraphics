@@ -24,6 +24,20 @@ struct Matriz
   static Matriz translacao(Vetor3d vetor_translacao);
   static Matriz escala(Vetor3d vetor_escala);
   static Matriz escala(Vetor3d vetor_escala, Vetor3d ponto_fixo);
+  static Matriz rotacao_x(float angulo);
+  static Matriz rotacao_y(float angulo);
+  static Matriz rotacao_z(float angulo);
+  static Matriz cisalhamento_xy_x(float angulo);
+  static Matriz cisalhamento_xy_y(float angulo);
+  static Matriz cisalhamento_xz_x(float angulo);
+  static Matriz cisalhamento_xz_z(float angulo);
+  static Matriz cisalhamento_yz_y(float angulo);
+  static Matriz cisalhamento_yz_z(float angulo);
+  static Matriz espelhamento_xy();
+  static Matriz espelhamento_xz();
+  static Matriz espelhamento_yz();
+  static Matriz espelhamento(Vetor3d normal);
+  static Matriz espelhamento(Vetor3d normal, Vetor3d ponto);
 };
 
 // Definição da estrutura Vetor3d
