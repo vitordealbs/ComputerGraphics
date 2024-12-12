@@ -1,9 +1,10 @@
-// Created by Vitor de Albuquerque on 25/10/2024.
+  // Created by Vitor de Albuquerque on 25/10/2024.
 
 #include "funcoes_auxiliares_de_modelacao.h"
 #include "funcoes_auxiliares.h" // Incluindo as operações vetoriais
 #include <cmath>                // Para pow e sqrt
 #include <cstring>              // Para memset
+#include <vector>
 
 using namespace funcoes_auxiliares; // Usando o namespace "Auxiliares"
 using namespace Auxiliares_de_modelacao;
@@ -567,5 +568,22 @@ iluminacao::luz_ambiente(Vetor3d I_A, Vetor3d K_a)
 {
   return K_a * I_A;
 }
+  struct Aresta {
+    Vetor3d inicio;
+    Vetor3d fim;
+
+    Aresta(Vetor3d inicio, Vetor3d fim);
+};
+
+struct Ponto {
+    Vetor3d posicao;
+
+    Ponto(Vetor3d posicao);
+};
+
+// Funções para gerar malhas
+std::vector<Triangulo> gerarMalhaTriangularCubo(Vetor3d centro, float aresta, MaterialSimples material);
+std::vector<Aresta> gerarMalhaArestasCubo(Vetor3d centro, float aresta);
+std::vector<Ponto> gerarMalhaPontualCubo(Vetor3d centro, float aresta);
 
 }

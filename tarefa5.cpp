@@ -97,7 +97,7 @@ main(void)
   InitWindow(W_C, H_C, "Tarefa 04");
   SetTargetFPS(60);
 
-  Image textura_madeira = LoadImage("madeira.png");
+  Image textura_madeira = LoadImage("../cmake-build-default/madeira.png");
   Color* pixels_textura_madeira = LoadImageColors(textura_madeira);
 
   double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
