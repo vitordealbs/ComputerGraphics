@@ -3,10 +3,12 @@
 //
 
 #include "Aresta.h"
+#include <math.h>
 
-struct Aresta {
-    Vetor3d inicio;
-    Vetor3d fim;
+Aresta::Aresta(const Vetor3d& p1, const Vetor3d& p2) : p1(p1), p2(p2) {}
 
-    Aresta(Vetor3d inicio, Vetor3d fim);
-};
+float Aresta::comprimento() const {
+    return sqrt((p1.x - p2.x) * (p1.x - p2.x) +
+                (p1.y - p2.y) * (p1.y - p2.y) +
+                (p1.z - p2.z) * (p1.z - p2.z));
+}

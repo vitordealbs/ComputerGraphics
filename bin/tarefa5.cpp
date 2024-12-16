@@ -14,183 +14,162 @@
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
 #include "./src/Objeto/Objeto.h"
+#include "./src/Malha/Malha.h"
 
 using namespace funcoes_auxiliares;
 
-
-
+// Função para calcular interseção
 std::pair<float, int>
-calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
+calcular_intersecao(Raio raio, const std::vector<Objeto>& objetos, int excluir = -1)
 {
-  int objeto = -1;
-  float menor_t = -1.0f;
-  float t;
-  for (int i = 0; i < objetos.size(); ++i) {
-    if (i == excluir)
-      continue;
-    if ((t = raio.intersecao(objetos[i])) > 0.0f &&
-        (menor_t < 0.0f || t < menor_t)) {
-      menor_t = t;
-      objeto = i;
-    }
-  }
+    int objeto = -1;
+    float menor_t = -1.0f;
+    float t;
 
-  return { menor_t, objeto };
+    for (int i = 0; i < objetos.size(); ++i) {
+        if (i == excluir) continue;
+        if ((t = raio.intersecao(objetos[i])) > 0.0f && (menor_t < 0.0f || t < menor_t)) {
+            menor_t = t;
+            objeto = i;
+        }
+    }
+
+    return {menor_t, objeto};
 }
 
-// definicao das dimensoes da janela
+// Dimensões da janela e frame
 const int W_C = 500;
 const int H_C = 500;
-
-// definicao das dimensoes do frame
 const float W_J = 60.0f;
 const float H_J = 60.0f;
-
-// definicao do numero de linhas do frame
-const int nLin = 500;
-
-// definicao do numero de colunas do frame
-const int nCol = 500;
-
-// distancia do frame ao olho
+const int nLin = 500, nCol = 500;
 float d = 30.0f;
 
-// definicao da esfera da cena
-Vetor3d K_d_triangulo = { 0.7, 0.2, 0.2 };
-Vetor3d K_e_triangulo = { 0.7, 0.2, 0.2 };
-Vetor3d K_a_triangulo = { 0.7, 0.2, 0.2 };
-float m_triangulo = 10;
-Triangulo triangulo({ -40.0f, -40.0f, -100.0f },
-                    { 40.0f, -40.0f, -100.0f },
-                    { -40.0f, 40.0f, -100.0f },
-                    K_d_triangulo,
-                    K_e_triangulo,
-                    K_a_triangulo,
-                    m_triangulo);
+// Declaração de objetos da cena
+float R = 5.0f;
 
-// definicao do plano do chao
-Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
-Vetor3d K_e_plano_chao = { 0.0f, 0.0f, 0.0f };
-Vetor3d K_a_plano_chao = { 0.2f, 0.7f, 0.2f };
-float m_plano_chao = 1;
-Plano plano_chao({ 0.0f, -40.0f, 0.0f },
-                 { 0.0f, 1.0f, 0.0f },
-                 K_d_plano_chao,
-                 K_e_plano_chao,
-                 K_a_plano_chao,
-                 m_plano_chao);
+// Esfera
 
-// definicao do plano de fundo
-Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
-Vetor3d K_e_plano_fundo = { 0.0f, 0.0f, 0.0f };
-Vetor3d K_a_plano_fundo = { 0.3f, 0.3f, 0.7f };
-float m_plano_fundo = 1;
-Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
-                  { 0.0f, 0.0f, 1.0f },
-                  K_d_plano_fundo,
-                  K_e_plano_fundo,
-                  K_a_plano_fundo,
-                  m_plano_fundo);
+Vetor3d K_d_esfera = {0.854, 0.647, 0.125};
+Vetor3d K_e_esfera = K_d_esfera;
+Vetor3d K_a_esfera = K_d_esfera;
+Esfera esfera({0.0f, 95.0f, -200.0f}, R, K_d_esfera, K_e_esfera, K_a_esfera, 10.0f);
+
+// Plano do chão
+Vetor3d K_d_plano_chao = {0.2f, 0.7f, 0.2f};
+Vetor3d K_e_plano_chao = {0.0f, 0.0f, 0.0f};
+Vetor3d K_a_plano_chao = {0.2f, 0.7f, 0.2f};
+Plano plano_chao({0.0f, -150.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, K_d_plano_chao, K_e_plano_chao, K_a_plano_chao, 1.0f);
+
+// Plano de fundo
+Vetor3d K_d_plano_fundo = {0.3f, 0.3f, 0.7f};
+Plano plano_fundo({0.0f, 0.0f, -200.0f}, {0.0f, 0.0f, 1.0f}, K_d_plano_fundo, K_d_plano_fundo, K_d_plano_fundo, 1.0f);
+
+// Parede Lateral Direita
+Vetor3d K_d_parede_lateral_direita = {0.686f, 0.933f, 0.933f};
+Plano plano_parede_lateral_direita({200.0f, -50.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, K_d_parede_lateral_direita, K_d_parede_lateral_direita, K_d_parede_lateral_direita, 1.0f);
+
+// Parede Lateral Esquerda
+
+Vetor3d K_d_parede_lateral_esquerda = {0.686f, 0.933f, 0.933f};
+Plano plano_parede_lateral_esquerda({-200.0f, -150.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, K_d_parede_lateral_esquerda, K_d_parede_lateral_esquerda, K_d_parede_lateral_esquerda, 1.0f);
+
+// Plano Teto
+Vetor3d K_d_teto = {0.933f, 0.933f, 0.933f};
+Plano plano_teto({200.0f, 150.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, K_d_teto, K_d_teto, K_d_teto, 1.0f);
+
+// Cilindro
+Vetor3d K_d_cilindro = {0.824f, 0.706, 0.549};
+Cilindro cilindro({0.0f, -150.0f, -200.0f}, R , 90.0f, {0.0f, 1.0f, 0.0f}, K_d_cilindro, K_d_cilindro, K_d_cilindro, 1.0f);
+
+// Cone
+Vetor3d K_d_cone = {0, 1, 0.498};
+Cone cone({0.0f, -60.0f, -200.0f}, 90.0f, 150.0f, {0.0f, 1.0f, 0.0f}, K_d_cone, K_d_cone, K_d_cone, 1.0f);
+
+// Cubo
+Vetor3d centro_cubo = {50.0f, -130.0f, -200.0f};
+float tamanho_cubo = 40.0f;
+Vetor3d K_d_cubo = {1.0f, 0.078f, 0.576f};
+float m_cubo = 10.0f;
+
+// Vetor de objetos
+std::vector<Objeto> objetos;
+
+void inicializar_objetos() {
+    objetos.push_back(Objeto(esfera));
+    objetos.push_back(Objeto(plano_chao));
+    objetos.push_back(Objeto(plano_fundo));
+    objetos.push_back(Objeto(plano_teto));
+    objetos.push_back(Objeto(plano_parede_lateral_esquerda));
+    objetos.push_back(Objeto(plano_parede_lateral_direita));
+    objetos.push_back(Objeto(cone));
+    objetos.push_back(Objeto(cilindro));
+    Malha malha_cubo;
+    malha_cubo.inicializar_cubo({50.0f, -130.0f, -200.0f}, 40.0f, {0.0f, 1.0f, 0.0f}, K_d_cubo, K_d_cubo, K_d_cubo, m_cubo);
+
+    for (const auto& triangulo : malha_cubo.faces) {
+        objetos.push_back(Objeto(triangulo));
+    }
+}
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
-Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
+Vetor3d P_F = { -100.0f, 140.0f, -20.0f };
 
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
 
-std::vector<Objeto> objetos = { Objeto(triangulo),
-                                Objeto(plano_chao),
-                                Objeto(plano_fundo) };
 
-int
-main(void)
-{
-  InitWindow(W_C, H_C, "Tarefa 04");
-  SetTargetFPS(60);
 
-  Image textura_madeira = LoadImage("../cmake-build-default/madeira.png");
-  Color* pixels_textura_madeira = LoadImageColors(textura_madeira);
+int main() {
+    // Inicialização
+    InitWindow(W_C, H_C, "Cena Raylib");
+    Texture2D textura_madeira = LoadTexture("../assets/madeira.png");
+    inicializar_objetos();
+    SetTargetFPS(60);
 
-  double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
-  int Deltax = W_C / nCol, Deltay = H_C / nLin;
-  Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
-  float zp = -d;
-  Vetor3d P0 = { 0.0f, 0.0f, 0.0f };
+    double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+    Vetor3d Ponto_Superior_Esquerdo = {-W_J * 0.5f, W_J * 0.5f, -d};
+    Vetor3d P0 = {0.0f, 0.0f, 150.0f};
 
-  while (!WindowShouldClose()) {
-    BeginDrawing();
-    {
-      ClearBackground(BLACK);
+    // Loop principal
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
 
-      for (int i = 0; i < nLin; ++i) {
-        float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5 - i * deltinhay;
-        for (int j = 0; j < nCol; ++j) {
-          float xp =
-            Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5 * deltinhax;
-          Vetor3d P = { xp, yp, zp };
-          Vetor3d dr = P.normalizado();
-          Raio raio(P0, dr);
-          // auto [t, objeto] = calcular_intersecao(raio, objetos);
-          float t = raio.intersecao(triangulo);
-          Vetor3d I_total = I_A;
-          if (t > 0.0f) {
-            Vetor3d Pt = raio.no_ponto(t);
-            Vetor3d v = Pt - triangulo.P0;
-            Vetor3d l1 = triangulo.lado1;
-            Vetor3d l2 = triangulo.lado2;
-            float det = l1.x * l2.y - l1.y * l2.x;
-            if (det == 0.0f)
-              det = 1.0f;
-            float a = (v.x * l2.y - v.y * l2.x) / det;
-            float b = (v.y * l1.x - v.x * l1.y) / det;
-            int image_x = (float)textura_madeira.width * a;
-            int image_y = (float)textura_madeira.height * (1.0f - b);
-            Color pixel =
-              pixels_textura_madeira[textura_madeira.width * image_y + image_x];
-            Vetor3d K_d_textura = { pixel.r / 255.0f,
-                                    pixel.g / 255.0f,
-                                    pixel.b / 255.0f };
-            Vetor3d K_e_textura = K_d_textura;
-            Vetor3d K_a_textura = K_d_textura;
-            float m_textura = 1.0f;
-            MaterialSimples material = {
-              K_d_textura, K_e_textura, K_a_textura, m_textura
-            };
-            I_total = iluminacao::modelo_phong(
-              Pt, raio.dr, triangulo.normal, { P_F, I_F }, I_A, material);
-          }
-          /*
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d dr_luz = (P_F - Pt).normalizado();
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          if(t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-              I_total = iluminacao::modelo_phong(Pt, raio.dr,
-          objetos[objeto].normal(Pt), {P_F, I_F}, I_A,
-          objetos[objeto].material); } else { I_total =
-          iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
-          }
-          */
+        // Desenhar textura do chão
+        DrawTexture(textura_madeira, 0, H_C / 2, WHITE);
 
-          DrawRectangle(
-            Deltax * j,
-            Deltay * i,
-            Deltax,
-            Deltay,
-            (Color){
-              static_cast<unsigned char>(min(I_total.x * 255.0f, 255.0f)),
-              static_cast<unsigned char>(min(I_total.y * 255.0f, 255.0f)),
-              static_cast<unsigned char>(min(I_total.z * 255.0f, 255.0f)),
-              255 });
+
+        for (int i = 0; i < nLin; ++i) {
+            float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
+            for (int j = 0; j < nCol; ++j) {
+                float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
+                Vetor3d P = {xp, yp, -d};
+                Vetor3d dr = P.normalizado();
+                Raio raio(P0, dr);
+
+                auto [t, objeto] = calcular_intersecao(raio, objetos);
+                Vetor3d I_total = I_A;
+
+                if (t > 0.0f) {
+                    Vetor3d Pt = raio.no_ponto(t);
+                    I_total = iluminacao::modelo_phong(Pt, raio.dr, objetos[objeto].normal(Pt), {P_F, I_F}, I_A, objetos[objeto].material);
+                }
+
+                Color pixel = {
+                    static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
+                    static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
+                    static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
+                    255};
+
+                DrawPixel(j, i, pixel);
+            }
         }
-      }
+        EndDrawing();
     }
-    EndDrawing();
-  }
 
-  UnloadImageColors(pixels_textura_madeira);
-  UnloadImage(textura_madeira);
-
-  return 0;
+    UnloadTexture(textura_madeira);
+    CloseWindow();
+    return 0;
 }
