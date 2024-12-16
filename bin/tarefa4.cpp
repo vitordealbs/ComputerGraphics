@@ -134,8 +134,8 @@ Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
 
-std::vector<Objeto> objetos = { Objeto(esfera),        Objeto(plano_chao),
-                                Objeto(plano_fundo),   Objeto(cilindro),
+std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
+                                Objeto(esfera),        Objeto(cilindro),
                                 Objeto(topo_cilindro), Objeto(base_cilindro),
                                 Objeto(cone),          Objeto(base_cone) };
 

@@ -45,6 +45,7 @@ const float H_J = 60.0f;
 const int nLin = 500, nCol = 500;
 float d = 30.0f;
 
+
 // Declaração de objetos da cena
 float R = 5.0f;
 
@@ -112,12 +113,14 @@ void inicializar_objetos() {
     }
 }
 
+
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
 Vetor3d P_F = { -100.0f, 140.0f, -20.0f };
 
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
+
 
 
 
@@ -165,6 +168,7 @@ int main() {
 
                 DrawPixel(j, i, pixel);
             }
+
         }
         EndDrawing();
     }

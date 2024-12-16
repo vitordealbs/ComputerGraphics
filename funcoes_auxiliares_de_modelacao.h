@@ -4,12 +4,14 @@
 #define FUNCOES_AUXILIARES_DE_MODELACAO_H
 
 #include "funcoes_auxiliares.h" // Incluindo o arquivo de operações vetoriais
+#include <raylib.h>
 using namespace funcoes_auxiliares;
 
 namespace Auxiliares_de_modelacao {
 
 struct Esfera;          // Declaração antecipada de Esfera
 struct Plano;           // Declaração antecipada de Plano
+struct PlanoTextura;    // Declaração antecipada de PlanoTextura
 struct Cilindro;        // Declaração antecipada de Cilindro
 struct Cone;            // Declaração antecipada de Cone
 struct Circulo;         // Declaração antecipada de Circulo
@@ -17,6 +19,7 @@ struct Triangulo;       // Declaração antecipada de Triangulo
 struct Raio;            // Declaração antecipada de Raio
 struct Objeto;          // Declaração antecipada de Objeto
 struct MaterialSimples; // Declaração antecipada de MaterialSimples
+struct Textura;         // Declaração antecipada de Textura
 struct FontePontual;    // Declaração antecipada de FontePontual
 
 struct Esfera
@@ -74,6 +77,36 @@ struct Plano
                               Vetor3d P_F,
                               Vetor3d I_F,
                               Vetor3d I_A);
+};
+
+struct Textura
+{
+  int col, lin;        // tamanho em pixels
+  float width, height; // tamanho no cena
+  float m;
+  Color* pixels;
+
+  Textura(Color* pixels, int col, int lin, float width, float height, float m);
+
+  Color at(float x, float y);
+};
+
+// Representa um plano com textura
+struct PlanoTextura
+{
+  Vetor3d ponto;
+  Vetor3d normal;
+  Vetor3d eixo1;
+  Vetor3d eixo2;
+  Textura textura;
+
+  // Construtor do plano. Aceita um ponto do plano, que será sua origem
+  // e também aceita dois vetores que representam o sistema de coordenadas
+  // do plano. Assume-se que eles são ortonormais. Além disso, aceita
+  // a textura do plano.
+  PlanoTextura(Vetor3d ponto, Vetor3d eixo1, Vetor3d eixo2, Textura textura);
+
+  MaterialSimples material(Vetor3d Pt);
 };
 
 struct Cilindro
@@ -193,6 +226,7 @@ struct Raio
   float intersecao(Objeto objeto);
   float intersecao(Esfera esfera);
   float intersecao(Plano plano); // Função de intersecção com Plano
+  float intersecao(PlanoTextura plano_tex);
   float intersecao(Cone cone);
   float intersecao(Cilindro cilindro);
   float intersecao(Circulo circulo);
@@ -223,6 +257,7 @@ enum TipoObjeto
 {
   OBJ_ESFERA,
   OBJ_PLANO,
+  OBJ_PLANO_TEXTURA,
   OBJ_CILINDRO,
   OBJ_CONE,
   OBJ_CIRCULO,
@@ -233,6 +268,7 @@ union UnionObjeto
 {
   Esfera esfera;
   Plano plano;
+  PlanoTextura plano_tex;
   Cilindro cilindro;
   Cone cone;
   Circulo circulo;
@@ -250,6 +286,7 @@ struct Objeto
 
   Objeto(Esfera esfera);
   Objeto(Plano plano);
+  Objeto(PlanoTextura planoTex);
   Objeto(Cilindro cilindro);
   Objeto(Cone cone);
   Objeto(Circulo circulo);
