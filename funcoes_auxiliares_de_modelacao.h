@@ -81,12 +81,12 @@ struct Plano
 
 struct Textura
 {
-  int lin, col;        // tamanho em pixels
+  int col, lin;        // tamanho em pixels
   float width, height; // tamanho no cena
   float m;
   Color* pixels;
 
-  Textura(Color* pixels, int lin, int col, float width, float height, float m);
+  Textura(Color* pixels, int col, int lin, float width, float height, float m);
 
   Color at(float x, float y);
 };

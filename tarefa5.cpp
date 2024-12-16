@@ -105,12 +105,12 @@ main(void)
   Textura textura(pixels_textura_madeira,
                   textura_madeira.width,
                   textura_madeira.height,
-                  20.0f,
-                  20.0f,
+                  textura_madeira.width / 10.0f,
+                  textura_madeira.height / 10.0f,
                   1.0f);
-  PlanoTextura plano_chao({ 0.0f, -40.0f, 0.0f },
+  PlanoTextura plano_chao({ 0.0f, -20.0f, 0.0f },
                           { 1.0f, 0.0f, 0.0f },
-                          { -1.0f, 0.0f, 0.0f },
+                          { 0.0f, 0.0f, -1.0f },
                           textura);
   objetos.push_back(Objeto(plano_chao));
 
@@ -165,25 +165,27 @@ main(void)
               Pt, raio.dr, triangulo.normal, { P_F, I_F }, I_A, material);
           }
           */
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d dr_luz = (P_F - Pt).normalizado();
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          MaterialSimples material;
-          if (objetos[objeto].tipo == OBJ_PLANO_TEXTURA) {
-            material = objetos[objeto].obj.plano_tex.material(Pt);
-          } else {
-            material = objetos[objeto].material;
-          }
-          if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-            I_total = iluminacao::modelo_phong(Pt,
-                                               raio.dr,
-                                               objetos[objeto].normal(Pt),
-                                               { P_F, I_F },
-                                               I_A,
-                                               material);
-          } else {
-            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+          if (objeto >= 0) {
+            Vetor3d Pt = raio.no_ponto(t);
+            Vetor3d dr_luz = (P_F - Pt).normalizado();
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+            MaterialSimples material;
+            if (objetos[objeto].tipo == OBJ_PLANO_TEXTURA) {
+              material = objetos[objeto].obj.plano_tex.material(Pt);
+            } else {
+              material = objetos[objeto].material;
+            }
+            if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
+              I_total = iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 { P_F, I_F },
+                                                 I_A,
+                                                 material);
+            } else {
+              I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+            }
           }
 
           DrawRectangle(

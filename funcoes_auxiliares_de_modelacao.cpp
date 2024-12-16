@@ -331,8 +331,9 @@ PlanoTextura::PlanoTextura(Vetor3d ponto,
 MaterialSimples
 PlanoTextura::material(Vetor3d Pt)
 {
-  float x = Pt.dot_product(eixo1);
-  float y = Pt.dot_product(eixo2);
+  Vetor3d v = Pt - ponto;
+  float x = v.dot_product(eixo1);
+  float y = v.dot_product(eixo2);
 
   Color pixel = textura.at(x, y);
   Vetor3d K = { pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0 };
@@ -591,14 +592,14 @@ MaterialSimples::MaterialSimples(Vetor3d K_d, Vetor3d K_e, Vetor3d K_a, float m)
 }
 
 Textura::Textura(Color* pixels,
-                 int lin,
                  int col,
+                 int lin,
                  float width,
                  float height,
                  float m)
   : pixels(pixels)
-  , lin(lin)
   , col(col)
+  , lin(lin)
   , width(width)
   , height(height)
   , m(m)
@@ -608,10 +609,10 @@ Textura::Textura(Color* pixels,
 Color
 Textura::at(float x, float y)
 {
-  int pos_x = ((int)(x / width * col) % col + col) % col;
-  int pos_y = ((int)(y / height * lin) % lin + lin) % lin;
+  int pos_x = ((int)roundf(x / width * col) % col + col) % col;
+  int pos_y = ((int)roundf(y / height * lin) % lin + lin) % lin;
 
-  return pixels[(lin - pos_y) * col + col - pos_x];
+  return pixels[pos_y * col + pos_x];
 }
 
 Vetor3d
