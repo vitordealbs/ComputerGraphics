@@ -1,26 +1,43 @@
 #ifndef RAIO_H
 #define RAIO_H
 
-#include "./src/Objeto/Objeto.h"
+#include "./../Objeto/Objeto.h"
 #include <vector>
 #include "funcoes_auxiliares.h"
-
+#include "./../Objeto/Objeto.h"
+#include "./../Esfera/Esfera.h"
+#include "./../Plano/Plano.h"
+#include "./../Cone/Cone.h"
+#include "./../Cilindro/Cilindro.h"
+#include "./../Circulo/Circulo.h"
+#include "./../Triangulo/Triangulo.h"
 using namespace funcoes_auxiliares;
+class Objeto; // Declaração antecipada
 
-class Raio {
-public:
-    Raio(const Vetor3d& origem, const Vetor3d& direcao);
 
-    // Retorna o ponto no raio dado o parâmetro t
-    Vetor3d noPonto(float t) const;
+struct Raio
+{
+  Vetor3d P0;
+  Vetor3d dr;
 
-    // Calcula a interseção com uma lista de objetos e retorna o objeto mais próximo
-    std::pair<float, const Objeto*> intersecaoMaisProxima(
-        const std::vector<std::shared_ptr<Objeto>>& objetos) const;
-
-private:
-    Vetor3d origem;
-    Vetor3d direcao;
+  Raio(Vetor3d P0, Vetor3d dr);
+  Vetor3d no_ponto(float t);
+  float intersecao(Objeto objeto);
+  float intersecao(Esfera esfera);
+  float intersecao(Plano plano); // Função de intersecção com Plano
+  float intersecao(Cone cone);
+  float intersecao(Cilindro cilindro);
+  float intersecao(Circulo circulo);
+  float intersecao(Triangulo triangulo);
 };
+
+struct FontePontual
+{
+  Vetor3d posicao;
+  Vetor3d intensidade;
+
+  FontePontual(Vetor3d posicao, Vetor3d intensidade);
+};
+// calculo do material para calcular iluminação
 
 #endif // RAIO_H

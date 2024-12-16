@@ -39,6 +39,11 @@ struct Matriz
   static Matriz espelhamento(Vetor3d normal);
   static Matriz espelhamento(Vetor3d normal, Vetor3d ponto);
 };
+  // Funções max e min
+  double
+  max(double a, double b);
+  double
+  min(double a, double b);
 
 // Definição da estrutura Vetor3d
 struct Vetor3d

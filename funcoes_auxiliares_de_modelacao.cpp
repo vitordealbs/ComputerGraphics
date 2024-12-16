@@ -11,18 +11,6 @@ using namespace Auxiliares_de_modelacao;
 
 namespace Auxiliares_de_modelacao {
 
-double
-max(double a, double b)
-{
-  return a + (b - a) * (a < b);
-}
-
-double
-min(double a, double b)
-{
-  return a + (b - a) * (a > b);
-}
-
 // Definição do construtor da Esfera
 Esfera::Esfera(Vetor3d centro,
                float raio,
