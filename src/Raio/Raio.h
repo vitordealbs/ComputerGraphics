@@ -1,19 +1,18 @@
 #ifndef RAIO_H
 #define RAIO_H
 
-#include "./../Objeto/Objeto.h"
-#include <vector>
-#include "funcoes_auxiliares.h"
-#include "./../Objeto/Objeto.h"
-#include "./../Esfera/Esfera.h"
-#include "./../Plano/Plano.h"
-#include "./../Cone/Cone.h"
 #include "./../Cilindro/Cilindro.h"
 #include "./../Circulo/Circulo.h"
+#include "./../Cone/Cone.h"
+#include "./../Esfera/Esfera.h"
+#include "./../Objeto/Objeto.h"
+#include "./../Plano/Plano.h"
+#include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
+#include "funcoes_auxiliares.h"
+#include <vector>
 using namespace funcoes_auxiliares;
 class Objeto; // Declaração antecipada
-
 
 struct Raio
 {
@@ -25,6 +24,7 @@ struct Raio
   float intersecao(Objeto objeto);
   float intersecao(Esfera esfera);
   float intersecao(Plano plano); // Função de intersecção com Plano
+  float intersecao(PlanoTextura plano_tex);
   float intersecao(Cone cone);
   float intersecao(Cilindro cilindro);
   float intersecao(Circulo circulo);

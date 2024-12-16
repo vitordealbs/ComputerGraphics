@@ -25,6 +25,9 @@ Raio::intersecao(Objeto objeto)
     case OBJ_PLANO: {
       return intersecao(objeto.obj.plano);
     } break;
+    case OBJ_PLANO_TEXTURA: {
+      return intersecao(objeto.obj.plano_tex);
+    } break;
     case OBJ_CILINDRO: {
       return intersecao(objeto.obj.cilindro);
     } break;
@@ -70,6 +73,18 @@ Raio::intersecao(Plano plano)
     return -1.0;
   }
   double b = v.dot_product(plano.normal);
+  return -b / a;
+}
+
+float
+Raio::intersecao(PlanoTextura plano_tex)
+{
+  Vetor3d v = P0 - plano_tex.ponto;
+  double a = dr.dot_product(plano_tex.normal);
+  if (a == 0.0) {
+    return -1.0;
+  }
+  double b = v.dot_product(plano_tex.normal);
   return -b / a;
 }
 
