@@ -5,23 +5,12 @@
 #include <cmath>                // Para pow e sqrt
 #include <cstring>              // Para memset
 #include <raylib.h>
+#include <vector>
 
 using namespace funcoes_auxiliares; // Usando o namespace "Auxiliares"
 using namespace Auxiliares_de_modelacao;
 
 namespace Auxiliares_de_modelacao {
-
-double
-max(double a, double b)
-{
-  return a + (b - a) * (a < b);
-}
-
-double
-min(double a, double b)
-{
-  return a + (b - a) * (a > b);
-}
 
 // Definição do construtor da Esfera
 Esfera::Esfera(Vetor3d centro,
@@ -643,5 +632,29 @@ iluminacao::luz_ambiente(Vetor3d I_A, Vetor3d K_a)
 {
   return K_a * I_A;
 }
+struct Aresta
+{
+  Vetor3d inicio;
+  Vetor3d fim;
+
+  Aresta(Vetor3d inicio, Vetor3d fim);
+};
+
+struct Ponto
+{
+  Vetor3d posicao;
+
+  Ponto(Vetor3d posicao);
+};
+
+// Funções para gerar malhas
+std::vector<Triangulo>
+gerarMalhaTriangularCubo(Vetor3d centro,
+                         float aresta,
+                         MaterialSimples material);
+std::vector<Aresta>
+gerarMalhaArestasCubo(Vetor3d centro, float aresta);
+std::vector<Ponto>
+gerarMalhaPontualCubo(Vetor3d centro, float aresta);
 
 }
