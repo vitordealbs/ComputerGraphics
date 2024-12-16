@@ -5,7 +5,19 @@
 #include <cmath> // Para sqrtf()
 
 namespace funcoes_auxiliares {
+// Funções max e min
 
+  double
+max(double a, double b)
+  {
+    return a + (b - a) * (a < b);
+  }
+
+  double
+  min(double a, double b)
+  {
+    return a + (b - a) * (a > b);
+  }
 float
 Vetor3d::dot_product(Vetor3d vetor)
 {

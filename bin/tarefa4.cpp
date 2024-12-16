@@ -1,11 +1,22 @@
-#include "funcoes_auxiliares.h"
-#include "funcoes_auxiliares_de_modelacao.h"
-#include <cstdio>
 #include <math.h>
+#include <cstdio>
+
 #include <raylib.h>
 #include <vector>
+
+#include "funcoes_auxiliares.h"
+#include "./src/Circulo/Circulo.h"
+#include "./src/Cilindro/Cilindro.h"
+#include "./src/Cone/Cone.h"
+#include "./src/Esfera/Esfera.h"
+#include "./src/Iluminacao/Iluminacao.h"
+#include "./src/Material/Material.h"
+#include "./src/Plano/Plano.h"
+#include "./src/Raio/Raio.h"
+#include "./src/Triangulo/Triangulo.h"
+#include "./src/Objeto/Objeto.h"
 using namespace funcoes_auxiliares;
-using namespace Auxiliares_de_modelacao;
+
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -42,15 +53,6 @@ const int nCol = 500;
 
 // distancia do frame ao olho
 float d = 30.0f;
-
-Vetor3d K_d_selecionado = { 0.7, 0.7, 0.1 };
-Vetor3d K_e_selecionado = { 0.7, 0.7, 0.1 };
-Vetor3d K_a_selecionado = { 0.7, 0.7, 0.1 };
-float m_selecionado = 1;
-MaterialSimples material_selecionado(K_d_selecionado,
-                                     K_d_selecionado,
-                                     K_d_selecionado,
-                                     m_selecionado);
 
 // definicao da esfera da cena
 Vetor3d K_d_esfera = { 0.7, 0.2, 0.2 };
@@ -94,9 +96,7 @@ Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
 Vetor3d K_e_cilindro = K_d_cilindro;
 Vetor3d K_a_cilindro = K_d_cilindro;
 float m_cilindro = 1;
-Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0),
-                         1.0f / sqrtf(3.0f),
-                         1.0f / sqrtf(3.0) };
+Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), 1.0f / sqrtf(3.0) };
 Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
 Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   R / 3.0f,
@@ -106,20 +106,9 @@ Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   K_e_cilindro,
                   K_a_cilindro,
                   m_cilindro);
-Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
-                      R / 3.0f,
-                      dir_cilindro,
-                      K_d_cilindro,
-                      K_e_cilindro,
-                      K_a_cilindro,
-                      m_cilindro);
-Circulo base_cilindro(centro_cilindro,
-                      R / 3.0f,
-                      -1.0f * dir_cilindro,
-                      K_d_cilindro,
-                      K_e_cilindro,
-                      K_a_cilindro,
-                      m_cilindro);
+Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
+Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
+
 
 // definicao do cone
 Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
@@ -136,13 +125,7 @@ Cone cone(centro_cone,
           K_e_cone,
           K_a_cone,
           m_cone);
-Circulo base_cone(centro_cone,
-                  R / 3.0f,
-                  -1.0f * dir_cone,
-                  K_d_cone,
-                  K_e_cone,
-                  K_a_cone,
-                  m_cone);
+Circulo base_cone(centro_cone, R / 3.0f, -1.0f * dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
@@ -168,21 +151,7 @@ main(void)
   float zp = -d;
   Vetor3d P0 = { 0.0f, 0.0f, 0.0f };
 
-  int objeto_selecionado = -1;
-
   while (!WindowShouldClose()) {
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-      int i = GetMouseY();
-      int j = GetMouseX();
-      float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
-      float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
-      Vetor3d P = { xp, yp, zp };
-      Vetor3d dr = P.normalizado();
-      Raio raio(P0, dr);
-      objeto_selecionado = calcular_intersecao(raio, objetos).second;
-      TraceLog(
-        LOG_INFO, "Objeto selecionado %d (%d %d)", objeto_selecionado, i, j);
-    }
     BeginDrawing();
     {
       ClearBackground(BLACK);
@@ -201,18 +170,16 @@ main(void)
           Vetor3d dr_luz = (P_F - Pt).normalizado();
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          MaterialSimples material = objeto == objeto_selecionado
-                                       ? material_selecionado
-                                       : objetos[objeto].material;
           if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
             I_total = iluminacao::modelo_phong(Pt,
                                                raio.dr,
                                                objetos[objeto].normal(Pt),
                                                { P_F, I_F },
                                                I_A,
-                                               material);
+                                               objetos[objeto].material);
           } else {
-            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+            I_total =
+              iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
           }
 
           DrawRectangle(

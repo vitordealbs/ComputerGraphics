@@ -270,11 +270,7 @@ Vetor3d
 luz_ambiente(Vetor3d I_A, Vetor3d K_a);
 }
 
-// Funções max e min
-double
-max(double a, double b);
-double
-min(double a, double b);
+
 
 }
 

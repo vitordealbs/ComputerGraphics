@@ -1,11 +1,23 @@
-#include "funcoes_auxiliares.h"
-#include "funcoes_auxiliares_de_modelacao.h"
-#include <cstdio>
 #include <math.h>
+#include <cstdio>
 #include <raylib.h>
 #include <vector>
+
+#include "funcoes_auxiliares.h"
+#include "./src/Circulo/Circulo.h"
+#include "./src/Cilindro/Cilindro.h"
+#include "./src/Cone/Cone.h"
+#include "./src/Esfera/Esfera.h"
+#include "./src/Iluminacao/Iluminacao.h"
+#include "./src/Material/Material.h"
+#include "./src/Plano/Plano.h"
+#include "./src/Raio/Raio.h"
+#include "./src/Triangulo/Triangulo.h"
+#include "./src/Objeto/Objeto.h"
+
 using namespace funcoes_auxiliares;
-using namespace Auxiliares_de_modelacao;
+
+
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -97,7 +109,7 @@ main(void)
   InitWindow(W_C, H_C, "Tarefa 04");
   SetTargetFPS(60);
 
-  Image textura_madeira = LoadImage("madeira.png");
+  Image textura_madeira = LoadImage("../cmake-build-default/madeira.png");
   Color* pixels_textura_madeira = LoadImageColors(textura_madeira);
 
   double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
