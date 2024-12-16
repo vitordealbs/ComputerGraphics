@@ -1,19 +1,19 @@
 #ifndef OBJETO_H
 #define OBJETO_H
+
 #include <variant>
 #include "./src/Material/Material.h"
 #include "funcoes_auxiliares.h"
+
+// Inclua os headers necessários (sem criar loops)
 #include "./../Esfera/Esfera.h"
 #include "./../Plano/Plano.h"
-#include "./../Cone/Cone.h"
 #include "./../Cilindro/Cilindro.h"
+#include "./../Cone/Cone.h"
 #include "./../Circulo/Circulo.h"
 #include "./../Triangulo/Triangulo.h"
 
-
-
-
-
+// Enum para os tipos de objetos
 enum TipoObjeto
 {
   OBJ_ESFERA,
@@ -24,6 +24,7 @@ enum TipoObjeto
   OBJ_TRIANGULO
 };
 
+// Union
 union UnionObjeto
 {
   Esfera esfera;
@@ -36,11 +37,11 @@ union UnionObjeto
   UnionObjeto();
 };
 
+// Estrutura Objeto
 struct Objeto
 {
   TipoObjeto tipo;
   UnionObjeto obj;
-
   MaterialSimples material;
 
   Objeto(Esfera esfera);

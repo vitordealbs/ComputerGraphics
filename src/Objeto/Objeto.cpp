@@ -1,11 +1,6 @@
 #include "Objeto.h"
 #include <cstring>
-#include "./../Esfera/Esfera.h"
-#include "./../Plano/Plano.h"
-#include "./../Cone/Cone.h"
-#include "./../Cilindro/Cilindro.h"
-#include "./../Circulo/Circulo.h"
-#include "./../Triangulo/Triangulo.h"
+
 
 UnionObjeto::UnionObjeto()
 {

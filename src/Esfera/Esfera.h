@@ -1,13 +1,8 @@
 #ifndef ESFERA_H
 #define ESFERA_H
-
-#include "./../Material/Material.h"
-#include "./../Raio/Raio.h"
 #include "funcoes_auxiliares.h"
 
 using namespace funcoes_auxiliares;
-struct Esfera;
-
 	struct Esfera
 	{
   	Vetor3d centro;

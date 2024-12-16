@@ -11,10 +11,10 @@
 #include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
 #include "./src/Material/Material.h"
-#include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
+#include "./src/Objeto/Objeto.h"
 using namespace funcoes_auxiliares;
 
 
