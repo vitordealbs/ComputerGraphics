@@ -57,6 +57,7 @@ Triangulo triangulo({ -40.0f, -40.0f, -100.0f },
                     m_triangulo);
 
 // definicao do plano do chao
+/*
 Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
 Vetor3d K_e_plano_chao = { 0.0f, 0.0f, 0.0f };
 Vetor3d K_a_plano_chao = { 0.2f, 0.7f, 0.2f };
@@ -67,6 +68,7 @@ Plano plano_chao({ 0.0f, -40.0f, 0.0f },
                  K_e_plano_chao,
                  K_a_plano_chao,
                  m_plano_chao);
+                 */
 
 // definicao do plano de fundo
 Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
@@ -87,18 +89,30 @@ Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
 
-std::vector<Objeto> objetos = { Objeto(triangulo),
-                                Objeto(plano_chao),
-                                Objeto(plano_fundo) };
+std::vector<Objeto> objetos; /*= { // Objeto(triangulo),
+                                //  Objeto(plano_chao),
+  Objeto(plano_fundo)
+};*/
 
 int
 main(void)
 {
-  InitWindow(W_C, H_C, "Tarefa 04");
+  InitWindow(W_C, H_C, "Tarefa 05");
   SetTargetFPS(60);
 
   Image textura_madeira = LoadImage("madeira.png");
   Color* pixels_textura_madeira = LoadImageColors(textura_madeira);
+  Textura textura(pixels_textura_madeira,
+                  textura_madeira.width,
+                  textura_madeira.height,
+                  20.0f,
+                  20.0f,
+                  1.0f);
+  PlanoTextura plano_chao({ 0.0f, -40.0f, 0.0f },
+                          { 1.0f, 0.0f, 0.0f },
+                          { -1.0f, 0.0f, 0.0f },
+                          textura);
+  objetos.push_back(Objeto(plano_chao));
 
   double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
   int Deltax = W_C / nCol, Deltay = H_C / nLin;
@@ -119,7 +133,9 @@ main(void)
           Vetor3d P = { xp, yp, zp };
           Vetor3d dr = P.normalizado();
           Raio raio(P0, dr);
-          // auto [t, objeto] = calcular_intersecao(raio, objetos);
+          auto [t, objeto] = calcular_intersecao(raio, objetos);
+          Vetor3d I_total = I_A;
+          /*
           float t = raio.intersecao(triangulo);
           Vetor3d I_total = I_A;
           if (t > 0.0f) {
@@ -148,18 +164,27 @@ main(void)
             I_total = iluminacao::modelo_phong(
               Pt, raio.dr, triangulo.normal, { P_F, I_F }, I_A, material);
           }
-          /*
+          */
           Vetor3d Pt = raio.no_ponto(t);
           Vetor3d dr_luz = (P_F - Pt).normalizado();
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          if(t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-              I_total = iluminacao::modelo_phong(Pt, raio.dr,
-          objetos[objeto].normal(Pt), {P_F, I_F}, I_A,
-          objetos[objeto].material); } else { I_total =
-          iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+          MaterialSimples material;
+          if (objetos[objeto].tipo == OBJ_PLANO_TEXTURA) {
+            material = objetos[objeto].obj.plano_tex.material(Pt);
+          } else {
+            material = objetos[objeto].material;
           }
-          */
+          if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
+            I_total = iluminacao::modelo_phong(Pt,
+                                               raio.dr,
+                                               objetos[objeto].normal(Pt),
+                                               { P_F, I_F },
+                                               I_A,
+                                               material);
+          } else {
+            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+          }
 
           DrawRectangle(
             Deltax * j,

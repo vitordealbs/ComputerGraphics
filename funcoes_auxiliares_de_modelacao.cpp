@@ -4,6 +4,7 @@
 #include "funcoes_auxiliares.h" // Incluindo as operações vetoriais
 #include <cmath>                // Para pow e sqrt
 #include <cstring>              // Para memset
+#include <raylib.h>
 
 using namespace funcoes_auxiliares; // Usando o namespace "Auxiliares"
 using namespace Auxiliares_de_modelacao;
@@ -89,6 +90,9 @@ Raio::intersecao(Objeto objeto)
     case OBJ_PLANO: {
       return intersecao(objeto.obj.plano);
     } break;
+    case OBJ_PLANO_TEXTURA: {
+      return intersecao(objeto.obj.plano_tex);
+    } break;
     case OBJ_CILINDRO: {
       return intersecao(objeto.obj.cilindro);
     } break;
@@ -134,6 +138,18 @@ Raio::intersecao(Plano plano)
     return -1.0;
   }
   double b = v.dot_product(plano.normal);
+  return -b / a;
+}
+
+float
+Raio::intersecao(PlanoTextura plano_tex)
+{
+  Vetor3d v = P0 - plano_tex.ponto;
+  double a = dr.dot_product(plano_tex.normal);
+  if (a == 0.0) {
+    return -1.0;
+  }
+  double b = v.dot_product(plano_tex.normal);
   return -b / a;
 }
 
@@ -300,6 +316,30 @@ Plano::calcular_iluminacao(Vetor3d Pt,
   return I_total;
 }
 
+PlanoTextura::PlanoTextura(Vetor3d ponto,
+                           Vetor3d eixo1,
+                           Vetor3d eixo2,
+                           Textura textura)
+  : ponto(ponto)
+  , eixo1(eixo1)
+  , eixo2(eixo2)
+  , textura(textura)
+{
+  normal = eixo1.cross_product(eixo2).normalizado();
+}
+
+MaterialSimples
+PlanoTextura::material(Vetor3d Pt)
+{
+  float x = Pt.dot_product(eixo1);
+  float y = Pt.dot_product(eixo2);
+
+  Color pixel = textura.at(x, y);
+  Vetor3d K = { pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0 };
+  MaterialSimples material(K, K, K, textura.m);
+  return material;
+}
+
 Cone::Cone(Vetor3d centro,
            float raio,
            float altura,
@@ -463,6 +503,14 @@ Objeto::Objeto(Plano plano)
   material = MaterialSimples(plano.K_d, plano.K_e, plano.K_a, plano.m);
 }
 
+Objeto::Objeto(PlanoTextura plano_tex)
+{
+  tipo = OBJ_PLANO_TEXTURA;
+  obj.plano_tex = plano_tex;
+
+  material = {};
+}
+
 Objeto::Objeto(Cilindro cilindro)
 {
   tipo = OBJ_CILINDRO;
@@ -507,6 +555,9 @@ Objeto::normal(Vetor3d Pt)
     case OBJ_PLANO: {
       return obj.plano.normal;
     } break;
+    case OBJ_PLANO_TEXTURA: {
+      return obj.plano_tex.normal;
+    } break;
     case OBJ_CILINDRO: {
       return obj.cilindro.normal(Pt);
     } break;
@@ -537,6 +588,30 @@ MaterialSimples::MaterialSimples(Vetor3d K_d, Vetor3d K_e, Vetor3d K_a, float m)
   , K_a(K_a)
   , m(m)
 {
+}
+
+Textura::Textura(Color* pixels,
+                 int lin,
+                 int col,
+                 float width,
+                 float height,
+                 float m)
+  : pixels(pixels)
+  , lin(lin)
+  , col(col)
+  , width(width)
+  , height(height)
+  , m(m)
+{
+}
+
+Color
+Textura::at(float x, float y)
+{
+  int pos_x = ((int)(x / width * col) % col + col) % col;
+  int pos_y = ((int)(y / height * lin) % lin + lin) % lin;
+
+  return pixels[(lin - pos_y) * col + col - pos_x];
 }
 
 Vetor3d
