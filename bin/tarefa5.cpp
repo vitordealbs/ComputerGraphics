@@ -229,12 +229,25 @@ main()
 
         if (t > 0.0f) {
           Vetor3d Pt = raio.no_ponto(t);
-          I_total = iluminacao::modelo_phong(Pt,
-                                             raio.dr,
-                                             objetos[objeto].normal(Pt),
-                                             { P_F, I_F },
-                                             I_A,
-                                             objetos[objeto].material);
+          Vetor3d dr_luz = (P_F - Pt).normalizado();
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          MaterialSimples material;
+          if (objetos[objeto].tipo == OBJ_PLANO_TEXTURA) {
+            material = objetos[objeto].obj.plano_tex.material(Pt);
+          } else {
+            material = objetos[objeto].material;
+          }
+          if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
+            I_total = iluminacao::modelo_phong(Pt,
+                                               raio.dr,
+                                               objetos[objeto].normal(Pt),
+                                               { P_F, I_F },
+                                               I_A,
+                                               material);
+          } else {
+            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+          }
         }
 
         Color pixel = { static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
