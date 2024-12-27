@@ -20,7 +20,7 @@ PlanoTextura::material(Vetor3d Pt)
   float y = v.dot_product(eixo2);
 
   Color pixel = textura.at(x, y);
-  Vetor3d K = { pixel.r / 255.0, pixel.g / 255.0, pixel.b / 255.0 };
+  Vetor3d K = { pixel.r / 255.0f, pixel.g / 255.0f, pixel.b / 255.0f };
   MaterialSimples material(K, K, K, textura.m);
   return material;
 }

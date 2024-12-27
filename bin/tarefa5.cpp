@@ -1,20 +1,19 @@
-#include <cstdio>
 #include <math.h>
+#include <cstdio>
 #include <raylib.h>
 #include <vector>
 
+#include "funcoes_auxiliares.h"
 #include "./src/Cilindro/Cilindro.h"
-#include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
 #include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
-#include "./src/Malha/Malha.h"
-#include "./src/Material/Material.h"
-#include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
-#include "funcoes_auxiliares.h"
+#include "./src/Objeto/Objeto.h"
+#include "./src/Malha/Malha.h"
+#include "./src/PlanoTextura/PlanoTextura.h"
 
 using namespace funcoes_auxiliares;
 
@@ -62,7 +61,7 @@ Esfera esfera({ 0.0f, 95.0f, -200.0f },
               K_d_esfera,
               K_e_esfera,
               K_a_esfera,
-              10.0f);
+              1.0f);
 
 // Plano do chão
 Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
@@ -77,7 +76,7 @@ Plano plano_chao({ 0.0f, -150.0f, 0.0f },
 
 // Plano de fundo
 Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
-Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
+Plano plano_fundo({ 200.0f, -150.0f, -400.0f },
                   { 0.0f, 0.0f, 1.0f },
                   K_d_plano_fundo,
                   K_d_plano_fundo,
@@ -86,7 +85,7 @@ Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
 
 // Parede Lateral Direita
 Vetor3d K_d_parede_lateral_direita = { 0.686f, 0.933f, 0.933f };
-Plano plano_parede_lateral_direita({ 200.0f, -50.0f, 0.0f },
+Plano plano_parede_lateral_direita({ 200.0f, -150.0f, 0.0f },
                                    { -1.0f, 0.0f, 0.0f },
                                    K_d_parede_lateral_direita,
                                    K_d_parede_lateral_direita,
@@ -105,7 +104,7 @@ Plano plano_parede_lateral_esquerda({ -200.0f, -150.0f, 0.0f },
 
 // Plano Teto
 Vetor3d K_d_teto = { 0.933f, 0.933f, 0.933f };
-Plano plano_teto({ 200.0f, 150.0f, 0.0f },
+Plano plano_teto({ 0.0f, 150.0f, 0.0f },
                  { 0.0f, -1.0f, 0.0f },
                  K_d_teto,
                  K_d_teto,
@@ -138,7 +137,7 @@ Cone cone({ 0.0f, -60.0f, -200.0f },
 Vetor3d centro_cubo = { 50.0f, -130.0f, -200.0f };
 float tamanho_cubo = 40.0f;
 Vetor3d K_d_cubo = { 1.0f, 0.078f, 0.576f };
-float m_cubo = 10.0f;
+float m_cubo = 1.0f;
 
 // Vetor de objetos
 std::vector<Objeto> objetos;
@@ -150,7 +149,7 @@ Color* pixels_textura_madeira;
 void
 inicializar_objetos()
 {
-  Image textura_madeira = LoadImage("./assets/madeira.png");
+  Image textura_madeira = LoadImage("../assets/madeira.png");
   Color* pixels_textura_madeira = LoadImageColors(textura_madeira);
   Textura textura(pixels_textura_madeira,
                   textura_madeira.width,
@@ -193,8 +192,8 @@ deletar_objetos()
 }
 
 // definicao da fonte luminosa
-Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
-Vetor3d P_F = { -100.0f, 140.0f, -20.0f };
+Vetor3d I_F = { 0.5f, 0.5f, 0.5f };
+Vetor3d P_F = { 150.0f, 140.0f, -20.0f };
 
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
@@ -203,7 +202,7 @@ int
 main()
 {
   // Inicialização
-  InitWindow(W_C, H_C, "Cena Raylib");
+  InitWindow(W_C, H_C, "Tarefa 05");
   inicializar_objetos();
   SetTargetFPS(60);
 
