@@ -159,13 +159,8 @@ inicializar_objetos()
   objetos.push_back(Objeto(cone));
   objetos.push_back(Objeto(cilindro));
   Malha malha_cubo;
-  malha_cubo.inicializar_cubo({ 50.0f, -130.0f, -200.0f },
-                              40.0f,
-                              { 0.0f, 1.0f, 0.0f },
-                              K_d_cubo,
-                              K_d_cubo,
-                              K_d_cubo,
-                              m_cubo);
+  malha_cubo.inicializar_cubo(
+    { 50.0f, -130.0f, -200.0f }, 40.0f, K_d_cubo, K_d_cubo, K_d_cubo, m_cubo);
 
   for (const auto& triangulo : malha_cubo.faces) {
     objetos.push_back(Objeto(triangulo));

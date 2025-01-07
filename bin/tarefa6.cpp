@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <vector>
 
+#include "./src/Camera/Camera.h"
 #include "./src/Cilindro/Cilindro.h"
 #include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
@@ -47,9 +48,14 @@ const int H_C = 500;
 const float W_J = 60.0f;
 const float H_J = 60.0f;
 const int nLin = 500, nCol = 500;
-float d = 30.0f;
 
 void
 inicializar_objetos()
 {
+  // mesa
+  Malha tampo;
+  Vetor3d K_tampo = { 0.0f, 0.0f, 1.0f };
+  float m_tampo = 1.0f;
+  tampo.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
 }
