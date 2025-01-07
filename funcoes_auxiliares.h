@@ -18,6 +18,7 @@ struct Matriz
   float data[DIMENSAO_MAXIMA][DIMENSAO_MAXIMA];
 
   Matriz transposta();
+  Vetor3d vetor3d();
 
   static Matriz identidade(int dimensao);
   static Matriz nula(int lin, int col);
@@ -39,11 +40,11 @@ struct Matriz
   static Matriz espelhamento(Vetor3d normal);
   static Matriz espelhamento(Vetor3d normal, Vetor3d ponto);
 };
-  // Funções max e min
-  double
-  max(double a, double b);
-  double
-  min(double a, double b);
+// Funções max e min
+double
+max(double a, double b);
+double
+min(double a, double b);
 
 // Definição da estrutura Vetor3d
 struct Vetor3d
@@ -57,6 +58,8 @@ struct Vetor3d
   float tamanho();
   Vetor3d normalizado();
   Matriz matriz();
+  Matriz ponto4d();
+  Matriz vetor4d();
 };
 // Métodos auxiliares de operação
 Vetor3d

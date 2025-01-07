@@ -1,19 +1,19 @@
-#include <math.h>
 #include <cstdio>
+#include <math.h>
 #include <raylib.h>
 #include <vector>
 
-#include "funcoes_auxiliares.h"
 #include "./src/Cilindro/Cilindro.h"
 #include "./src/Cone/Cone.h"
 #include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
+#include "./src/Malha/Malha.h"
+#include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
+#include "./src/PlanoTextura/PlanoTextura.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
-#include "./src/Objeto/Objeto.h"
-#include "./src/Malha/Malha.h"
-#include "./src/PlanoTextura/PlanoTextura.h"
+#include "funcoes_auxiliares.h"
 
 using namespace funcoes_auxiliares;
 
@@ -62,17 +62,6 @@ Esfera esfera({ 0.0f, 95.0f, -200.0f },
               K_e_esfera,
               K_a_esfera,
               1.0f);
-
-// Plano do chão
-Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
-Vetor3d K_e_plano_chao = { 0.0f, 0.0f, 0.0f };
-Vetor3d K_a_plano_chao = { 0.2f, 0.7f, 0.2f };
-Plano plano_chao({ 0.0f, -150.0f, 0.0f },
-                 { 0.0f, 1.0f, 0.0f },
-                 K_d_plano_chao,
-                 K_e_plano_chao,
-                 K_a_plano_chao,
-                 1.0f);
 
 // Plano de fundo
 Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
@@ -163,7 +152,6 @@ inicializar_objetos()
                           textura);
   objetos.push_back(Objeto(plano_chao));
   objetos.push_back(Objeto(esfera));
-  objetos.push_back(Objeto(plano_chao));
   objetos.push_back(Objeto(plano_fundo));
   objetos.push_back(Objeto(plano_teto));
   objetos.push_back(Objeto(plano_parede_lateral_esquerda));

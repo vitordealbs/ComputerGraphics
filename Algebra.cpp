@@ -7,17 +7,17 @@
 namespace funcoes_auxiliares {
 // Funções max e min
 
-  double
+double
 max(double a, double b)
-  {
-    return a + (b - a) * (a < b);
-  }
+{
+  return a + (b - a) * (a < b);
+}
 
-  double
-  min(double a, double b)
-  {
-    return a + (b - a) * (a > b);
-  }
+double
+min(double a, double b)
+{
+  return a + (b - a) * (a > b);
+}
 float
 Vetor3d::dot_product(Vetor3d vetor)
 {
@@ -54,6 +54,28 @@ Vetor3d::matriz()
   res.data[0][0] = x;
   res.data[1][0] = y;
   res.data[2][0] = z;
+  return res;
+}
+
+Matriz
+Vetor3d::ponto4d()
+{
+  Matriz res = { .lin = 4, .col = 1 };
+  res.data[0][0] = x;
+  res.data[1][0] = y;
+  res.data[2][0] = z;
+  res.data[3][0] = 1.0f;
+  return res;
+}
+
+Matriz
+Vetor3d::vetor4d()
+{
+  Matriz res = { .lin = 4, .col = 1 };
+  res.data[0][0] = x;
+  res.data[1][0] = y;
+  res.data[2][0] = z;
+  res.data[3][0] = 0.0f;
   return res;
 }
 
@@ -112,6 +134,14 @@ Matriz::transposta()
     }
   }
   return res;
+}
+
+Vetor3d
+Matriz::vetor3d()
+{
+  assert(col == 1);
+  assert(lin >= 3);
+  return (Vetor3d){ .x = data[0][0], .y = data[1][0], .z = data[2][0] };
 }
 
 Matriz
@@ -275,8 +305,8 @@ Matriz
 Matriz::espelhamento(Vetor3d normal, Vetor3d ponto)
 {
   Vetor3d origem = { 0.0f, 0.0f, 0.0f };
-  return Matriz::translacao(ponto - origem) *
-         Matriz::espelhamento(normal) * Matriz::translacao(origem);
+  return Matriz::translacao(ponto - origem) * Matriz::espelhamento(normal) *
+         Matriz::translacao(origem);
 }
 
 Matriz

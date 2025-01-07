@@ -20,3 +20,10 @@ Circulo::Circulo(Vetor3d centro,
   , m(m)
 {
 }
+
+void
+Circulo::transformar(Matriz mat)
+{
+  centro = (mat * centro.ponto4d()).vetor3d();
+  normal = (mat * normal.vetor4d()).vetor3d();
+}

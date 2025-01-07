@@ -22,6 +22,8 @@ struct PlanoTextura
   PlanoTextura(Vetor3d ponto, Vetor3d eixo1, Vetor3d eixo2, Textura textura);
 
   MaterialSimples material(Vetor3d Pt);
+
+  void transformar(Matriz mat);
 };
 
 #endif // PLANO_TEXTURA_H

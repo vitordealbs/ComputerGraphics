@@ -94,3 +94,33 @@ Objeto::normal(Vetor3d Pt)
     } break;
   }
 }
+
+void
+Objeto::transformar(Matriz mat)
+{
+  switch (tipo) {
+    case OBJ_ESFERA: {
+      return obj.esfera.transformar(mat);
+    } break;
+    case OBJ_PLANO: {
+      return obj.plano.transformar(mat);
+    } break;
+    case OBJ_PLANO_TEXTURA: {
+      return obj.plano_tex.transformar(mat);
+    } break;
+    case OBJ_CILINDRO: {
+      return obj.cilindro.transformar(mat);
+    } break;
+    case OBJ_CONE: {
+      return obj.cone.transformar(mat);
+    } break;
+    case OBJ_CIRCULO: {
+      return obj.circulo.transformar(mat);
+    } break;
+    case OBJ_TRIANGULO: {
+      return obj.triangulo.transformar(mat);
+    } break;
+    default: {
+    } break;
+  }
+}

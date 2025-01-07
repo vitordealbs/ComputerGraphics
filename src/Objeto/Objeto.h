@@ -10,6 +10,7 @@
 #include "./../Circulo/Circulo.h"
 #include "./../Cone/Cone.h"
 #include "./../Esfera/Esfera.h"
+#include "./../ObjetoComplexo/ObjetoComplexo.h"
 #include "./../Plano/Plano.h"
 #include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
@@ -56,6 +57,7 @@ struct Objeto
   Objeto(Triangulo triangulo);
 
   Vetor3d normal(Vetor3d Pt);
+  void transformar(Matriz mat);
 };
 
 #endif // OBJETO_H
