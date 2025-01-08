@@ -58,4 +58,49 @@ inicializar_objetos()
   float m_tampo = 1.0f;
   tampo.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+  tampo.transformar(Matriz::translacao({125.0f, 95.0f + 2.5f, 75.0f}) * Matriz::escala({250.0f, 5.0f, 150.0f}));
+  Vetor3d K_suporte = { 1.0f, 1.0f, 0.0f };
+  float m_suporte = 1.0f;
+  Malha suporte1;
+  suporte1.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  suporte1.transformar(Matriz::translacao({2.5f, 95.0f * 0.5f, 75.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
+  Malha suporte2;
+  suporte2.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  suporte2.transformar(Matriz::translacao({250.0f - 2.5f, 95.0f * 0.5f, 75.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
+  ObjetoComplexo mesa;
+  mesa.adicionar_objeto(tampo);
+  mesa.adicionar_objeto(suporte1);
+  mesa.adicionar_objeto(suporte2);
+  // arvore
+  Vetor3d dir_cima = {0.0f, 1.0f, 0.0f};
+  Vetor3d K_madeira = {0.8f, 0.8f, 0.3f};
+  float m_madeira = 1.0f;
+  Vetor3d K_folha = {0.0f, 0.8f, 0.0f};
+  float m_folha = 1.0f;
+  Vetor3d K_bola = {1.0f, 1.0f, 0.2f};
+  float m_bola = 100.0f;
+  Cilindro suporte_arvore({0.0f, 0.0f, 0.0f}, 30.0f, 9.0f, dir_cima, K_madeira, K_madeira, K_madeira, m_madeira);
+  Cilindro tronco_arvore({0.0f, 9.0f, 0.0f}, 6.0f, 40.0f, dir_cima, K_madeira, K_madeira, K_madeira, m_madeira);
+  Cone cone_arvore({0.0f, 49.0f, 0.0f}, 60.0f, 150.0f, dir_cima, K_folha, K_folha, K_folha, m_folha);
+  Esfera bola_arvore({0.0f, 199.0f + 4.5f * 0.5f, 0.0f}, 4.5f, K_bola, K_bola, K_bola, m_bola);
+  ObjetoComplexo arvore;
+  arvore.adicionar_objeto(suporte_arvore);
+  arvore.adicionar_objeto(tronco_arvore);
+  arvore.adicionar_objeto(cone_arvore);
+  arvore.adicionar_objeto(bola_arvore);
+  // pórtico
+  Malha coluna_esq;
+  coluna_esq.inicializar_cubo(
+    {0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  coluna_esq.transformar(Matriz::translacao({-25.0f, 250.0f, 15.0f}) * Matriz::escala({50.0f, 500.0f, 30.0f}));
+  Malha coluna_dir;
+  coluna_dir.inicializar_cubo(
+    {0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  coluna_dir.transformar(Matriz::translacao({600.0f, 250.0f, 15.0f}) * Matriz::escala({50.0f, 500.0f, 30.0f}));
+  Malha viga_esq;
+  viga_esq.inicializar_cubo(
+    {0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  viga_esq.transformar(Matriz::translacao({600.0f, 250.0f, 15.0f}) * Matriz::cisalhamento_xy_y(atan(0.75)) * Matriz::escala({300.0f, 50.0f, 30.0f}));
 }

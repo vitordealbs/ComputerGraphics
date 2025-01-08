@@ -42,3 +42,9 @@ Malha::inicializar_cubo(const Vetor3d& centro,
       vertices[1], vertices[6], vertices[5], K_d, K_e, K_a, m) // Direita
   };
 }
+
+void
+Malha::transformar(Matriz mat)
+{
+  
+}
