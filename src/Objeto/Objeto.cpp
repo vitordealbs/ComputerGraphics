@@ -6,7 +6,9 @@ UnionObjeto::UnionObjeto()
   memset(this, 0, sizeof(UnionObjeto));
 }
 
-Objeto::Objeto(Esfera esfera)
+UnionObjeto::~UnionObjeto() {}
+
+Objeto::Objeto(const Esfera& esfera)
 {
   tipo = OBJ_ESFERA;
   obj.esfera = esfera;
@@ -14,7 +16,7 @@ Objeto::Objeto(Esfera esfera)
   material = MaterialSimples(esfera.K_d, esfera.K_e, esfera.K_a, esfera.m);
 }
 
-Objeto::Objeto(Plano plano)
+Objeto::Objeto(const Plano& plano)
 {
   tipo = OBJ_PLANO;
   obj.plano = plano;
@@ -22,7 +24,7 @@ Objeto::Objeto(Plano plano)
   material = MaterialSimples(plano.K_d, plano.K_e, plano.K_a, plano.m);
 }
 
-Objeto::Objeto(PlanoTextura plano_tex)
+Objeto::Objeto(const PlanoTextura& plano_tex)
 {
   tipo = OBJ_PLANO_TEXTURA;
   obj.plano_tex = plano_tex;
@@ -30,7 +32,7 @@ Objeto::Objeto(PlanoTextura plano_tex)
   material = {};
 }
 
-Objeto::Objeto(Cilindro cilindro)
+Objeto::Objeto(const Cilindro& cilindro)
 {
   tipo = OBJ_CILINDRO;
   obj.cilindro = cilindro;
@@ -39,7 +41,7 @@ Objeto::Objeto(Cilindro cilindro)
     MaterialSimples(cilindro.K_d, cilindro.K_e, cilindro.K_a, cilindro.m);
 }
 
-Objeto::Objeto(Cone cone)
+Objeto::Objeto(const Cone& cone)
 {
   tipo = OBJ_CONE;
   obj.cone = cone;
@@ -47,7 +49,7 @@ Objeto::Objeto(Cone cone)
   material = MaterialSimples(cone.K_d, cone.K_e, cone.K_a, cone.m);
 }
 
-Objeto::Objeto(Circulo circulo)
+Objeto::Objeto(const Circulo& circulo)
 {
   tipo = OBJ_CIRCULO;
   obj.circulo = circulo;
@@ -55,13 +57,21 @@ Objeto::Objeto(Circulo circulo)
   material = MaterialSimples(circulo.K_d, circulo.K_e, circulo.K_a, circulo.m);
 }
 
-Objeto::Objeto(Triangulo triangulo)
+Objeto::Objeto(const Triangulo& triangulo)
 {
   tipo = OBJ_TRIANGULO;
   obj.triangulo = triangulo;
 
   material =
     MaterialSimples(triangulo.K_d, triangulo.K_e, triangulo.K_a, triangulo.m);
+}
+
+Objeto::Objeto(const Malha& malha)
+{
+  tipo = OBJ_MALHA;
+  obj.malha = malha;
+
+  material = malha.material;
 }
 
 Vetor3d
@@ -100,26 +110,29 @@ Objeto::transformar(Matriz mat)
 {
   switch (tipo) {
     case OBJ_ESFERA: {
-      return obj.esfera.transformar(mat);
+      obj.esfera.transformar(mat);
     } break;
     case OBJ_PLANO: {
-      return obj.plano.transformar(mat);
+      obj.plano.transformar(mat);
     } break;
     case OBJ_PLANO_TEXTURA: {
-      return obj.plano_tex.transformar(mat);
+      obj.plano_tex.transformar(mat);
     } break;
     case OBJ_CILINDRO: {
-      return obj.cilindro.transformar(mat);
+      obj.cilindro.transformar(mat);
     } break;
     case OBJ_CONE: {
-      return obj.cone.transformar(mat);
+      obj.cone.transformar(mat);
     } break;
     case OBJ_CIRCULO: {
-      return obj.circulo.transformar(mat);
+      obj.circulo.transformar(mat);
     } break;
     case OBJ_TRIANGULO: {
-      return obj.triangulo.transformar(mat);
+      obj.triangulo.transformar(mat);
     } break;
+    case OBJ_MALHA: {
+      obj.malha.transformar(mat);
+    }
     default: {
     } break;
   }
