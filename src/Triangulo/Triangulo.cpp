@@ -19,10 +19,24 @@ Triangulo::Triangulo(Vetor3d P0,
   , K_a(K_a)
   , m(m)
 {
-    lado1 = P1 - P0;
-    lado2 = P2 - P0;
-    lado3 = P2 - P1;
-    Vetor3d N = lado1.cross_product(lado2);
-    area2 = N.tamanho();
-    normal = N * (1.0f / area2);
+  lado1 = P1 - P0;
+  lado2 = P2 - P0;
+  lado3 = P2 - P1;
+  Vetor3d N = lado1.cross_product(lado2);
+  area2 = N.tamanho();
+  normal = N * (1.0f / area2);
+}
+
+void
+Triangulo::transformar(Matriz mat)
+{
+  P0 = (mat * P0.ponto4d()).vetor3d();
+  P1 = (mat * P1.ponto4d()).vetor3d();
+  P2 = (mat * P2.ponto4d()).vetor3d();
+  lado1 = P1 - P0;
+  lado2 = P2 - P0;
+  lado3 = P2 - P1;
+  Vetor3d N = lado1.cross_product(lado2);
+  area2 = N.tamanho();
+  normal = N * (1.0f / area2);
 }

@@ -16,7 +16,7 @@ Raio::no_ponto(float t)
 }
 
 float
-Raio::intersecao(Objeto objeto)
+Raio::intersecao(const Objeto& objeto)
 {
   switch (objeto.tipo) {
     case OBJ_ESFERA: {
@@ -40,6 +40,9 @@ Raio::intersecao(Objeto objeto)
     case OBJ_TRIANGULO: {
       return intersecao(objeto.obj.triangulo);
     } break;
+    case OBJ_MALHA: {
+      return intersecao(objeto.obj.malha);
+    } break;
     default: {
       return -1.0f;
     } break;
@@ -47,7 +50,7 @@ Raio::intersecao(Objeto objeto)
 }
 
 float
-Raio::intersecao(Esfera esfera)
+Raio::intersecao(const Esfera& esfera)
 {
   Vetor3d v = P0 - esfera.centro;
   double a = dr.dot_product(dr);
@@ -65,7 +68,7 @@ Raio::intersecao(Esfera esfera)
 }
 
 float
-Raio::intersecao(Plano plano)
+Raio::intersecao(const Plano& plano)
 {
   Vetor3d v = P0 - plano.ponto;
   double a = dr.dot_product(plano.normal);
@@ -77,7 +80,7 @@ Raio::intersecao(Plano plano)
 }
 
 float
-Raio::intersecao(PlanoTextura plano_tex)
+Raio::intersecao(const PlanoTextura& plano_tex)
 {
   Vetor3d v = P0 - plano_tex.ponto;
   double a = dr.dot_product(plano_tex.normal);
@@ -89,7 +92,7 @@ Raio::intersecao(PlanoTextura plano_tex)
 }
 
 float
-Raio::intersecao(Cilindro cilindro)
+Raio::intersecao(const Cilindro& cilindro)
 {
   Vetor3d v = P0 - cilindro.centro;
   Vetor3d u = dr - dr.dot_product(cilindro.direcao) * cilindro.direcao;
@@ -115,7 +118,7 @@ Raio::intersecao(Cilindro cilindro)
 }
 
 float
-Raio::intersecao(Cone cone)
+Raio::intersecao(const Cone& cone)
 {
   float R = cone.raio;
   float h = cone.altura;
@@ -155,7 +158,7 @@ Raio::intersecao(Cone cone)
 }
 
 float
-Raio::intersecao(Circulo circulo)
+Raio::intersecao(const Circulo& circulo)
 {
   Vetor3d v = P0 - circulo.centro;
   double a = dr.dot_product(circulo.normal);
@@ -172,7 +175,7 @@ Raio::intersecao(Circulo circulo)
 }
 
 float
-Raio::intersecao(Triangulo triangulo)
+Raio::intersecao(const Triangulo& triangulo)
 {
   Vetor3d v = P0 - triangulo.P0;
   double a = dr.dot_product(triangulo.normal);
@@ -197,4 +200,17 @@ Raio::intersecao(Triangulo triangulo)
   if (s3 < 0.0f)
     return -1.0f;
   return t;
+}
+
+float
+Raio::intersecao(const Malha& malha)
+{
+  float menor_t = -1.0f;
+  float t;
+  for (Triangulo triangulo : malha.faces) {
+    if ((t = intersecao(triangulo)) > 0.0f && (menor_t < 0.0f || t < menor_t)) {
+      menor_t = t;
+    }
+  }
+  return menor_t;
 }

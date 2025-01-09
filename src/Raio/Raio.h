@@ -21,14 +21,15 @@ struct Raio
 
   Raio(Vetor3d P0, Vetor3d dr);
   Vetor3d no_ponto(float t);
-  float intersecao(Objeto objeto);
-  float intersecao(Esfera esfera);
-  float intersecao(Plano plano); // Função de intersecção com Plano
-  float intersecao(PlanoTextura plano_tex);
-  float intersecao(Cone cone);
-  float intersecao(Cilindro cilindro);
-  float intersecao(Circulo circulo);
-  float intersecao(Triangulo triangulo);
+  float intersecao(const Objeto& objeto);
+  float intersecao(const Esfera& esfera);
+  float intersecao(const Plano& plano); // Função de intersecção com Plano
+  float intersecao(const PlanoTextura& plano_tex);
+  float intersecao(const Cone& cone);
+  float intersecao(const Cilindro& cilindro);
+  float intersecao(const Circulo& circulo);
+  float intersecao(const Triangulo& triangulo);
+  float intersecao(const Malha& malha);
 };
 
 struct FontePontual

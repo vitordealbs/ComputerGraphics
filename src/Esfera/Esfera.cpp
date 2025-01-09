@@ -1,7 +1,6 @@
 #include "Esfera.h"
 #include <cmath>
 
-
 // Construtor parametrizado
 // Definição do construtor da Esfera
 Esfera::Esfera(Vetor3d centro,
@@ -45,4 +44,15 @@ Vetor3d
 Esfera::normal(Vetor3d Pt)
 {
   return (Pt - centro).normalizado();
+}
+
+void
+Esfera::transformar(Matriz mat)
+{
+  Vetor3d ponto = centro + (Vetor3d){ raio, 0.0f, 0.0f };
+  Vetor3d novo_ponto = (mat * ponto.ponto4d()).vetor3d();
+  Vetor3d novo_centro = (mat * centro.ponto4d()).vetor3d();
+  float novo_raio = (novo_ponto - novo_centro).tamanho();
+  raio = novo_raio;
+  centro = novo_centro;
 }

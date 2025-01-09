@@ -10,30 +10,30 @@ using namespace funcoes_auxiliares;
 struct Triangulo
 {
 
-    Vetor3d P0;
-    Vetor3d P1;
-    Vetor3d P2;
+  Vetor3d P0;
+  Vetor3d P1;
+  Vetor3d P2;
 
-    Vetor3d normal;
-    float area2; // dobro da area
-    Vetor3d lado1;
-    Vetor3d lado2;
-    Vetor3d lado3;
+  Vetor3d normal;
+  float area2; // dobro da area
+  Vetor3d lado1;
+  Vetor3d lado2;
+  Vetor3d lado3;
 
-    Vetor3d K_d;
-    Vetor3d K_e;
-    Vetor3d K_a;
-    float m;
+  Vetor3d K_d;
+  Vetor3d K_e;
+  Vetor3d K_a;
+  float m;
 
-    Triangulo(Vetor3d P0,
-              Vetor3d P1,
-              Vetor3d P2,
-              Vetor3d K_d,
-              Vetor3d K_e,
-              Vetor3d K_a,
-              float m);
+  Triangulo(Vetor3d P0,
+            Vetor3d P1,
+            Vetor3d P2,
+            Vetor3d K_d,
+            Vetor3d K_e,
+            Vetor3d K_a,
+            float m);
+
+  void transformar(Matriz mat);
 };
 
-
-
-#endif //TRIANGULO_H
+#endif // TRIANGULO_H

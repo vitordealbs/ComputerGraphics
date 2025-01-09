@@ -24,3 +24,12 @@ PlanoTextura::material(Vetor3d Pt)
   MaterialSimples material(K, K, K, textura.m);
   return material;
 }
+
+void
+PlanoTextura::transformar(Matriz mat)
+{
+  ponto = (mat * ponto.ponto4d()).vetor3d();
+  eixo1 = (mat * eixo1.vetor4d()).vetor3d();
+  eixo2 = (mat * eixo2.vetor4d()).vetor3d();
+  normal = (mat * normal.vetor4d()).vetor3d();
+}

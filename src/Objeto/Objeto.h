@@ -10,6 +10,8 @@
 #include "./../Circulo/Circulo.h"
 #include "./../Cone/Cone.h"
 #include "./../Esfera/Esfera.h"
+#include "./../Malha/Malha.h"
+#include "./../ObjetoComplexo/ObjetoComplexo.h"
 #include "./../Plano/Plano.h"
 #include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
@@ -23,7 +25,8 @@ enum TipoObjeto
   OBJ_CILINDRO,
   OBJ_CONE,
   OBJ_CIRCULO,
-  OBJ_TRIANGULO
+  OBJ_TRIANGULO,
+  OBJ_MALHA
 };
 
 // Union
@@ -36,8 +39,10 @@ union UnionObjeto
   Cone cone;
   Circulo circulo;
   Triangulo triangulo;
+  Malha malha;
 
   UnionObjeto();
+  ~UnionObjeto();
 };
 
 // Estrutura Objeto
@@ -47,15 +52,17 @@ struct Objeto
   UnionObjeto obj;
   MaterialSimples material;
 
-  Objeto(Esfera esfera);
-  Objeto(Plano plano);
-  Objeto(PlanoTextura plano_tex);
-  Objeto(Cilindro cilindro);
-  Objeto(Cone cone);
-  Objeto(Circulo circulo);
-  Objeto(Triangulo triangulo);
+  Objeto(const Esfera& esfera);
+  Objeto(const Plano& plano);
+  Objeto(const PlanoTextura& plano_tex);
+  Objeto(const Cilindro& cilindro);
+  Objeto(const Cone& cone);
+  Objeto(const Circulo& circulo);
+  Objeto(const Triangulo& triangulo);
+  Objeto(const Malha& malha);
 
   Vetor3d normal(Vetor3d Pt);
+  void transformar(Matriz mat);
 };
 
 #endif // OBJETO_H
