@@ -116,7 +116,7 @@ inicializar_objetos()
   arvore.adicionar_objeto(tronco_arvore);
   arvore.adicionar_objeto(cone_arvore);
   arvore.adicionar_objeto(bola_arvore);
-  // pórtico
+  // pórticos
   Malha coluna_esq;
   coluna_esq.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
@@ -130,7 +130,22 @@ inicializar_objetos()
   Malha viga_esq;
   viga_esq.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  viga_esq.transformar(Matriz::translacao({ 600.0f, 250.0f, 15.0f }) *
-                       Matriz::cisalhamento_xy_y(atan(0.75)) *
-                       Matriz::escala({ 300.0f, 50.0f, 30.0f }));
+  viga_esq.transformar(
+    Matriz::translacao({ 150.0f, 475.0f + 150.0f * 0.75f, 15.0f }) *
+    Matriz::cisalhamento_xy_y(atan(0.75)) *
+    Matriz::escala({ 300.0f, 50.0f, 30.0f }));
+  Malha viga_dir;
+  viga_dir.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
+  viga_dir.transformar(
+    Matriz::translacao({ 450.0f, 475.0f + 150.0f * 0.75f, 15.0f }) *
+    Matriz::cisalhamento_xy_y(atan(0.75)) *
+    Matriz::escala({ 300.0f, 50.0f, 30.0f }));
+  ObjetoComplexo portico1;
+  portico1.adicionar_objeto(coluna_esq);
+  portico1.adicionar_objeto(coluna_dir);
+  portico1.adicionar_objeto(viga_esq);
+  portico1.adicionar_objeto(viga_dir);
+  ObjetoComplexo portico2(portico1);
+  // galpão
 }
