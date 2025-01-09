@@ -146,6 +146,12 @@ inicializar_objetos()
   portico1.adicionar_objeto(coluna_dir);
   portico1.adicionar_objeto(viga_esq);
   portico1.adicionar_objeto(viga_dir);
-  ObjetoComplexo portico2(portico1);
+  ObjetoComplexo portico2(portico1); // cria uma cópia
   // galpão
+}
+
+int
+main(void)
+{
+  return 0;
 }
