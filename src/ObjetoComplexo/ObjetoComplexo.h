@@ -1,6 +1,7 @@
 #ifndef OBJETO_COMPLEXO_H
 #define OBJETO_COMPLEXO_H
-#include "../Objeto/Objeto.h"
+#include "./funcoes_auxiliares.h"
+#include "./src/Objeto/Objeto.h"
 #include <vector>
 
 struct ObjetoComplexo
