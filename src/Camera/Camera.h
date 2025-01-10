@@ -4,22 +4,22 @@
 #define Camera_H
 
 using namespace funcoes_auxiliares;
-class Camera
+class Camera3d
 {
 public:
-    Vetor3d position;
-    Vetor3d lookAt;
-    Vetor3d viewUp;
+  Vetor3d position;
+  Vetor3d lookAt;
+  Vetor3d viewUp;
 
-    Vetor3d i{}; // Vetor horizontal
-    Vetor3d j{}; // Vetor vertical
-    Vetor3d k{}; // Vetor direção para trás
+  Vetor3d i{}; // Vetor horizontal
+  Vetor3d j{}; // Vetor vertical
+  Vetor3d k{}; // Vetor direção para trás
 
-    Matriz transformationMatrix{};
+  Matriz transformationMatrix{};
 
-    Camera(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp);
+  Camera3d(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp);
 
-    Matriz getTransformationMatrix();
+  Matriz getTransformationMatrix();
 };
 
 #endif

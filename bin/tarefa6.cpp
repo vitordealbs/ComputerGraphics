@@ -12,6 +12,7 @@
 #include "./src/Malha/Malha.h"
 #include "./src/Material/Material.h"
 #include "./src/Objeto/Objeto.h"
+#include "./src/ObjetoComplexo/ObjetoComplexo.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
