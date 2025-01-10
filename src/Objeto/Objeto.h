@@ -11,7 +11,6 @@
 #include "./../Cone/Cone.h"
 #include "./../Esfera/Esfera.h"
 #include "./../Malha/Malha.h"
-#include "./../ObjetoComplexo/ObjetoComplexo.h"
 #include "./../Plano/Plano.h"
 #include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
@@ -43,6 +42,7 @@ union UnionObjeto
 
   UnionObjeto();
   ~UnionObjeto();
+  UnionObjeto(const UnionObjeto& objeto);
 };
 
 // Estrutura Objeto

@@ -38,9 +38,3 @@ iluminacao::luz_ambiente(Vetor3d I_A, Vetor3d K_a)
 {
   return K_a * I_A;
 }
-struct Aresta {
-  Vetor3d inicio;
-  Vetor3d fim;
-
-  Aresta(Vetor3d inicio, Vetor3d fim);
-};

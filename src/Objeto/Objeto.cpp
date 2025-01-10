@@ -8,6 +8,11 @@ UnionObjeto::UnionObjeto()
 
 UnionObjeto::~UnionObjeto() {}
 
+UnionObjeto::UnionObjeto(const UnionObjeto& objeto)
+{
+  memcpy(this, &objeto, sizeof(UnionObjeto));
+}
+
 Objeto::Objeto(const Esfera& esfera)
 {
   tipo = OBJ_ESFERA;

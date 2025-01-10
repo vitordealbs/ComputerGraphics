@@ -5,6 +5,7 @@
 #include "./../Circulo/Circulo.h"
 #include "./../Cone/Cone.h"
 #include "./../Esfera/Esfera.h"
+#include "./../Malha/Malha.h"
 #include "./../Objeto/Objeto.h"
 #include "./../Plano/Plano.h"
 #include "./../PlanoTextura/PlanoTextura.h"
