@@ -4,7 +4,7 @@
 #define Camera_H
 
 using namespace funcoes_auxiliares;
-class Camera
+class Camera3de
 {
 public:
     Vetor3d position;
@@ -17,7 +17,7 @@ public:
 
     Matriz transformationMatrix{};
 
-    Camera(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp);
+    Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp);
 
     Matriz getTransformationMatrix();
 };

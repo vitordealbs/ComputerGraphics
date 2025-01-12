@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <vector>
 
-#include "./src/Camera/Camera.h"
+#include "./src/Camera/Camera3de.h"
 #include "./src/Cilindro/Cilindro.h"
 #include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
@@ -14,8 +14,9 @@
 #include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
-#include "./src/Triangulo/Triangulo.h"
+#include "src/ObjetoComplexo/ObjetoComplexo.h"
 #include "funcoes_auxiliares.h"
+
 
 using namespace funcoes_auxiliares;
 
@@ -43,12 +44,31 @@ calcular_intersecao(Raio raio,
 }
 
 // Dimensões da janela e frame
-const int W_C = 500;
-const int H_C = 500;
+const int W_C = 600;
+const int H_C = 600;
 const float W_J = 60.0f;
 const float H_J = 60.0f;
 const int nLin = 500, nCol = 500;
+const float d = 30.0f;
 
+// Iluminação e fontes de luz
+const Vetor3d I_A = { 0.2f, 0.2f, 0.2f };
+const Vetor3d P_F = { 300.0f, 400.0f, 100.0f };
+const Vetor3d I_F = { 1.0f, 1.0f, 1.0f };
+
+
+std::vector<ObjetoComplexo> objetos_complexos;
+std::vector<Objeto> objetos_flat;
+
+// Função para "achatar" objetos complexos
+void flatten_objetos(const ObjetoComplexo& objeto_complexo, std::vector<Objeto>& objetos_flat) {
+  for (const auto& obj : objeto_complexo.objetos) {
+    objetos_flat.push_back(obj); // Adiciona objetos simples
+  }
+  for (const auto& sub_objeto : objeto_complexo.objetosComplexos) {
+    flatten_objetos(sub_objeto, objetos_flat); // Processa objetos complexos recursivamente
+  }
+}
 void
 inicializar_objetos()
 {
@@ -77,6 +97,8 @@ inicializar_objetos()
   mesa.adicionar_objeto(tampo);
   mesa.adicionar_objeto(suporte1);
   mesa.adicionar_objeto(suporte2);
+
+  objetos_complexos.push_back(mesa);
   // arvore
   Vetor3d dir_cima = { 0.0f, 1.0f, 0.0f };
   Vetor3d K_madeira = { 0.8f, 0.8f, 0.3f };
@@ -116,6 +138,7 @@ inicializar_objetos()
   arvore.adicionar_objeto(tronco_arvore);
   arvore.adicionar_objeto(cone_arvore);
   arvore.adicionar_objeto(bola_arvore);
+  objetos_complexos.push_back(arvore);
   // pórticos
   Malha coluna_esq;
   coluna_esq.inicializar_cubo(
@@ -147,11 +170,154 @@ inicializar_objetos()
   portico1.adicionar_objeto(viga_esq);
   portico1.adicionar_objeto(viga_dir);
   ObjetoComplexo portico2(portico1); // cria uma cópia
+
+
+  // Paredes&Telhados
+  Vetor3d K_parede = { 0.5f, 0.5f, 0.5f };
+  float m_parede = 1.0f;
+
+  // --- TELHADO ESQUERDO ---
+  Malha telhado_esq;
+  telhado_esq.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_parede, K_parede, K_parede, m_parede);
+  telhado_esq.transformar(
+    Matriz::translacao({ 300.0f, 550.0f, 150.0f }) *
+    Matriz::cisalhamento_xy_y(-atan(0.75)) *
+    Matriz::escala({ 600.0f, 20.0f, 300.0f }));
+
+  // --- TELHADO DIREITO ---
+  Malha telhado_dir;
+  telhado_dir.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_parede, K_parede, K_parede, m_parede);
+  telhado_dir.transformar(
+    Matriz::translacao({ 300.0f, 550.0f, 450.0f }) *
+    Matriz::cisalhamento_xy_y(atan(0.75)) *
+    Matriz::escala({ 600.0f, 20.0f, 300.0f }));
+  // --- PAREDE DE FECHAMENTO ESQUERDA ---
+  Malha parede_esq;
+  parede_esq.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_parede, K_parede, K_parede, m_parede);
+  parede_esq.transformar(
+    Matriz::translacao({ 0.0f, 250.0f, 300.0f }) *
+    Matriz::escala({ 20.0f, 500.0f, 600.0f }));
+
+  // --- PAREDE DE FECHAMENTO DIREITA ---
+  Malha parede_dir;
+  parede_dir.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_parede, K_parede, K_parede, m_parede);
+  parede_dir.transformar(
+    Matriz::translacao({ 600.0f, 250.0f, 300.0f }) *
+    Matriz::escala({ 20.0f, 500.0f, 600.0f }));
+
+  // --- PAREDE DE FECHAMENTO DE FUNDO ---
+  Malha parede_fundo;
+  parede_fundo.inicializar_cubo(
+    { 0.0f, 0.0f, 0.0f }, 1.0f, K_parede, K_parede, K_parede, m_parede);
+  parede_fundo.transformar(
+    Matriz::translacao({ 300.0f, 250.0f, 600.0f }) *
+    Matriz::escala({ 600.0f, 500.0f, 20.0f }));
+
+  ObjetoComplexo paredeseTelhado;
+
+  paredeseTelhado.adicionar_objeto(parede_fundo);
+  paredeseTelhado.adicionar_objeto(parede_dir);
+  paredeseTelhado.adicionar_objeto(parede_esq);
+  paredeseTelhado.adicionar_objeto(telhado_dir);
+  paredeseTelhado.adicionar_objeto(telhado_esq);
+
   // galpão
+  ObjetoComplexo galpao;
+  galpao.adicionar_objeto_complexo(portico1);
+  galpao.adicionar_objeto_complexo(portico2);
+  galpao.adicionar_objeto_complexo(paredeseTelhado);
+
+  objetos_complexos.push_back(galpao);
 }
 
-int
-main(void)
-{
-  return 0;
+
+
+
+
+int main(void) {
+    // Inicialização da janela Raylib
+    InitWindow(W_C, H_C, "Tarefa06 - Ray Tracing");
+    SetTargetFPS(60);
+
+    // Inicializar câmera
+    Vetor3d Eye = {300.0f, 250.0f, 800.0f}; // Ajustar posição da câmera se necessário
+    Vetor3d At = {300.0f, 250.0f, 300.0f};  // Apontando para o centro dos objetos
+    Vetor3d Up = {0.0f, 1.0f, 0.0f};
+    Camera3de camera(Eye, At, Up);
+    Matriz M_wc = camera.getTransformationMatrix();
+
+    inicializar_objetos();
+
+    // Flatten todos os objetos complexos
+    for (const auto& objeto_complexo : objetos_complexos) {
+        flatten_objetos(objeto_complexo, objetos_flat);
+    }
+    for (auto& objeto : objetos_flat) {
+        objeto.transformar(M_wc);
+    }
+
+
+    // Loop principal de renderização
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        // Renderizar usando Raycasting
+        for (int i = 0; i < nLin; ++i) {
+            for (int j = 0; j < nCol; ++j) {
+                // Cálculo da posição do pixel no plano de projeção
+                float x = -W_J * 0.5f + float(j) * (W_J / nCol);
+                float y = H_J * 0.5f - float(i) * (H_J / nLin);
+                Vetor3d P = {x, y, -30.0f};
+                Vetor3d dr = P.normalizado();
+                Raio raio(camera.position, dr);
+
+                // Calcular interseção
+                auto [t, idx] = calcular_intersecao(raio, objetos_flat);
+                if (t > 0.0f) {
+                    Vetor3d Pt = raio.no_ponto(t); // Ponto de interseção
+                    Vetor3d normal = objetos_flat[idx].normal(Pt); // Normal no ponto de interseção
+
+
+
+                    // Iluminação Phong
+                    Vetor3d dr_luz = (P_F - Pt).normalizado();
+                    Raio raio_luz(Pt, dr_luz);
+                    auto [t_luz, _] = calcular_intersecao(raio_luz, objetos_flat, idx);
+
+                    MaterialSimples material = objetos_flat[idx].material;
+                    Vetor3d I_total = I_A;
+                    if (t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
+                        I_total = iluminacao::modelo_phong(Pt, raio.dr, normal, { P_F, I_F }, I_A, material);
+                    } else {
+                        I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+                    }
+
+
+
+                    // Definir cor do pixel
+                    Color pixel_color = {
+                        static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
+                        static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
+                        static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
+                        255
+                    };
+
+                    DrawPixel(j, i, pixel_color);
+                } else {
+                    DrawPixel(j, i, BLACK);
+                }
+            }
+        }
+
+        DrawText("Renderizando Cena", 10, 10, 20, WHITE);
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
 }

@@ -11,7 +11,6 @@
 #include "./../Cone/Cone.h"
 #include "./../Esfera/Esfera.h"
 #include "./../Malha/Malha.h"
-#include "./../ObjetoComplexo/ObjetoComplexo.h"
 #include "./../Plano/Plano.h"
 #include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
@@ -48,10 +47,10 @@ union UnionObjeto
 // Estrutura Objeto
 struct Objeto
 {
-  TipoObjeto tipo;
-  UnionObjeto obj;
+  std::variant<Esfera, Plano, PlanoTextura, Cilindro, Cone, Circulo, Triangulo, Malha> obj;
   MaterialSimples material;
 
+  // Construtores para cada tipo de objeto
   Objeto(const Esfera& esfera);
   Objeto(const Plano& plano);
   Objeto(const PlanoTextura& plano_tex);

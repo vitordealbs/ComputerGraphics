@@ -1,8 +1,8 @@
 
-#include "Camera.h"
+#include "Camera3de.h"
 using namespace funcoes_auxiliares;
 
-Camera::Camera(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp)
+Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp)
     : position(position), lookAt(lookAt), viewUp(viewUp)
 {
     // Calcula o vetor k (direção para trás)
@@ -18,7 +18,7 @@ Camera::Camera(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp)
     transformationMatrix = getTransformationMatrix();
 }
 
-Matriz Camera::getTransformationMatrix()
+Matriz Camera3de::getTransformationMatrix()
 {
     Matriz viewMatrix = Matriz::identidade(4);
 

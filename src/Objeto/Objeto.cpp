@@ -1,139 +1,97 @@
 #include "Objeto.h"
-#include <cstring>
-
-UnionObjeto::UnionObjeto()
-{
-  memset(this, 0, sizeof(UnionObjeto));
-}
-
-UnionObjeto::~UnionObjeto() {}
 
 Objeto::Objeto(const Esfera& esfera)
+  : obj(esfera)
 {
-  tipo = OBJ_ESFERA;
-  obj.esfera = esfera;
-
   material = MaterialSimples(esfera.K_d, esfera.K_e, esfera.K_a, esfera.m);
 }
 
 Objeto::Objeto(const Plano& plano)
+  : obj(plano)
 {
-  tipo = OBJ_PLANO;
-  obj.plano = plano;
-
   material = MaterialSimples(plano.K_d, plano.K_e, plano.K_a, plano.m);
 }
 
 Objeto::Objeto(const PlanoTextura& plano_tex)
+  : obj(plano_tex)
 {
-  tipo = OBJ_PLANO_TEXTURA;
-  obj.plano_tex = plano_tex;
-
-  material = {};
+  material = {}; // Define o material conforme necessário
 }
 
 Objeto::Objeto(const Cilindro& cilindro)
+  : obj(cilindro)
 {
-  tipo = OBJ_CILINDRO;
-  obj.cilindro = cilindro;
-
-  material =
-    MaterialSimples(cilindro.K_d, cilindro.K_e, cilindro.K_a, cilindro.m);
+  material = MaterialSimples(cilindro.K_d, cilindro.K_e, cilindro.K_a, cilindro.m);
 }
 
 Objeto::Objeto(const Cone& cone)
+  : obj(cone)
 {
-  tipo = OBJ_CONE;
-  obj.cone = cone;
-
   material = MaterialSimples(cone.K_d, cone.K_e, cone.K_a, cone.m);
 }
 
 Objeto::Objeto(const Circulo& circulo)
+  : obj(circulo)
 {
-  tipo = OBJ_CIRCULO;
-  obj.circulo = circulo;
-
   material = MaterialSimples(circulo.K_d, circulo.K_e, circulo.K_a, circulo.m);
 }
 
 Objeto::Objeto(const Triangulo& triangulo)
+  : obj(triangulo)
 {
-  tipo = OBJ_TRIANGULO;
-  obj.triangulo = triangulo;
-
-  material =
-    MaterialSimples(triangulo.K_d, triangulo.K_e, triangulo.K_a, triangulo.m);
+  material = MaterialSimples(triangulo.K_d, triangulo.K_e, triangulo.K_a, triangulo.m);
 }
 
 Objeto::Objeto(const Malha& malha)
+  : obj(malha)
 {
-  tipo = OBJ_MALHA;
-  obj.malha = malha;
-
   material = malha.material;
 }
 
-Vetor3d
-Objeto::normal(Vetor3d Pt)
+// Implementação da função normal usando std::visit
+Vetor3d Objeto::normal(Vetor3d Pt)
 {
-  switch (tipo) {
-    case OBJ_ESFERA: {
-      return obj.esfera.normal(Pt);
-    } break;
-    case OBJ_PLANO: {
-      return obj.plano.normal;
-    } break;
-    case OBJ_PLANO_TEXTURA: {
-      return obj.plano_tex.normal;
-    } break;
-    case OBJ_CILINDRO: {
-      return obj.cilindro.normal(Pt);
-    } break;
-    case OBJ_CONE: {
-      return obj.cone.normal(Pt);
-    } break;
-    case OBJ_CIRCULO: {
-      return obj.circulo.normal;
-    } break;
-    case OBJ_TRIANGULO: {
-      return obj.triangulo.normal;
-    } break;
-    default: {
-      return { 0.0f, 0.0f, 0.0f };
-    } break;
-  }
+  return std::visit([Pt](auto&& objeto) -> Vetor3d {
+    using T = std::decay_t<decltype(objeto)>;
+    if constexpr (std::is_same_v<T, Esfera>)
+      return objeto.normal(Pt);
+    else if constexpr (std::is_same_v<T, Plano>)
+      return objeto.normal;
+    else if constexpr (std::is_same_v<T, PlanoTextura>)
+      return objeto.normal;
+    else if constexpr (std::is_same_v<T, Cilindro>)
+      return objeto.normal(Pt);
+    else if constexpr (std::is_same_v<T, Cone>)
+      return objeto.normal(Pt);
+    else if constexpr (std::is_same_v<T, Circulo>)
+      return objeto.normal;
+    else if constexpr (std::is_same_v<T, Triangulo>)
+      return objeto.normal;
+    else
+      return {0.0f, 0.0f, 0.0f};
+  }, obj);
 }
 
-void
-Objeto::transformar(Matriz mat)
+// Implementação da função transformar usando std::visit
+void Objeto::transformar(Matriz mat)
 {
-  switch (tipo) {
-    case OBJ_ESFERA: {
-      obj.esfera.transformar(mat);
-    } break;
-    case OBJ_PLANO: {
-      obj.plano.transformar(mat);
-    } break;
-    case OBJ_PLANO_TEXTURA: {
-      obj.plano_tex.transformar(mat);
-    } break;
-    case OBJ_CILINDRO: {
-      obj.cilindro.transformar(mat);
-    } break;
-    case OBJ_CONE: {
-      obj.cone.transformar(mat);
-    } break;
-    case OBJ_CIRCULO: {
-      obj.circulo.transformar(mat);
-    } break;
-    case OBJ_TRIANGULO: {
-      obj.triangulo.transformar(mat);
-    } break;
-    case OBJ_MALHA: {
-      obj.malha.transformar(mat);
-    }
-    default: {
-    } break;
-  }
+  std::visit([mat](auto&& objeto) {
+    using T = std::decay_t<decltype(objeto)>;
+    if constexpr (std::is_same_v<T, Esfera>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Plano>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, PlanoTextura>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Cilindro>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Cone>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Circulo>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Triangulo>)
+      objeto.transformar(mat);
+    else if constexpr (std::is_same_v<T, Malha>)
+      objeto.transformar(mat);
+  }, obj);
 }
