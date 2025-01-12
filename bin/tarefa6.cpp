@@ -313,8 +313,7 @@ int main(void) {
                 }
             }
         }
-
-        DrawText("Renderizando Cena", 10, 10, 20, WHITE);
+      
         EndDrawing();
     }
 
