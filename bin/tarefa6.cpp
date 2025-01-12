@@ -72,104 +72,56 @@ void flatten_objetos(const ObjetoComplexo& objeto_complexo, std::vector<Objeto>&
 void
 inicializar_objetos()
 {
-  // mesa
-  Malha tampo;
-  Vetor3d K_tampo = { 0.0f, 0.0f, 1.0f };
-  float m_tampo = 1.0f;
-  tampo.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
-  tampo.transformar(Matriz::translacao({ 125.0f, 95.0f + 2.5f, 75.0f }) *
-                    Matriz::escala({ 250.0f, 5.0f, 150.0f }));
-  Vetor3d K_suporte = { 1.0f, 1.0f, 0.0f };
-  float m_suporte = 1.0f;
-  Malha suporte1;
-  suporte1.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  suporte1.transformar(Matriz::translacao({ 2.5f, 95.0f * 0.5f, 75.0f }) *
-                       Matriz::escala({ 5.0f, 95.0f, 150.0f }));
-  Malha suporte2;
-  suporte2.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  suporte2.transformar(
-    Matriz::translacao({ 250.0f - 2.5f, 95.0f * 0.5f, 75.0f }) *
-    Matriz::escala({ 5.0f, 95.0f, 150.0f }));
-  ObjetoComplexo mesa;
-  mesa.adicionar_objeto(tampo);
-  mesa.adicionar_objeto(suporte1);
-  mesa.adicionar_objeto(suporte2);
+  // Mesa
+    Malha tampo;
+    Vetor3d K_tampo = {0.0f, 0.0f, 1.0f};
+    float m_tampo = 1.0f;
+    tampo.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+    tampo.transformar(Matriz::translacao({300.0f, 10.0f, 300.0f}) * // Centralize no eixo X e Z
+                      Matriz::escala({250.0f, 5.0f, 150.0f}));
 
-  objetos_complexos.push_back(mesa);
-  // arvore
-  Vetor3d dir_cima = { 0.0f, 1.0f, 0.0f };
-  Vetor3d K_madeira = { 0.8f, 0.8f, 0.3f };
-  float m_madeira = 1.0f;
-  Vetor3d K_folha = { 0.0f, 0.8f, 0.0f };
-  float m_folha = 1.0f;
-  Vetor3d K_bola = { 1.0f, 1.0f, 0.2f };
-  float m_bola = 100.0f;
-  Cilindro suporte_arvore({ 0.0f, 0.0f, 0.0f },
-                          30.0f,
-                          9.0f,
-                          dir_cima,
-                          K_madeira,
-                          K_madeira,
-                          K_madeira,
-                          m_madeira);
-  Cilindro tronco_arvore({ 0.0f, 9.0f, 0.0f },
-                         6.0f,
-                         40.0f,
-                         dir_cima,
-                         K_madeira,
-                         K_madeira,
-                         K_madeira,
-                         m_madeira);
-  Cone cone_arvore({ 0.0f, 49.0f, 0.0f },
-                   60.0f,
-                   150.0f,
-                   dir_cima,
-                   K_folha,
-                   K_folha,
-                   K_folha,
-                   m_folha);
-  Esfera bola_arvore(
-    { 0.0f, 199.0f + 4.5f * 0.5f, 0.0f }, 4.5f, K_bola, K_bola, K_bola, m_bola);
-  ObjetoComplexo arvore;
-  arvore.adicionar_objeto(suporte_arvore);
-  arvore.adicionar_objeto(tronco_arvore);
-  arvore.adicionar_objeto(cone_arvore);
-  arvore.adicionar_objeto(bola_arvore);
-  objetos_complexos.push_back(arvore);
-  // pórticos
-  Malha coluna_esq;
-  coluna_esq.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  coluna_esq.transformar(Matriz::translacao({ -25.0f, 250.0f, 15.0f }) *
-                         Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  Malha coluna_dir;
-  coluna_dir.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  coluna_dir.transformar(Matriz::translacao({ 600.0f, 250.0f, 15.0f }) *
-                         Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  Malha viga_esq;
-  viga_esq.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  viga_esq.transformar(
-    Matriz::translacao({ 150.0f, 475.0f + 150.0f * 0.75f, 15.0f }) *
-    Matriz::cisalhamento_xy_y(atan(0.75)) *
-    Matriz::escala({ 300.0f, 50.0f, 30.0f }));
-  Malha viga_dir;
-  viga_dir.inicializar_cubo(
-    { 0.0f, 0.0f, 0.0f }, 1.0f, K_suporte, K_suporte, K_suporte, m_suporte);
-  viga_dir.transformar(
-    Matriz::translacao({ 450.0f, 475.0f + 150.0f * 0.75f, 15.0f }) *
-    Matriz::cisalhamento_xy_y(atan(0.75)) *
-    Matriz::escala({ 300.0f, 50.0f, 30.0f }));
-  ObjetoComplexo portico1;
-  portico1.adicionar_objeto(coluna_esq);
-  portico1.adicionar_objeto(coluna_dir);
-  portico1.adicionar_objeto(viga_esq);
-  portico1.adicionar_objeto(viga_dir);
-  ObjetoComplexo portico2(portico1); // cria uma cópia
+    Vetor3d K_suporte = {1.0f, 1.0f, 0.0f};
+    Malha suporte1, suporte2;
+    suporte1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
+    suporte2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
+    suporte1.transformar(Matriz::translacao({275.0f, 5.0f, 325.0f}) * Matriz::escala({10.0f, 90.0f, 10.0f}));
+    suporte2.transformar(Matriz::translacao({325.0f, 5.0f, 275.0f}) * Matriz::escala({10.0f, 90.0f, 10.0f}));
+
+    ObjetoComplexo mesa;
+    mesa.adicionar_objeto(tampo);
+    mesa.adicionar_objeto(suporte1);
+    mesa.adicionar_objeto(suporte2);
+    objetos_complexos.push_back(mesa);
+
+    // Árvore de Natal
+    Vetor3d dir_cima = {0.0f, 1.0f, 0.0f};
+    Cilindro tronco({300.0f, 100.0f, 300.0f}, 10.0f, 50.0f, dir_cima, K_suporte, K_suporte, K_suporte, m_tampo);
+    Cone folhas({300.0f, 150.0f, 300.0f}, 60.0f, 100.0f, dir_cima, K_tampo, K_tampo, K_tampo, m_tampo);
+    Esfera estrela({300.0f, 250.0f, 300.0f}, 10.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+
+    ObjetoComplexo arvore;
+    arvore.adicionar_objeto(tronco);
+    arvore.adicionar_objeto(folhas);
+    arvore.adicionar_objeto(estrela);
+    objetos_complexos.push_back(arvore);
+
+    // Galpão
+    Malha coluna1, coluna2, viga, parede;
+    coluna1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
+    coluna2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
+    viga.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
+    parede.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+
+    coluna1.transformar(Matriz::translacao({250.0f, 50.0f, 250.0f}) * Matriz::escala({10.0f, 100.0f, 10.0f}));
+    coluna2.transformar(Matriz::translacao({350.0f, 50.0f, 350.0f}) * Matriz::escala({10.0f, 100.0f, 10.0f}));
+    viga.transformar(Matriz::translacao({300.0f, 100.0f, 300.0f}) * Matriz::escala({100.0f, 10.0f, 10.0f}));
+    parede.transformar(Matriz::translacao({300.0f, 50.0f, 300.0f}) * Matriz::escala({200.0f, 100.0f, 10.0f}));
+
+    ObjetoComplexo portico;
+    portico.adicionar_objeto(coluna1);
+    portico.adicionar_objeto(coluna2);
+    portico.adicionar_objeto(viga);
+    objetos_complexos.push_back(portico);
 
 
   // Paredes&Telhados
@@ -227,8 +179,7 @@ inicializar_objetos()
 
   // galpão
   ObjetoComplexo galpao;
-  galpao.adicionar_objeto_complexo(portico1);
-  galpao.adicionar_objeto_complexo(portico2);
+
   galpao.adicionar_objeto_complexo(paredeseTelhado);
 
   objetos_complexos.push_back(galpao);
@@ -309,7 +260,7 @@ int main(void) {
 
                     DrawPixel(j, i, pixel_color);
                 } else {
-                    DrawPixel(j, i, BLACK);
+                    DrawPixel(j, i, RED);
                 }
             }
         }

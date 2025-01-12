@@ -15,7 +15,10 @@ Objeto::Objeto(const Plano& plano)
 Objeto::Objeto(const PlanoTextura& plano_tex)
   : obj(plano_tex)
 {
-  material = {}; // Define o material conforme necessário
+  material = MaterialSimples({0.5f, 0.5f, 0.5f},
+                             {0.5f, 0.5f, 0.5f},
+                             {0.5f, 0.5f, 0.5f},
+                             1.0f); // Define o material conforme necessário
 }
 
 Objeto::Objeto(const Cilindro& cilindro)
