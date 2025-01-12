@@ -4,6 +4,7 @@
 #include <raylib.h>
 
 #include <vector>
+#include <string>
 
 #include "funcoes_auxiliares.h"
 #include "./src/Circulo/Circulo.h"
@@ -17,6 +18,11 @@
 #include "./src/Triangulo/Triangulo.h"
 #include "./src/Objeto/Objeto.h"
 using namespace funcoes_auxiliares;
+
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 500;
+const Color BACKGROUND_COLOR = { 44, 44, 44, 255 };
+const Color TEXTBOX_COLOR = { 64, 64, 64, 255 };
 
 struct Parametro
 {
@@ -37,6 +43,12 @@ struct TextBox
   }
 
   TextBox(Rectangle rect) : rect(rect) {}
+
+  void desenhar()
+  {
+    DrawRectangleRec(rect, TEXTBOX_COLOR);
+
+  }
 };
 
 std::pair<float, int>
@@ -57,9 +69,6 @@ calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
 
   return { menor_t, objeto };
 }
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 500;
 
 // definicao das dimensoes da janela
 const int W_C = 500;
@@ -241,16 +250,19 @@ main(void)
 
   while (!WindowShouldClose()) {
 
+      Vector2 mouse = GetMousePosition();
       if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        int x_pos = GetMouseX(), y_pos = GetMouseY();
-        float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
-        float xp = Ponto_Superior_Esquerdo.x + deltinhax * x_pos + 0.5f * deltinhax;
-        Vetor3d P = { xp, yp, zp };
-        Vetor3d dr = P.normalizado();
-        Raio raio(P0, dr);
-        auto [t, objeto] = calcular_intersecao(raio, objetos);
-        if(t > 0.0f) objeto_selecionado = objeto;
-        TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+        if(mouse.x < W_C && mouse.y < H_C) {
+          int x_pos = mouse.y, y_pos = mouse.x;
+          float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
+          float xp = Ponto_Superior_Esquerdo.x + deltinhax * x_pos + 0.5f * deltinhax;
+          Vetor3d P = { xp, yp, zp };
+          Vetor3d dr = P.normalizado();
+          Raio raio(P0, dr);
+          auto [t, objeto] = calcular_intersecao(raio, objetos);
+          if(t > 0.0f) objeto_selecionado = objeto;
+          TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+        }
       }
 
       BeginDrawing();
