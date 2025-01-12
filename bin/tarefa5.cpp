@@ -212,6 +212,7 @@ main()
         if (t > 0.0f) {
           Vetor3d Pt = raio.no_ponto(t);
           Vetor3d dr_luz = (P_F - Pt).normalizado();
+
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           MaterialSimples material;
