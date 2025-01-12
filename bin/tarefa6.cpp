@@ -313,7 +313,7 @@ int main(void) {
                 }
             }
         }
-      
+
         EndDrawing();
     }
 

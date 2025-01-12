@@ -17,7 +17,7 @@ Vetor3d Raio::no_ponto(float t) {
 float Raio::intersecao(const Objeto& objeto) {
   // Usa std::visit para acessar dinamicamente o tipo armazenado no std::variant
   return std::visit([this](auto&& obj) -> float {
-    return intersecao(obj); // Chama o método correspondente com o tipo correto
+    return intersecao(obj);
   }, objeto.obj);
 }
 
