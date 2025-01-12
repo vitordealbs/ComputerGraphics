@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include <raylib.h>
+
 #include <vector>
 
 #include "funcoes_auxiliares.h"
@@ -17,6 +18,26 @@
 #include "./src/Objeto/Objeto.h"
 using namespace funcoes_auxiliares;
 
+struct Parametro
+{
+  std::string nome;
+  float* valor;
+};
+
+struct TextBox
+{
+  Rectangle rect;
+  char texto[10] = {0};
+  size_t capacidade = sizeof(texto) / sizeof(texto[0]);
+  size_t cursor = 0;
+
+  TextBox(int x, int y, int width, int height)
+  {
+    rect = (Rectangle) {x, y, width, height};
+  }
+
+  TextBox(Rectangle rect) : rect(rect) {}
+};
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -36,6 +57,9 @@ calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
 
   return { menor_t, objeto };
 }
+
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 500;
 
 // definicao das dimensoes da janela
 const int W_C = 500;
@@ -145,6 +169,13 @@ std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
                                 Objeto(topo_cilindro), Objeto(base_cilindro),
                                 Objeto(cone),          Objeto(base_cone) };
 
+std::vector<Parametro> parametros(10);
+
+void
+desenhar_parametro(const Parametro& parametro)
+{
+}
+
 void
 renderizar(RenderTexture2D tela)
 {
@@ -199,7 +230,7 @@ int
 main(void)
 {
   
-  InitWindow(W_C, H_C, "Tarefa 04");
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Interatividade");
   SetTargetFPS(60);
 
   int objeto_selecionado = -1;
@@ -224,7 +255,9 @@ main(void)
 
       BeginDrawing();
       {
+        ClearBackground((Color){ 44, 44, 44, 255 });
         DrawTextureRec(tela.texture, {0.0f, 0.0f, W_C, -H_C}, {0.0f, 0.0f}, WHITE);
+
       }
       EndDrawing();
   }
