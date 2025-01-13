@@ -53,9 +53,10 @@
     const float d = 30.0f;
 
     // Iluminação e fontes de luz
-    const Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
-    const Vetor3d P_F = { 300.0f, 500.0f, 300.0f};
-    const Vetor3d I_F = { 1.0f, 1.0f, 1.0f };
+    Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
+    Vetor3d P_F = { 300.0f, 300.0f, 1500.0f};
+    Vetor3d I_F = { 1.0f, 1.0f, 1.0f };
+
 
 
     std::vector<ObjetoComplexo> objetos_complexos;
@@ -133,7 +134,7 @@
         Vetor3d K_tampo = {0.6f, 0.3f, 0.1f};
         float m_tampo = 1.0f;
         tampo.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
-        tampo.transformar(Matriz::translacao({300.0f, 50.0f, 300.0f}) * // Centralize no eixo X e Z
+        tampo.transformar(Matriz::translacao({300.0f, 50.0f, 500.0f}) * // Centralize no eixo X e Z
                           Matriz::escala({250.0f, 5.0f, 150.0f}));
 
         Vetor3d K_suporte = {1.0f, 0.5f, 0.5f};
@@ -144,8 +145,8 @@
         suporte1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
 
         suporte2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_suporte, K_suporte, K_suporte, m_tampo);
-        suporte1.transformar(Matriz::translacao({175.0f, 2.0f, 300.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
-        suporte2.transformar(Matriz::translacao({425.0f, 2.0f, 300.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
+        suporte1.transformar(Matriz::translacao({425.0f, 2.0f, 500.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
+        suporte2.transformar(Matriz::translacao({175.0f, 2.0f, 500.0f}) * Matriz::escala({5.0f, 95.0f, 150.0f}));
 
         ObjetoComplexo mesa;
         mesa.adicionar_objeto(tampo);
@@ -155,13 +156,13 @@
 
         // Árvore de Natal
         Vetor3d dir_cima = {0.0f, 1.0f, 0.0f};
-        Cilindro tronco({300.0f, 55.0f, 300.0f}, 6.0f, 40.0f, dir_cima, K_tronco, K_tronco, K_tronco, 10.0f);
+        Cilindro tronco({300.0f, 55.0f, 500.0f}, 6.0f, 40.0f, dir_cima, K_tronco, K_tronco, K_tronco, 10.0f);
         //300, 55, 300 -> {300, 55, 300, 1}, {0,0,0,0}
-        Cone folhas({300.0f, 100.0f, 300.0f}, 60.0f, 150.0f, dir_cima, K_folhas, K_folhas, K_folhas, m_tampo);
+        Cone folhas({300.0f, 100.0f, 500.0f}, 60.0f, 150.0f, dir_cima, K_folhas, K_folhas, K_folhas, m_tampo);
         //300, 100, 300 -> 1, caso seja ponto, caso seja direcao = 0
-        Esfera estrela({300.0f, 250.0f, 300.0f}, 4.5f, K_estrela, K_estrela, K_estrela, m_tampo);
-        Cilindro suporte_arvore({300.0f, 55.0f, 300.0f}, 30.0f, 9.0f, dir_cima, K_estrela, K_estrela, K_estrela, 10.0f);
-        Circulo suporte_arvore_circulo({300.0f, 64.0f, 300.0f}, 30.0f,{0.0f,1.0f,0.0f} , K_estrela, K_estrela, K_estrela, 10.0f);
+        Esfera estrela({300.0f, 250.0f, 500.0f}, 4.5f, K_estrela, K_estrela, K_estrela, m_tampo);
+        Cilindro suporte_arvore({300.0f, 55.0f, 500.0f}, 30.0f, 9.0f, dir_cima, K_estrela, K_estrela, K_estrela, 10.0f);
+        Circulo suporte_arvore_circulo({300.0f, 64.0f, 500.0f}, 30.0f,{0.0f,1.0f,0.0f} , K_estrela, K_estrela, K_estrela, 10.0f);
 
         ObjetoComplexo arvore;
         arvore.adicionar_objeto(tronco);
@@ -281,11 +282,16 @@
         SetTargetFPS(60);
 
         // Inicializar câmera
-        Vetor3d Eye = {200.0f, 125.0f, 700.0f};
+        Vetor3d Eye = {300.0f, 125.0f, 600.0f};
         Vetor3d At  = {300.0f, 125.0f, 500.0f};
         Vetor3d Up  = {  300.0f,   350.0f,    500.0f};
         Camera3de camera(Eye, At, Up);
         Matriz M_wc = camera.getTransformationMatrix();
+
+
+
+
+        P_F = (M_wc * P_F.ponto4d()).vetor3d();
 
         inicializar_objetos();
 
