@@ -1,5 +1,10 @@
 #include "Objeto.h"
 
+UnionObjeto::UnionObjeto(const UnionObjeto& objeto)
+{
+  memcpy(this, &objeto, sizeof(UnionObjeto));
+}
+
 Objeto::Objeto(const Esfera& esfera)
   : obj(esfera)
 {

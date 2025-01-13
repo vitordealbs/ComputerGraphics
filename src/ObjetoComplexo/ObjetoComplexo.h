@@ -14,7 +14,7 @@ struct ObjetoComplexo
   void transformar(Matriz mat);
   void adicionar_objeto(const Objeto& obj);
 
-  Vetor3d normal(const Vetor3d &Pt) const;
+  Vetor3d normal(const Vetor3d& Pt) const;
 
   void adicionar_objeto_complexo(const ObjetoComplexo& obj_complexo);
 };

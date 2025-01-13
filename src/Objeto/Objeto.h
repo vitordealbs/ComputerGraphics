@@ -42,6 +42,7 @@ union UnionObjeto
 
   UnionObjeto();
   ~UnionObjeto();
+  UnionObjeto(const UnionObjeto& objeto);
 };
 
 // Estrutura Objeto

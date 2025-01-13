@@ -7,19 +7,19 @@ using namespace funcoes_auxiliares;
 class Camera3de
 {
 public:
-    Vetor3d position;
-    Vetor3d lookAt;
-    Vetor3d Up;
+  Vetor3d position;
+  Vetor3d lookAt;
+  Vetor3d Up;
 
-    Vetor3d i{}; // Vetor horizontal
-    Vetor3d j{}; // Vetor vertical
-    Vetor3d k{}; // Vetor direção para trás
+  Vetor3d i{}; // Vetor horizontal
+  Vetor3d j{}; // Vetor vertical
+  Vetor3d k{}; // Vetor direção para trás
 
-    Matriz transformationMatrix{};
+  Matriz transformationMatrix{};
 
-    Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up);
+  Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up);
 
-    Matriz getTransformationMatrix();
+  Matriz getTransformationMatrix();
 };
 
 #endif
