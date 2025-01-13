@@ -48,10 +48,10 @@ union UnionObjeto
 // Estrutura Objeto
 struct Objeto
 {
-  TipoObjeto tipo;
-  UnionObjeto obj;
+  std::variant<Esfera, Plano, PlanoTextura, Cilindro, Cone, Circulo, Triangulo, Malha> obj;
   MaterialSimples material;
 
+  // Construtores para cada tipo de objeto
   Objeto(const Esfera& esfera);
   Objeto(const Plano& plano);
   Objeto(const PlanoTextura& plano_tex);
