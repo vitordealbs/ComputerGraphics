@@ -212,14 +212,21 @@ main()
         if (t > 0.0f) {
           Vetor3d Pt = raio.no_ponto(t);
           Vetor3d dr_luz = (P_F - Pt).normalizado();
+
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           MaterialSimples material;
-          if (objetos[objeto].tipo == OBJ_PLANO_TEXTURA) {
-            material = objetos[objeto].obj.plano_tex.material(Pt);
-          } else {
-            material = objetos[objeto].material;
+          auto objeto_visitado = objetos[objeto];
+          std::visit([&](auto&& obj) {
+          using T = std::decay_t<decltype(obj)>;
+          if constexpr (std::is_same_v<T, PlanoTextura>) {
+              material = obj.material(Pt);
+            }
+
+          else {
+              material = objeto_visitado.material;
           }
+          }, objeto_visitado.obj);
           if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
             I_total = iluminacao::modelo_phong(Pt,
                                                raio.dr,

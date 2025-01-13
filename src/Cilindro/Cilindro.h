@@ -38,6 +38,9 @@ struct Cilindro
   Vetor3d normal(Vetor3d Pt);
 
   void transformar(Matriz mat);
+  Vetor3d normal(Vetor3d Pt);
+
+  void transformar(Matriz mat);
 };
 
 #endif // CILINDRO_H
