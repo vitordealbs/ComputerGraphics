@@ -14,8 +14,7 @@ Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp)
     // Calcula o vetor j (vertical)
     j = k.cross_product(i);
 
-    // Calcula a matriz de transformação
-    transformationMatrix = getTransformationMatrix();
+
 }
 
 Matriz Camera3de::getTransformationMatrix()
@@ -37,6 +36,8 @@ Matriz Camera3de::getTransformationMatrix()
     viewMatrix.data[2][1] = k.y;
     viewMatrix.data[2][2] = k.z;
     viewMatrix.data[2][3] = -k.dot_product(position);
+
+
 
     return viewMatrix;
 }

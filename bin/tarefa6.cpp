@@ -50,7 +50,7 @@
     const float W_J = 60.0f;
     const float H_J = 60.0f;
     const int nLin = 500, nCol = 500;
-    const float d = 40.0f;
+    const float d = 30.0f;
 
     // Iluminação e fontes de luz
     const Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
@@ -86,8 +86,8 @@
             pixels_textura_grama,
             textura_grama.width,
             textura_grama.height,
-            textura_grama.width / 10.0f,
-            textura_grama.height / 10.0f,
+            textura_grama.width,
+            textura_grama.height,
             10.0f
         );
 
@@ -113,8 +113,8 @@
             pixels_textura_ceu,
             textura_ceu.width,
             textura_ceu.height,
-            textura_ceu.width / 10.0f,
-            textura_ceu.height / 10.0f,
+            textura_ceu.width/0.1f ,
+            textura_ceu.height/0.1f ,
             1.0f
         );
 
@@ -168,18 +168,18 @@
         arvore.adicionar_objeto(suporte_arvore_circulo);
         objetos_complexos.push_back(arvore);
 
-        // Pórtico
+        // Pórtico 1
         Malha coluna1, coluna2, viga1, viga2;
         coluna1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
         coluna2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
         viga1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
-        viga2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_suporte, K_suporte, m_tampo);
+        viga2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
 
 
-        coluna1.transformar(Matriz::escala({50.0f, 500.0f, 30.0f}) * Matriz::translacao({10.0f, 0.0f, 0.0f}));
-        coluna2.transformar(Matriz::escala({50.0f, 500.0f, 30.0f}) * Matriz::translacao({10.0f, 0.0f, 20.0f}));
-        viga1.transformar( Matriz::escala({300.0f, 50.0f, 30.0f})* Matriz::cisalhamento_xy_y(75) * Matriz::translacao({0.0f, 20.0f, 0.0f}));
-        viga2.transformar( Matriz::escala({300.0f, 50.0f, 30.0f}) * Matriz::cisalhamento_xy_y(-75)* Matriz::translacao({0.0f, 20.0f, 0.0f}));
+        coluna1.transformar(Matriz::translacao({0.0f, 250.0f, 600.0f}) * Matriz::escala({50.0f, 500.0f, 30.0f}));
+        coluna2.transformar(Matriz::translacao({600.0f, 250.0f, 600.0f})* Matriz::escala({50.0f, 500.0f, 30.0f}));
+        viga1.transformar( Matriz::translacao({150.0f, 587.5f, 600.0f})* Matriz::cisalhamento_xy_y(atan(0.75)) * Matriz::escala({300.0f, 50.0f, 30.0f}));
+        viga2.transformar(Matriz::translacao({450.0f, 587.5f, 600.0f})* Matriz::cisalhamento_xy_y(atan(-0.75)) * Matriz::escala({300.0f, 50.0f, 30.0f}));
 
 
         ObjetoComplexo portico;
@@ -189,19 +189,41 @@
         portico.adicionar_objeto(viga2);
         objetos_complexos.push_back(portico);
 
-        Vetor3d K_parede = {0.5f, 0.5f, 0.5f};
+        // Pórtico 2
+        Malha coluna12, coluna22, viga12, viga22;
+        coluna1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+        coluna2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+        viga1.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+        viga2.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
+
+
+        coluna12.transformar(Matriz::translacao({0.0f, 250.0f, -400.0f}) * Matriz::escala({50.0f, 500.0f, 30.0f}));
+        coluna22.transformar(Matriz::translacao({600.0f, 250.0f, -400.0f})* Matriz::escala({50.0f, 500.0f, 30.0f}));
+        viga12.transformar( Matriz::translacao({150.0f, 587.5f, -400.0f})* Matriz::cisalhamento_xy_y(atan(0.75)) * Matriz::escala({300.0f, 50.0f, 30.0f}));
+        viga22.transformar(Matriz::translacao({450.0f, 587.5f, -400.0f})* Matriz::cisalhamento_xy_y(atan(-0.75)) * Matriz::escala({300.0f, 50.0f, 30.0f}));
+
+
+        ObjetoComplexo portico2;
+        portico2.adicionar_objeto(coluna1);
+        portico2.adicionar_objeto(coluna2);
+        portico2.adicionar_objeto(viga1);
+        portico2.adicionar_objeto(viga2);
+        objetos_complexos.push_back(portico2);
+
+        Vetor3d K_parede = {0.0f, 0.0f, 1.0f};
+        Vetor3d K_telhado = {1.0f, 0.0f, 0.0f};
     float m_parede = 1.0f;
 
     // --- TELHADO ESQUERDO ---
     Malha telhado_esq;
     telhado_esq.inicializar_cubo(
-        {0.0f, 0.0f, 0.0f}, 1.0f, K_parede, K_parede, K_parede, m_parede);
-    telhado_esq.transformar(Matriz::escala({600.0f, 20.0f, 300.0f})*Matriz::cisalhamento_xy_y(-atan(0.75)) * Matriz::translacao({300.0f, 550.0f, 150.0f}));
+        {0.0f, 0.0f, 0.0f}, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
+    telhado_esq.transformar(Matriz::translacao({450.0f, 587.5f, 100.0f}) *Matriz::cisalhamento_xy_y(-atan(0.75)) * Matriz::escala({450.0f, 20.0f, 1000.0f}));
 
     // --- TELHADO DIREITO ---
     Malha telhado_dir;
-    telhado_dir.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_parede, K_parede, K_parede, m_parede);
-        telhado_dir.transformar(Matriz::escala({600.0f, 20.0f, 300.0f})*Matriz::cisalhamento_xy_y(-atan(0.75)) * Matriz::translacao({0.0f, 10.0f, 10.0f}));
+    telhado_dir.inicializar_cubo({0.0f, 0.0f, 0.0f}, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
+        telhado_dir.transformar(Matriz::translacao({150.0f, 587.5f, 100.0f})*Matriz::cisalhamento_xy_y(-atan(-0.75))* Matriz::escala({450.0f, 20.0f, 1000.0f}));
 
     // --- PAREDE DE FECHAMENTO ESQUERDA ---
     Malha parede_esq;
@@ -237,6 +259,7 @@
 
 
     objetos_complexos.push_back(paredes_e_telhados);
+
     }
 
     //Galpao
@@ -254,9 +277,9 @@
         SetTargetFPS(60);
 
         // Inicializar câmera
-        Vetor3d Eye = {300.0f, 400.0f, 800.0f}; // Elevação e afastamento no eixo Z
-        Vetor3d At  = {300.0f, 50.0f, 300.0f};        // Olhando para o centro da cena
-        Vetor3d Up = {0.0f, 1.0f, 0.0f};
+        Vetor3d Eye = {300.0f, 55.0f, -10000.0f};
+        Vetor3d At  = {300.0f, 55.0f, 600.0f};
+        Vetor3d Up  = {  0.0f,   1.0f,    0.0f};
         Camera3de camera(Eye, At, Up);
         Matriz M_wc = camera.getTransformationMatrix();
 
