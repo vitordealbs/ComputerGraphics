@@ -2,12 +2,14 @@
 #include "Camera3de.h"
 using namespace funcoes_auxiliares;
 
-Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d viewUp)
-    : position(position), lookAt(lookAt), viewUp(viewUp)
+Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up)
+    : position(position), lookAt(lookAt), Up(Up)
 {
     // Calcula o vetor k (direção para trás)
     k = (position - lookAt).normalizado();
 
+
+    Vetor3d viewUp = (Up - position);
     // Calcula o vetor i (horizontal)
     i = (viewUp.cross_product(k)).normalizado();
 

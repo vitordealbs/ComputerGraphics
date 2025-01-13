@@ -2,6 +2,7 @@
 
 Malha::Malha() {}
 
+
 void
 Malha::inicializar_cubo(const Vetor3d& centro,
                         float tamanho,
