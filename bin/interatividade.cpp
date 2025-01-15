@@ -1,28 +1,29 @@
-#include <math.h>
 #include <cstdio>
+#include <math.h>
 
 #include <raylib.h>
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "funcoes_auxiliares.h"
-#include "./src/Circulo/Circulo.h"
 #include "./src/Cilindro/Cilindro.h"
+#include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
 #include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
 #include "./src/Material/Material.h"
+#include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
-#include "./src/Objeto/Objeto.h"
+#include "funcoes_auxiliares.h"
 using namespace funcoes_auxiliares;
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 500;
 const Color BACKGROUND_COLOR = { 44, 44, 44, 255 };
 const Color TEXTBOX_COLOR = { 64, 64, 64, 255 };
+const float TEXTBOX_PADDING = 2.0f;
 
 struct Parametro
 {
@@ -33,21 +34,26 @@ struct Parametro
 struct TextBox
 {
   Rectangle rect;
-  char texto[10] = {0};
-  size_t capacidade = sizeof(texto) / sizeof(texto[0]);
+  char texto[10] = { 0 };
+  size_t capacidade = 9;
   size_t cursor = 0;
 
   TextBox(int x, int y, int width, int height)
   {
-    rect = (Rectangle) {x, y, width, height};
+    rect = (Rectangle){ (float)x, (float)y, (float)width, (float)height };
   }
 
-  TextBox(Rectangle rect) : rect(rect) {}
+  TextBox(Rectangle rect)
+    : rect(rect)
+  {
+  }
 
-  void desenhar()
+  void desenhar(Font font)
   {
     DrawRectangleRec(rect, TEXTBOX_COLOR);
-
+    Vector2 text_pos = { rect.x + TEXTBOX_PADDING, rect.y + TEXTBOX_PADDING };
+    DrawTextEx(
+      font, texto, text_pos, rect.height - 2 * TEXTBOX_PADDING, 3.0f, WHITE);
   }
 };
 
@@ -135,7 +141,9 @@ Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
 Vetor3d K_e_cilindro = K_d_cilindro;
 Vetor3d K_a_cilindro = K_d_cilindro;
 float m_cilindro = 1;
-Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), 1.0f / sqrtf(3.0) };
+Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0),
+                         1.0f / sqrtf(3.0f),
+                         1.0f / sqrtf(3.0) };
 Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
 Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   R / 3.0f,
@@ -145,9 +153,20 @@ Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   K_e_cilindro,
                   K_a_cilindro,
                   m_cilindro);
-Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
-Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
-
+Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
+                      R / 3.0f,
+                      dir_cilindro,
+                      K_d_cilindro,
+                      K_e_cilindro,
+                      K_a_cilindro,
+                      m_cilindro);
+Circulo base_cilindro(centro_cilindro,
+                      R / 3.0f,
+                      -1.0f * dir_cilindro,
+                      K_d_cilindro,
+                      K_e_cilindro,
+                      K_a_cilindro,
+                      m_cilindro);
 
 // definicao do cone
 Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
@@ -164,7 +183,13 @@ Cone cone(centro_cone,
           K_e_cone,
           K_a_cone,
           m_cone);
-Circulo base_cone(centro_cone, R / 3.0f, -1.0f * dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
+Circulo base_cone(centro_cone,
+                  R / 3.0f,
+                  -1.0f * dir_cone,
+                  K_d_cone,
+                  K_e_cone,
+                  K_a_cone,
+                  m_cone);
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
@@ -188,16 +213,15 @@ desenhar_parametro(const Parametro& parametro)
 void
 renderizar(RenderTexture2D tela)
 {
-  
+
   BeginTextureMode(tela);
   {
     ClearBackground(BLACK);
-  
+
     for (int i = 0; i < nLin; ++i) {
       float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
       for (int j = 0; j < nCol; ++j) {
-        float xp =
-          Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
+        float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
         Vetor3d P = { xp, yp, zp };
         Vetor3d dr = P.normalizado();
         Raio raio(P0, dr);
@@ -215,20 +239,18 @@ renderizar(RenderTexture2D tela)
                                              I_A,
                                              objetos[objeto].material);
         } else {
-          I_total =
-            iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+          I_total = iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
         }
-  
+
         DrawRectangle(
           Deltax * j,
           Deltay * i,
           Deltax,
           Deltay,
-          (Color){
-            static_cast<unsigned char>(min(I_total.x * 255.0f, 255.0f)),
-            static_cast<unsigned char>(min(I_total.y * 255.0f, 255.0f)),
-            static_cast<unsigned char>(min(I_total.z * 255.0f, 255.0f)),
-            255 });
+          (Color){ static_cast<unsigned char>(min(I_total.x * 255.0f, 255.0f)),
+                   static_cast<unsigned char>(min(I_total.y * 255.0f, 255.0f)),
+                   static_cast<unsigned char>(min(I_total.z * 255.0f, 255.0f)),
+                   255 });
       }
     }
   }
@@ -238,7 +260,7 @@ renderizar(RenderTexture2D tela)
 int
 main(void)
 {
-  
+
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Interatividade");
   SetTargetFPS(60);
 
@@ -248,30 +270,66 @@ main(void)
 
   renderizar(tela);
 
+  TextBox caixa((Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f });
+  caixa.texto[caixa.cursor++] = 'h';
+  caixa.texto[caixa.cursor++] = 'i';
+  std::vector<TextBox> caixas;
+  caixas.push_back(caixa);
+  int caixa_selecionada = -1;
+
   while (!WindowShouldClose()) {
 
-      Vector2 mouse = GetMousePosition();
-      if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        if(mouse.x < W_C && mouse.y < H_C) {
-          int x_pos = mouse.y, y_pos = mouse.x;
-          float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
-          float xp = Ponto_Superior_Esquerdo.x + deltinhax * x_pos + 0.5f * deltinhax;
-          Vetor3d P = { xp, yp, zp };
-          Vetor3d dr = P.normalizado();
-          Raio raio(P0, dr);
-          auto [t, objeto] = calcular_intersecao(raio, objetos);
-          if(t > 0.0f) objeto_selecionado = objeto;
-          TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+    Vector2 mouse = GetMousePosition();
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+      caixa_selecionada = -1;
+      if (mouse.x < W_C && mouse.y < H_C) {
+        int x_pos = mouse.y, y_pos = mouse.x;
+        float yp =
+          Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
+        float xp =
+          Ponto_Superior_Esquerdo.x + deltinhax * x_pos + 0.5f * deltinhax;
+        Vetor3d P = { xp, yp, zp };
+        Vetor3d dr = P.normalizado();
+        Raio raio(P0, dr);
+        auto [t, objeto] = calcular_intersecao(raio, objetos);
+        if (t > 0.0f)
+          objeto_selecionado = objeto;
+        TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+      } else {
+        for (int i = 0; i < caixas.size(); ++i) {
+          const TextBox& caixa = caixas[i];
+          if (CheckCollisionPointRec(mouse, caixa.rect)) {
+            caixa_selecionada = i;
+          }
         }
       }
+    }
 
-      BeginDrawing();
-      {
-        ClearBackground((Color){ 44, 44, 44, 255 });
-        DrawTextureRec(tela.texture, {0.0f, 0.0f, W_C, -H_C}, {0.0f, 0.0f}, WHITE);
-
+    if (caixa_selecionada >= 0) {
+      TraceLog(LOG_INFO, "caixa_selecionada = %d", caixa_selecionada);
+      TextBox* caixa = &caixas[caixa_selecionada];
+      int key = GetKeyPressed();
+      if (key == KEY_BACKSPACE) {
+        if (caixa->cursor > 0) {
+          caixa->texto[--caixa->cursor] = '\0';
+        }
+      } else if (key != 0 && caixa->cursor < caixa->capacidade &&
+                 key != KEY_LEFT_SHIFT) {
+        TraceLog(LOG_INFO, "key = %d", key);
+        caixa->texto[caixa->cursor++] = GetCharPressed();
       }
-      EndDrawing();
+    }
+
+    BeginDrawing();
+    {
+      ClearBackground((Color){ 44, 44, 44, 255 });
+      DrawTextureRec(
+        tela.texture, { 0.0f, 0.0f, W_C, -H_C }, { 0.0f, 0.0f }, WHITE);
+      for (TextBox& caixa : caixas) {
+        caixa.desenhar(GetFontDefault());
+      }
+    }
+    EndDrawing();
   }
 
   UnloadRenderTexture(tela);
