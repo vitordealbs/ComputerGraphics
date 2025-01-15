@@ -5,11 +5,12 @@
 #include "Iluminacao.h"
 #include <math.h>
 
-FontePontual::FontePontual(Vetor3d posicao, Vetor3d intensidade)
+iluminacao::FontePontual::FontePontual(Vetor3d posicao, Vetor3d intensidade)
   : posicao(posicao)
   , intensidade(intensidade)
 {
 }
+
 Vetor3d
 iluminacao::modelo_phong(Vetor3d Pt,
                          Vetor3d dr,
@@ -37,4 +38,10 @@ Vetor3d
 iluminacao::luz_ambiente(Vetor3d I_A, Vetor3d K_a)
 {
   return K_a * I_A;
+}
+
+void
+iluminacao::FontePontual::transformar(Matriz mat)
+{
+  posicao = (mat * posicao.ponto4d()).vetor3d();
 }

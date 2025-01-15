@@ -15,40 +15,18 @@
 #include "./../PlanoTextura/PlanoTextura.h"
 #include "./../Triangulo/Triangulo.h"
 
-// Enum para os tipos de objetos
-enum TipoObjeto
-{
-  OBJ_ESFERA,
-  OBJ_PLANO,
-  OBJ_PLANO_TEXTURA,
-  OBJ_CILINDRO,
-  OBJ_CONE,
-  OBJ_CIRCULO,
-  OBJ_TRIANGULO,
-  OBJ_MALHA
-};
-
-// Union
-union UnionObjeto
-{
-  Esfera esfera;
-  Plano plano;
-  PlanoTextura plano_tex;
-  Cilindro cilindro;
-  Cone cone;
-  Circulo circulo;
-  Triangulo triangulo;
-  Malha malha;
-
-  UnionObjeto();
-  ~UnionObjeto();
-  UnionObjeto(const UnionObjeto& objeto);
-};
-
 // Estrutura Objeto
 struct Objeto
 {
-  std::variant<Esfera, Plano, PlanoTextura, Cilindro, Cone, Circulo, Triangulo, Malha> obj;
+  std::variant<Esfera,
+               Plano,
+               PlanoTextura,
+               Cilindro,
+               Cone,
+               Circulo,
+               Triangulo,
+               Malha>
+    obj;
   MaterialSimples material;
 
   // Construtores para cada tipo de objeto

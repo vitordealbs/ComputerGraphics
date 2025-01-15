@@ -10,19 +10,24 @@ Raio::Raio(Vetor3d P0, Vetor3d dr)
 {
 }
 
-Vetor3d Raio::no_ponto(float t) {
+Vetor3d
+Raio::no_ponto(float t)
+{
   return P0 + dr * t;
 }
 
-float Raio::intersecao(const Objeto& objeto) {
+float
+Raio::intersecao(const Objeto& objeto)
+{
   // Usa std::visit para acessar dinamicamente o tipo armazenado no std::variant
-  return std::visit([this](auto&& obj) -> float {
-    return intersecao(obj);
-  }, objeto.obj);
+  return std::visit([this](auto&& obj) -> float { return intersecao(obj); },
+                    objeto.obj);
 }
 
 // Métodos específicos para cada tipo de interseção
-float Raio::intersecao(const Esfera& esfera) {
+float
+Raio::intersecao(const Esfera& esfera)
+{
   Vetor3d v = P0 - esfera.centro;
   double a = dr.dot_product(dr);
   double b = 2 * dr.dot_product(v);
@@ -38,7 +43,9 @@ float Raio::intersecao(const Esfera& esfera) {
   return t;
 }
 
-float Raio::intersecao(const Plano& plano) {
+float
+Raio::intersecao(const Plano& plano)
+{
   Vetor3d v = P0 - plano.ponto;
   double a = dr.dot_product(plano.normal);
   if (a == 0.0) {
@@ -48,7 +55,9 @@ float Raio::intersecao(const Plano& plano) {
   return -b / a;
 }
 
-float Raio::intersecao(const PlanoTextura& plano_tex) {
+float
+Raio::intersecao(const PlanoTextura& plano_tex)
+{
   Vetor3d v = P0 - plano_tex.ponto;
   double a = dr.dot_product(plano_tex.normal);
   if (a == 0.0) {
@@ -58,7 +67,9 @@ float Raio::intersecao(const PlanoTextura& plano_tex) {
   return -b / a;
 }
 
-float Raio::intersecao(const Cilindro& cilindro) {
+float
+Raio::intersecao(const Cilindro& cilindro)
+{
   Vetor3d v = P0 - cilindro.centro;
   Vetor3d u = dr - dr.dot_product(cilindro.direcao) * cilindro.direcao;
   Vetor3d w = v - (v.dot_product(cilindro.direcao)) * cilindro.direcao;
@@ -82,7 +93,9 @@ float Raio::intersecao(const Cilindro& cilindro) {
   return t;
 }
 
-float Raio::intersecao(const Cone& cone) {
+float
+Raio::intersecao(const Cone& cone)
+{
   float R = cone.raio;
   float h = cone.altura;
   float fator = R * R / (h * h);
@@ -120,7 +133,9 @@ float Raio::intersecao(const Cone& cone) {
   return menor_t;
 }
 
-float Raio::intersecao(const Circulo& circulo) {
+float
+Raio::intersecao(const Circulo& circulo)
+{
   Vetor3d v = P0 - circulo.centro;
   double a = dr.dot_product(circulo.normal);
   if (a == 0.0) {
@@ -135,7 +150,9 @@ float Raio::intersecao(const Circulo& circulo) {
   return t;
 }
 
-float Raio::intersecao(const Triangulo& triangulo) {
+float
+Raio::intersecao(const Triangulo& triangulo)
+{
   Vetor3d v = P0 - triangulo.P0;
   double a = dr.dot_product(triangulo.normal);
   if (a == 0.0) {
@@ -161,7 +178,9 @@ float Raio::intersecao(const Triangulo& triangulo) {
   return t;
 }
 
-float Raio::intersecao(const Malha& malha) {
+float
+Raio::intersecao(const Malha& malha)
+{
   float menor_t = -1.0f;
   float t;
   for (Triangulo triangulo : malha.faces) {
