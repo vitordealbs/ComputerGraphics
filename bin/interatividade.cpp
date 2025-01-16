@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include <raylib.h>
+#include <raymath.h>
 
 #include <string>
 #include <vector>
@@ -24,36 +25,61 @@ const int SCREEN_HEIGHT = 500;
 const Color BACKGROUND_COLOR = { 44, 44, 44, 255 };
 const Color TEXTBOX_COLOR = { 64, 64, 64, 255 };
 const float TEXTBOX_PADDING = 2.0f;
-
-struct Parametro
-{
-  std::string nome;
-  float* valor;
-};
+const float LABEL_MARGIN = 4.0f;
 
 struct TextBox
 {
   Rectangle rect;
+  std::string label;
   char texto[10] = { 0 };
   size_t capacidade = 9;
   size_t cursor = 0;
 
-  TextBox(int x, int y, int width, int height)
+  TextBox(std::string label, int x, int y, int width, int height)
+    : label(label)
   {
     rect = (Rectangle){ (float)x, (float)y, (float)width, (float)height };
   }
 
-  TextBox(Rectangle rect)
-    : rect(rect)
+  TextBox(std::string label, Rectangle rect)
+    : label(label)
+    , rect(rect)
   {
   }
 
   void desenhar(Font font)
   {
-    DrawRectangleRec(rect, TEXTBOX_COLOR);
-    Vector2 text_pos = { rect.x + TEXTBOX_PADDING, rect.y + TEXTBOX_PADDING };
-    DrawTextEx(
-      font, texto, text_pos, rect.height - 2 * TEXTBOX_PADDING, 3.0f, WHITE);
+    float font_size = rect.height - 2 * TEXTBOX_PADDING;
+    float label_height = rect.height;
+    Vector2 label_pos = { rect.x, rect.y };
+    DrawTextEx(font, label.c_str(), label_pos, font_size, 3.0f, WHITE);
+    Rectangle box_rect = {
+      rect.x, rect.y + label_height + LABEL_MARGIN, rect.width, rect.height
+    };
+    DrawRectangleRec(box_rect, TEXTBOX_COLOR);
+    Vector2 text_pos = { box_rect.x + TEXTBOX_PADDING,
+                         box_rect.y + TEXTBOX_PADDING };
+    DrawTextEx(font, texto, text_pos, font_size, 3.0f, WHITE);
+  }
+
+  bool intersecao(Vector2 ponto)
+  {
+    float label_height = rect.height;
+    Rectangle box_rect = {
+      rect.x, rect.y + label_height + LABEL_MARGIN, rect.width, rect.height
+    };
+    return CheckCollisionPointRec(ponto, box_rect);
+  }
+
+  void atualizar(int key, char key_char)
+  {
+    if (key == KEY_BACKSPACE) {
+      if (cursor > 0) {
+        texto[--cursor] = '\0';
+      }
+    } else if (key != 0 && cursor < capacidade && key != KEY_LEFT_SHIFT) {
+      texto[cursor++] = key_char;
+    }
   }
 };
 
@@ -203,13 +229,6 @@ std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
                                 Objeto(topo_cilindro), Objeto(base_cilindro),
                                 Objeto(cone),          Objeto(base_cone) };
 
-std::vector<Parametro> parametros(10);
-
-void
-desenhar_parametro(const Parametro& parametro)
-{
-}
-
 void
 renderizar(RenderTexture2D tela)
 {
@@ -270,11 +289,13 @@ main(void)
 
   renderizar(tela);
 
-  TextBox caixa((Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f });
-  caixa.texto[caixa.cursor++] = 'h';
-  caixa.texto[caixa.cursor++] = 'i';
+  TextBox caixa1("label1", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f });
+  caixa1.texto[caixa1.cursor++] = 'h';
+  caixa1.texto[caixa1.cursor++] = 'i';
+  TextBox caixa2("label2", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f });
   std::vector<TextBox> caixas;
-  caixas.push_back(caixa);
+  caixas.push_back(caixa1);
+  caixas.push_back(caixa2);
   int caixa_selecionada = -1;
 
   while (!WindowShouldClose()) {
@@ -297,8 +318,8 @@ main(void)
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
       } else {
         for (int i = 0; i < caixas.size(); ++i) {
-          const TextBox& caixa = caixas[i];
-          if (CheckCollisionPointRec(mouse, caixa.rect)) {
+          TextBox& caixa = caixas[i];
+          if (caixa.intersecao(mouse)) {
             caixa_selecionada = i;
           }
         }
@@ -306,18 +327,10 @@ main(void)
     }
 
     if (caixa_selecionada >= 0) {
-      TraceLog(LOG_INFO, "caixa_selecionada = %d", caixa_selecionada);
       TextBox* caixa = &caixas[caixa_selecionada];
       int key = GetKeyPressed();
-      if (key == KEY_BACKSPACE) {
-        if (caixa->cursor > 0) {
-          caixa->texto[--caixa->cursor] = '\0';
-        }
-      } else if (key != 0 && caixa->cursor < caixa->capacidade &&
-                 key != KEY_LEFT_SHIFT) {
-        TraceLog(LOG_INFO, "key = %d", key);
-        caixa->texto[caixa->cursor++] = GetCharPressed();
-      }
+      char key_char = GetCharPressed();
+      caixa->atualizar(key, key_char);
     }
 
     BeginDrawing();
