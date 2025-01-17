@@ -1,0 +1,21 @@
+#include <cstdio>
+#include <iostream>
+#include <cmath>
+#include <raylib.h>
+#include <vector>
+#include <omp.h>
+
+#include "./src/calcular_intersecao.h"
+#include "./src/inicializar_objetos.h"
+#include "./src/Camera/Camera3de.h"
+#include "./src/Cilindro/Cilindro.h"
+#include "./src/Circulo/Circulo.h"
+#include "./src/Cone/Cone.h"
+#include "./src/Esfera/Esfera.h"
+#include "./src/Iluminacao/Iluminacao.h"
+#include "./src/Malha/Malha.h"
+#include "./src/Material/Material.h"
+#include "./src/Objeto/Objeto.h"
+#include "./src/Raio/Raio.h"
+#include "funcoes_auxiliares.h"
+#include "src/ObjetoComplexo/ObjetoComplexo.h"
