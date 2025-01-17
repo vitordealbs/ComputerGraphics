@@ -24,6 +24,8 @@ const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 500;
 const Color BACKGROUND_COLOR = { 44, 44, 44, 255 };
 const Color TEXTBOX_COLOR = { 64, 64, 64, 255 };
+const Color BUTTON_COLOR = { 54, 54, 54, 255 };
+const float BUTTON_FONTSIZE = 20.0f;
 const float TEXTBOX_PADDING = 2.0f;
 const float LABEL_MARGIN = 4.0f;
 
@@ -82,6 +84,34 @@ struct TextBox
     }
   }
 };
+
+struct Button
+{
+  std::string label;
+  Rectangle rect;
+
+  Button(std::string label, Rectangle rect)
+    : label(label)
+    , rect(rect)
+  {
+  }
+
+  void desenhar(Font font)
+  {
+    DrawRectangleRec(rect, BUTTON_COLOR);
+    Vector2 text_offset =
+      MeasureTextEx(font, label.c_str(), BUTTON_FONTSIZE, 3.0f);
+    Vector2 rect_center = { rect.x + 0.5f * rect.width,
+                            rect.y + 0.5f * rect.height };
+    Vector2 text_pos = Vector2Subtract(rect_center, text_offset);
+    DrawTextEx(font, label.c_str(), text_pos, BUTTON_FONTSIZE, 3.0f, WHITE);
+  }
+
+  bool intersecao(Vector2 ponto) { return CheckCollisionPointRec(ponto, rect); }
+};
+
+struct ScrollPanel
+{};
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -279,6 +309,7 @@ renderizar(RenderTexture2D tela)
 int
 main(void)
 {
+  Font font = GetFontDefault();
 
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Interatividade");
   SetTargetFPS(60);
@@ -298,13 +329,16 @@ main(void)
   caixas.push_back(caixa2);
   int caixa_selecionada = -1;
 
+  Button btn_atualizar("atualizar",
+                       (Rectangle){ 520.0f, 140.0f, 260.0f, 30.0f });
+
   while (!WindowShouldClose()) {
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       caixa_selecionada = -1;
       if (mouse.x < W_C && mouse.y < H_C) {
-        int x_pos = mouse.y, y_pos = mouse.x;
+        int x_pos = mouse.x, y_pos = mouse.y;
         float yp =
           Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
         float xp =
@@ -335,12 +369,13 @@ main(void)
 
     BeginDrawing();
     {
-      ClearBackground((Color){ 44, 44, 44, 255 });
+      ClearBackground(BACKGROUND_COLOR);
       DrawTextureRec(
         tela.texture, { 0.0f, 0.0f, W_C, -H_C }, { 0.0f, 0.0f }, WHITE);
       for (TextBox& caixa : caixas) {
-        caixa.desenhar(GetFontDefault());
+        caixa.desenhar(font);
       }
+      btn_atualizar.desenhar(font);
     }
     EndDrawing();
   }
