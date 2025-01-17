@@ -38,10 +38,6 @@ Camera3de::getTransformationMatrix()
   viewMatrix.data[2][1] = k.y;
   viewMatrix.data[2][2] = k.z;
   viewMatrix.data[2][3] = -k.dot_product(position);
-  viewMatrix.data[2][0] = k.x;
-  viewMatrix.data[2][1] = k.y;
-  viewMatrix.data[2][2] = k.z;
-  viewMatrix.data[2][3] = -k.dot_product(position);
 
   return viewMatrix;
 }

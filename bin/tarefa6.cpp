@@ -1,8 +1,9 @@
 #include <cstdio>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <raylib.h>
 #include <vector>
+#include <omp.h>
 
 #include "./src/Camera/Camera3de.h"
 #include "./src/Cilindro/Cilindro.h"
@@ -13,7 +14,6 @@
 #include "./src/Malha/Malha.h"
 #include "./src/Material/Material.h"
 #include "./src/Objeto/Objeto.h"
-#include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "funcoes_auxiliares.h"
 #include "src/ObjetoComplexo/ObjetoComplexo.h"
@@ -51,15 +51,15 @@ const float H_J = 60.0f;
 const int nLin = 500, nCol = 500;
 const float d = 30.0f;
 
-// Iluminação e fontes de luz
+// Illumination e fonts de luz
 Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
 Vetor3d P_F = { 300.0f, 300.0f, 1500.0f };
 Vetor3d I_F = { 1.0f, 1.0f, 1.0f };
 
-std::vector<ObjetoComplexo> objetos_complexos;
-std::vector<Objeto> objetos_flat;
+std::vector<ObjetoComplexo> complexObjects;
+std::vector<Objeto> objects_flat;
 
-// Função para "achatar" objetos complexos
+// Function to flat complex object
 void
 flatten_objetos(const ObjetoComplexo& objeto_complexo,
                 std::vector<Objeto>& objetos_flat)
@@ -96,7 +96,7 @@ inicializar_objetos()
     { 1.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 1.0f },
     texturaG);
-  objetos_flat.push_back(plano_grama);
+  objects_flat.push_back(plano_grama);
   std::cout << "Inicializou plano da grama.\n";
 
   Image textura_ceu = LoadImage("../assets/ceu.png");
@@ -116,7 +116,7 @@ inicializar_objetos()
                          { 1.0f, 0.0f, 0.0f },
                          { 0.0f, 1.0f, 0.0f },
                          texturaC);
-  objetos_flat.push_back(plano_ceu);
+  objects_flat.push_back(plano_ceu);
   std::cout << "Inicializou plano do céu.\n";
 
   // Mesa
@@ -148,7 +148,7 @@ inicializar_objetos()
   mesa.adicionar_objeto(tampo);
   mesa.adicionar_objeto(suporte1);
   mesa.adicionar_objeto(suporte2);
-  objetos_complexos.push_back(mesa);
+  complexObjects.push_back(mesa);
 
   // Árvore de Natal
   Vetor3d dir_cima = { 0.0f, 1.0f, 0.0f };
@@ -194,7 +194,7 @@ inicializar_objetos()
   arvore.adicionar_objeto(estrela);
   arvore.adicionar_objeto(suporte_arvore);
   arvore.adicionar_objeto(suporte_arvore_circulo);
-  objetos_complexos.push_back(arvore);
+  complexObjects.push_back(arvore);
 
   // Pórtico 1
   Malha coluna1, coluna2, viga1, viga2;
@@ -224,7 +224,7 @@ inicializar_objetos()
   portico.adicionar_objeto(coluna2);
   portico.adicionar_objeto(viga1);
   portico.adicionar_objeto(viga2);
-  objetos_complexos.push_back(portico);
+  complexObjects.push_back(portico);
 
   // Pórtico 2
   Malha coluna12, coluna22, viga12, viga22;
@@ -253,7 +253,7 @@ inicializar_objetos()
   portico2.adicionar_objeto(coluna22);
   portico2.adicionar_objeto(viga12);
   portico2.adicionar_objeto(viga22);
-  objetos_complexos.push_back(portico2);
+  complexObjects.push_back(portico2);
 
   Vetor3d K_parede = { 0.0f, 0.0f, 1.0f };
   Vetor3d K_telhado = { 1.0f, 0.0f, 0.0f };
@@ -303,7 +303,7 @@ inicializar_objetos()
   paredes_e_telhados.adicionar_objeto(parede_dir);
   paredes_e_telhados.adicionar_objeto(parede_fundo);
 
-  objetos_complexos.push_back(paredes_e_telhados);
+  complexObjects.push_back(paredes_e_telhados);
 }
 
 // Galpao
@@ -315,15 +315,16 @@ deletar_objetos()
 }
 
 int
-main(void)
+main()
 {
+  omp_set_num_threads(4);
   InitWindow(W_C, H_C, "Tarefa06 ");
   SetTargetFPS(60);
 
   // Inicializar câmera
-  Vetor3d Eye = { 300.0f, 125.0f, 600.0f };
+  Vetor3d Eye = { 150.0f, 125.0f, 800.0f };
   Vetor3d At = { 300.0f, 125.0f, 500.0f };
-  Vetor3d Up = { 300.0f, 350.0f, 500.0f };
+  Vetor3d Up = { 300.0f, 325.0f, 500.0f };
   Camera3de camera(Eye, At, Up);
   Matriz M_wc = camera.getTransformationMatrix();
 
@@ -331,15 +332,15 @@ main(void)
 
   inicializar_objetos();
 
-  for (const auto& objeto_complexo : objetos_complexos) {
-    flatten_objetos(objeto_complexo, objetos_flat);
+  for (const auto& objeto_complexo : complexObjects) {
+    flatten_objetos(objeto_complexo, objects_flat);
   }
   // Cada objeto irá transformar em 4x4
-  for (auto& objeto : objetos_flat) {
+  for (auto& objeto : objects_flat) {
 
     objeto.transformar(M_wc);
   }
-  std::cout << "Objetos na cena: " << objetos_flat.size() << "\n";
+  std::cout << "Objetos na cena: " << objects_flat.size() << "\n";
   // Loop principal
   while (!WindowShouldClose()) {
     BeginDrawing();
@@ -347,57 +348,65 @@ main(void)
     double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
     Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
     Vetor3d P0 = { 0.0f, 0.0f, 150.0f };
+
+    std::vector<Color> pixel_buffer(nLin * nCol, WHITE);
+
+    #pragma omp parallel for
     for (int i = 0; i < nLin; ++i) {
-      float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
-      for (int j = 0; j < nCol; ++j) {
-        float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
-        Vetor3d P = { xp, yp, -d };
-        Vetor3d dr = P.normalizado();
-        Raio raio(camera.position, dr);
+        for (int j = 0; j < nCol; ++j) {
+            float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
+            float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
+            Vetor3d P = { xp, yp, -d };
+            Vetor3d dr = P.normalizado();
+            Raio raio(camera.position, dr);
 
-        auto [t, objeto] = calcular_intersecao(raio, objetos_flat);
-        Vetor3d I_total = I_A;
-        MaterialSimples material;
+            auto [t, object] = calcular_intersecao(raio, objects_flat);
+            Vetor3d I_total = I_A;
+            MaterialSimples material;
 
-        if (t > 0.0f) {
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d normal = objetos_flat[objeto].normal(Pt);
+            if (t > 0.0f) {
+                Vetor3d Pt = raio.no_ponto(t);
+                Vetor3d normal = objects_flat[object].normal(Pt);
 
-          std::visit(
-            [&](auto&& obj) {
-              using T = std::decay_t<decltype(obj)>;
-              if constexpr (std::is_same_v<T, PlanoTextura>) {
-                material = obj.material(Pt);
-              } else {
-                material = objetos_flat[objeto].material;
-              }
-            },
-            objetos_flat[objeto].obj);
+                std::visit(
+                    [&](auto&& obj) {
+                        using T = std::decay_t<decltype(obj)>;
+                        if constexpr (std::is_same_v<T, PlanoTextura>) {
+                            material = obj.material(Pt);
+                        } else {
+                            material = objects_flat[object].material;
+                        }
+                    },
+                    objects_flat[object].obj);
 
-          Vetor3d dr_luz = (P_F - Pt).normalizado();
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos_flat, objeto);
+                Vetor3d dr_luz = (P_F - Pt).normalizado();
+                Raio light_ray(Pt, dr_luz);
 
-          if (t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
-            I_total = iluminacao::modelo_phong(
-              Pt, raio.dr, normal, { P_F, I_F }, I_A, material);
-          } else {
-            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
-          }
+                if (auto [t_luz, _] = calcular_intersecao(light_ray, objects_flat, object); t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
+                    I_total = iluminacao::modelo_phong(
+                        Pt, raio.dr, normal, { P_F, I_F }, I_A, material);
+                } else {
+                    I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+                }
 
-          Color pixel_color = {
-            static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
-            static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
-            static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
-            255
-          };
-
-          DrawPixel(j, i, pixel_color);
-        } else {
-          DrawPixel(j, i, WHITE);
+                pixel_buffer[i * nCol + j] = {
+                    static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
+                    static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
+                    static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
+                    255
+                };
+            } else {
+                pixel_buffer[i * nCol + j] = WHITE;
         }
-      }
     }
+}
+
+// Depois que os threads terminam de trabalhar, o código desenha os pixels
+for (int i = 0; i < nLin; ++i) {
+    for (int j = 0; j < nCol; ++j) {
+        DrawPixel(j, i, pixel_buffer[i * nCol + j]);
+    }
+}
 
     EndDrawing();
   }
