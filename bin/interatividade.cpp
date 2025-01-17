@@ -36,16 +36,18 @@ struct TextBox
   char texto[10] = { 0 };
   size_t capacidade = 9;
   size_t cursor = 0;
+  float* parametro = nullptr;
 
-  TextBox(std::string label, int x, int y, int width, int height)
-    : label(label)
+  TextBox(std::string label, int x, int y, int width, int height, float *parametro)
+    : label(label), parametro(parametro)
   {
     rect = (Rectangle){ (float)x, (float)y, (float)width, (float)height };
   }
 
-  TextBox(std::string label, Rectangle rect)
+  TextBox(std::string label, Rectangle rect, float *parametro)
     : label(label)
     , rect(rect)
+    , parametro(parametro)
   {
   }
 
@@ -83,6 +85,13 @@ struct TextBox
       texto[cursor++] = key_char;
     }
   }
+  
+  void atualizar_parametro()
+  {
+    TraceLog(LOG_INFO, "parametro antigo %f", *parametro);
+    sscanf(texto, "%f", parametro);
+    TraceLog(LOG_INFO, "parametro novo %f", *parametro);
+  }
 };
 
 struct Button
@@ -103,7 +112,7 @@ struct Button
       MeasureTextEx(font, label.c_str(), BUTTON_FONTSIZE, 3.0f);
     Vector2 rect_center = { rect.x + 0.5f * rect.width,
                             rect.y + 0.5f * rect.height };
-    Vector2 text_pos = Vector2Subtract(rect_center, text_offset);
+    Vector2 text_pos = Vector2Subtract(rect_center, Vector2Scale(text_offset, 0.5));
     DrawTextEx(font, label.c_str(), text_pos, BUTTON_FONTSIZE, 3.0f, WHITE);
   }
 
@@ -309,10 +318,11 @@ renderizar(RenderTexture2D tela)
 int
 main(void)
 {
-  Font font = GetFontDefault();
 
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Interatividade");
   SetTargetFPS(60);
+
+  Font font = GetFontDefault();
 
   int objeto_selecionado = -1;
 
@@ -320,17 +330,17 @@ main(void)
 
   renderizar(tela);
 
-  TextBox caixa1("label1", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f });
-  caixa1.texto[caixa1.cursor++] = 'h';
-  caixa1.texto[caixa1.cursor++] = 'i';
-  TextBox caixa2("label2", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f });
+  TextBox caixa1("I.r", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f }, &I_F.x);
+  TextBox caixa2("I.g", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f }, &I_F.y);
+  TextBox caixa3("I.b", (Rectangle){ 520.0f, 140.0f, 260.0f, 20.0f }, &I_F.z);
   std::vector<TextBox> caixas;
   caixas.push_back(caixa1);
   caixas.push_back(caixa2);
+  caixas.push_back(caixa3);
   int caixa_selecionada = -1;
 
   Button btn_atualizar("atualizar",
-                       (Rectangle){ 520.0f, 140.0f, 260.0f, 30.0f });
+                       (Rectangle){ 520.0f, 200.0f, 260.0f, 30.0f });
 
   while (!WindowShouldClose()) {
 
@@ -356,6 +366,12 @@ main(void)
           if (caixa.intersecao(mouse)) {
             caixa_selecionada = i;
           }
+        }
+        if(caixa_selecionada < 0 && btn_atualizar.intersecao(mouse)) {
+          for (int i = 0; i < caixas.size(); ++i) {
+            caixas[i].atualizar_parametro();
+          }
+          renderizar(tela);
         }
       }
     }
