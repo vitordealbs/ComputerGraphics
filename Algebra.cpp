@@ -223,6 +223,28 @@ Matriz::rotacao_z(float angulo)
 }
 
 Matriz
+Matriz::rotacao_eixo(Vetor3d eixo, float angulo)
+{
+  Vetor3d u = eixo.normalizado();
+  float seno = sin(0.5f*angulo), cosseno = cos(0.5f*angulo);
+  float x = seno*u.x, y = seno*u.y, z = seno*u.z, w = cosseno;
+  Matriz res = Matriz::identidade(4);
+  res.data[0][0] = w*w + x*x - y*y - z*z;
+  res.data[0][1] = 2*(x*y - w*z);
+  res.data[0][2] = 2*(x*z + w*y);
+
+  res.data[1][0] = 2*(x*y + w*z);
+  res.data[1][1] = w*w - x*x + y*y - z*z;
+  res.data[1][2] = 2*(y*z - w*x);
+
+  res.data[2][0] = 2*(x*z - w*y);
+  res.data[2][1] = 2*(y*z + w*x);
+  res.data[2][2] = w*w - x*x - y*y + z*z;
+
+  return res;
+}
+
+Matriz
 Matriz::cisalhamento_xy_x(float angulo)
 {
   Matriz res = Matriz::identidade(4);
