@@ -34,13 +34,6 @@ struct Raio
 
 };
 
-struct FontePontual
-{
-  Vetor3d posicao;
-  Vetor3d intensidade;
-
-  FontePontual(Vetor3d posicao, Vetor3d intensidade);
-};
 // calculo do material para calcular iluminação
 
 #endif // RAIO_H

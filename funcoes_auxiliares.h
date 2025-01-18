@@ -28,6 +28,7 @@ struct Matriz
   static Matriz rotacao_x(float angulo);
   static Matriz rotacao_y(float angulo);
   static Matriz rotacao_z(float angulo);
+  static Matriz rotacao_eixo(Vetor3d eixo, float angulo);
   static Matriz cisalhamento_xy_x(float angulo);
   static Matriz cisalhamento_xy_y(float angulo);
   static Matriz cisalhamento_xz_x(float angulo);
