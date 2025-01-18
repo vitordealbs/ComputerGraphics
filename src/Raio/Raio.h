@@ -31,6 +31,7 @@ struct Raio
   float intersecao(const Circulo& circulo);
   float intersecao(const Triangulo& triangulo);
   float intersecao(const Malha& malha);
+
 };
 
 // calculo do material para calcular iluminação

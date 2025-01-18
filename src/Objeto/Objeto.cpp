@@ -1,5 +1,7 @@
 #include "Objeto.h"
 
+
+
 Objeto::Objeto(const Esfera& esfera)
   : obj(esfera)
 {
