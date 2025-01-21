@@ -28,23 +28,30 @@ const Color BUTTON_COLOR = { 54, 54, 54, 255 };
 const float BUTTON_FONTSIZE = 20.0f;
 const float TEXTBOX_PADDING = 2.0f;
 const float LABEL_MARGIN = 4.0f;
+const float ELEMENT_MARGIN = 20.0f;
 
 struct TextBox
 {
   Rectangle rect;
   std::string label;
-  char texto[10] = { 0 };
-  size_t capacidade = 9;
+  char texto[30] = { 0 };
+  size_t capacidade = sizeof(texto) / sizeof(texto[0]) - 1;
   size_t cursor = 0;
   float* parametro = nullptr;
 
-  TextBox(std::string label, int x, int y, int width, int height, float *parametro)
-    : label(label), parametro(parametro)
+  TextBox(std::string label,
+          int x,
+          int y,
+          int width,
+          int height,
+          float* parametro)
+    : label(label)
+    , parametro(parametro)
   {
     rect = (Rectangle){ (float)x, (float)y, (float)width, (float)height };
   }
 
-  TextBox(std::string label, Rectangle rect, float *parametro)
+  TextBox(std::string label, Rectangle rect, float* parametro)
     : label(label)
     , rect(rect)
     , parametro(parametro)
@@ -75,6 +82,12 @@ struct TextBox
     return CheckCollisionPointRec(ponto, box_rect);
   }
 
+  void mover(const Vector2& pos)
+  {
+    rect.x = pos.x;
+    rect.y = pos.y;
+  }
+
   void atualizar(int key, char key_char)
   {
     if (key == KEY_BACKSPACE) {
@@ -85,12 +98,12 @@ struct TextBox
       texto[cursor++] = key_char;
     }
   }
-  
-  void atualizar_parametro()
+
+  void atualizar_parametro() { sscanf(texto, "%f", parametro); }
+
+  void atualizar_texto()
   {
-    TraceLog(LOG_INFO, "parametro antigo %f", *parametro);
-    sscanf(texto, "%f", parametro);
-    TraceLog(LOG_INFO, "parametro novo %f", *parametro);
+    cursor += snprintf(texto, capacidade, "%f", *parametro);
   }
 };
 
@@ -112,15 +125,19 @@ struct Button
       MeasureTextEx(font, label.c_str(), BUTTON_FONTSIZE, 3.0f);
     Vector2 rect_center = { rect.x + 0.5f * rect.width,
                             rect.y + 0.5f * rect.height };
-    Vector2 text_pos = Vector2Subtract(rect_center, Vector2Scale(text_offset, 0.5));
+    Vector2 text_pos =
+      Vector2Subtract(rect_center, Vector2Scale(text_offset, 0.5));
     DrawTextEx(font, label.c_str(), text_pos, BUTTON_FONTSIZE, 3.0f, WHITE);
   }
 
   bool intersecao(Vector2 ponto) { return CheckCollisionPointRec(ponto, rect); }
-};
 
-struct ScrollPanel
-{};
+  void mover(const Vector2& pos)
+  {
+    rect.x = pos.x;
+    rect.y = pos.y;
+  }
+};
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -293,7 +310,7 @@ renderizar(RenderTexture2D tela)
           I_total = iluminacao::modelo_phong(Pt,
                                              raio.dr,
                                              objetos[objeto].normal(Pt),
-                                             { P_F, I_F },
+                                             iluminacao::FontePontual(P_F, I_F),
                                              I_A,
                                              objetos[objeto].material);
         } else {
@@ -333,6 +350,9 @@ main(void)
   TextBox caixa1("I.r", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f }, &I_F.x);
   TextBox caixa2("I.g", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f }, &I_F.y);
   TextBox caixa3("I.b", (Rectangle){ 520.0f, 140.0f, 260.0f, 20.0f }, &I_F.z);
+  caixa1.atualizar_texto();
+  caixa2.atualizar_texto();
+  caixa3.atualizar_texto();
   std::vector<TextBox> caixas;
   caixas.push_back(caixa1);
   caixas.push_back(caixa2);
@@ -367,7 +387,7 @@ main(void)
             caixa_selecionada = i;
           }
         }
-        if(caixa_selecionada < 0 && btn_atualizar.intersecao(mouse)) {
+        if (caixa_selecionada < 0 && btn_atualizar.intersecao(mouse)) {
           for (int i = 0; i < caixas.size(); ++i) {
             caixas[i].atualizar_parametro();
           }

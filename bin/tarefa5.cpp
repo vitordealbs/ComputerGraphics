@@ -217,23 +217,26 @@ main()
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           MaterialSimples material;
           auto objeto_visitado = objetos[objeto];
-          std::visit([&](auto&& obj) {
-          using T = std::decay_t<decltype(obj)>;
-          if constexpr (std::is_same_v<T, PlanoTextura>) {
-              material = obj.material(Pt);
-            }
+          std::visit(
+            [&](auto&& obj) {
+              using T = std::decay_t<decltype(obj)>;
+              if constexpr (std::is_same_v<T, PlanoTextura>) {
+                material = obj.material(Pt);
+              }
 
-          else {
-              material = objeto_visitado.material;
-          }
-          }, objeto_visitado.obj);
+              else {
+                material = objeto_visitado.material;
+              }
+            },
+            objeto_visitado.obj);
           if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-            I_total = iluminacao::modelo_phong(Pt,
-                                               raio.dr,
-                                               objetos[objeto].normal(Pt),
-                                               { P_F, I_F },
-                                               I_A,
-                                               material);
+            I_total =
+              iluminacao::modelo_phong(Pt,
+                                       raio.dr,
+                                       objetos[objeto].normal(Pt),
+                                       iluminacao::FontePontual(P_F, I_F),
+                                       I_A,
+                                       material);
           } else {
             I_total = iluminacao::luz_ambiente(I_A, material.K_a);
           }
