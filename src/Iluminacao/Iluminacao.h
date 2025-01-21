@@ -20,6 +20,31 @@ struct FontePontual
   void transformar(Matriz mat);
 };
 
+struct FonteDirecional
+{
+  Vetor3d direcao;
+  Vetor3d intensidade;
+
+  FonteDirecional(Vetor3d posicao, Vetor3d intensidade);
+
+  void transformar(Matriz mat);
+};
+
+struct FonteSpot
+{
+  Vetor3d posicao;
+  Vetor3d direcao;
+  float cos_beta;
+  Vetor3d intensidade;
+
+  FonteSpot(Vetor3d posicao,
+            Vetor3d direcao,
+            float angulo,
+            Vetor3d intensidade);
+
+  void transformar(Matriz mat);
+};
+
 Vetor3d
 modelo_phong(Vetor3d Pt,
              Vetor3d dr,
@@ -27,6 +52,15 @@ modelo_phong(Vetor3d Pt,
              FontePontual fonte,
              Vetor3d I_A,
              MaterialSimples material);
+
+Vetor3d
+modelo_phong(Vetor3d Pt,
+             Vetor3d dr,
+             Vetor3d n,
+             FonteDirecional fonte,
+             Vetor3d I_A,
+             MaterialSimples material);
+
 Vetor3d
 luz_ambiente(Vetor3d I_A, Vetor3d K_a);
 
