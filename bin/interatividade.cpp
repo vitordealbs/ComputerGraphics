@@ -25,8 +25,11 @@ const int SCREEN_HEIGHT = 500;
 const Color BACKGROUND_COLOR = { 44, 44, 44, 255 };
 const Color TEXTBOX_COLOR = { 64, 64, 64, 255 };
 const Color BUTTON_COLOR = { 54, 54, 54, 255 };
+const Color SWITCH_ON_COLOR = { 54, 200, 54, 255 };
+const Color SWITCH_OFF_COLOR = { 64, 64, 64, 255 };
 const float BUTTON_FONTSIZE = 20.0f;
 const float TEXTBOX_PADDING = 2.0f;
+const float SWITCH_LABEL_MARGIN = 5.0f;
 const float LABEL_MARGIN = 4.0f;
 const float ELEMENT_MARGIN = 20.0f;
 
@@ -130,7 +133,60 @@ struct Button
     DrawTextEx(font, label.c_str(), text_pos, BUTTON_FONTSIZE, 3.0f, WHITE);
   }
 
-  bool intersecao(Vector2 ponto) { return CheckCollisionPointRec(ponto, rect); }
+  bool intersecao(const Vector2& ponto)
+  {
+    return CheckCollisionPointRec(ponto, rect);
+  }
+
+  void mover(const Vector2& pos)
+  {
+    rect.x = pos.x;
+    rect.y = pos.y;
+  }
+};
+
+struct Switch
+{
+  std::string label;
+  Rectangle rect;
+  bool* parametro;
+
+  Switch(std::string label, Rectangle rect, bool* parametro)
+    : label(label)
+    , rect(rect)
+    , parametro(parametro)
+  {
+  }
+
+  void desenhar(Font font)
+  {
+    float center_y = rect.y + 0.5f * rect.height;
+    Color switch_color = *parametro ? SWITCH_ON_COLOR : SWITCH_OFF_COLOR;
+    float small_r = 0.25f * rect.height, big_r = 0.5f * rect.height;
+    float big_circle_x =
+      *parametro ? rect.x + rect.width - big_r : rect.x + big_r;
+    DrawCircle(rect.x + small_r, center_y, small_r, switch_color);
+    DrawCircle(rect.x + rect.width - small_r, center_y, small_r, switch_color);
+    DrawRectangleRec({ rect.x + small_r,
+                       center_y - small_r,
+                       rect.width - 2.0f * small_r,
+                       2.0f * small_r },
+                     switch_color);
+    DrawCircle(big_circle_x, center_y, big_r, switch_color);
+    DrawTextEx(font,
+               label.c_str(),
+               { rect.x + rect.width + SWITCH_LABEL_MARGIN, rect.y },
+               rect.height,
+               3.0f,
+               WHITE);
+  }
+
+  bool intersecao(const Vector2& ponto)
+  {
+    return CheckCollisionPointRec(ponto, rect);
+  }
+
+  void atualizar_parametro() { *parametro = !*parametro; }
 
   void mover(const Vector2& pos)
   {
@@ -362,6 +418,9 @@ main(void)
   Button btn_atualizar("atualizar",
                        (Rectangle){ 520.0f, 200.0f, 260.0f, 30.0f });
 
+  bool luz = true;
+  Switch switch_luz("Luz", (Rectangle){ 520.0f, 240.0f, 30.0f, 20.0f }, &luz);
+
   while (!WindowShouldClose()) {
 
     Vector2 mouse = GetMousePosition();
@@ -387,11 +446,17 @@ main(void)
             caixa_selecionada = i;
           }
         }
-        if (caixa_selecionada < 0 && btn_atualizar.intersecao(mouse)) {
-          for (int i = 0; i < caixas.size(); ++i) {
-            caixas[i].atualizar_parametro();
+        if (caixa_selecionada < 0) {
+          if (btn_atualizar.intersecao(mouse)) {
+            for (int i = 0; i < caixas.size(); ++i) {
+              caixas[i].atualizar_parametro();
+            }
+            renderizar(tela);
           }
-          renderizar(tela);
+          if (switch_luz.intersecao(mouse)) {
+            switch_luz.atualizar_parametro();
+            renderizar(tela);
+          }
         }
       }
     }
@@ -412,6 +477,7 @@ main(void)
         caixa.desenhar(font);
       }
       btn_atualizar.desenhar(font);
+      switch_luz.desenhar(font);
     }
     EndDrawing();
   }

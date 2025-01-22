@@ -62,6 +62,14 @@ modelo_phong(Vetor3d Pt,
              MaterialSimples material);
 
 Vetor3d
+modelo_phong(Vetor3d Pt,
+             Vetor3d dr,
+             Vetor3d n,
+             FonteSpot fonte,
+             Vetor3d I_A,
+             MaterialSimples material);
+
+Vetor3d
 luz_ambiente(Vetor3d I_A, Vetor3d K_a);
 
 }
