@@ -20,6 +20,7 @@ public:
   Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up);
 
   Matriz getTransformationMatrix();
+  Matriz getMatrixCameraWorld();
 };
 
 #endif
