@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,7 @@ const float ELEMENT_MARGIN = 20.0f;
 const float TAB_LABEL_HEIGHT = 15.0f;
 const float TAB_LABEL_PADDING = 2.0f;
 const float TAB_LABEL_MARGIN_LEFT = 5.0f;
-const Color TAB_UNSELECTED_COLOR = {84, 84, 84, 255};
+const Color TAB_UNSELECTED_COLOR = { 84, 84, 84, 255 };
 
 struct TextBox
 {
@@ -120,10 +121,12 @@ struct Button
 {
   std::string label;
   Rectangle rect;
+  std::function<void()> action;
 
-  Button(std::string label, Rectangle rect)
+  Button(std::string label, Rectangle rect, std::function<void()> action)
     : label(label)
     , rect(rect)
+    , action(action)
   {
   }
 
@@ -216,39 +219,81 @@ struct Tab
   float top;
   float bottom;
 
-  Tab(float left, float top) : left(left), bottom(top), top(top) {}
+  int select_textbox = -1;
 
-  void add_element(TextBox& textbox) 
+  Tab(float left, float top)
+    : left(left)
+    , bottom(top)
+    , top(top)
   {
-    textbox.move({left, bottom});
+  }
+
+  void add_element(TextBox& textbox)
+  {
+    textbox.move({ left, bottom });
     bottom += textbox.height();
     textboxes.push_back(textbox);
   }
 
-  void add_element(Button& button) 
+  void add_element(Button& button)
   {
-    button.move({left, bottom});
+    button.move({ left, bottom });
     bottom += button.height();
     buttons.push_back(button);
   }
 
-  void add_element(Switch& switch_) 
+  void add_element(Switch& switch_)
   {
-    switch_.move({left, bottom});
+    switch_.move({ left, bottom });
     bottom += switch_.height();
     switches.push_back(switch_);
   }
 
-  void desenhar(Font font) 
+  void desenhar(Font font)
   {
-    for(auto& element : textboxes) {
+    for (auto& element : textboxes) {
       element.desenhar(font);
     }
-    for(auto& element : buttons) {
+    for (auto& element : buttons) {
       element.desenhar(font);
     }
-    for(auto& element : switches) {
+    for (auto& element : switches) {
       element.desenhar(font);
+    }
+  }
+
+  void intersecao(Vector2 mouse)
+  {
+    select_textbox = -1;
+    for (int i = 0; i < textboxes.size(); ++i) {
+      TextBox& textbox = textboxes[i];
+      if (textbox.intersecao(mouse)) {
+        select_textbox = i;
+        return;
+      }
+    }
+    for (int i = 0; i < buttons.size(); ++i) {
+      Button& button = buttons[i];
+      if (button.intersecao(mouse)) {
+        button.action();
+        // renderizar();
+        return;
+      }
+    }
+    for (int i = 0; i < switches.size(); ++i) {
+      Switch& switch_ = switches[i];
+      if (switch_.intersecao(mouse)) {
+        switch_.atualizar_parametro();
+        // renderizar();
+        return;
+      }
+    }
+  }
+
+  void receber_input(int key, char key_char)
+  {
+    if (select_textbox >= 0) {
+      textboxes[select_textbox].atualizar(key, key_char);
     }
   }
 };
@@ -260,23 +305,59 @@ struct TabbedPanel
   int selected_tab = -1;
   Rectangle rect;
 
-  TabbedPanel(Rectangle rect) : rect(rect) {}
+  TabbedPanel(Rectangle rect)
+    : rect(rect)
+  {
+  }
 
   void desenhar(Font font)
   {
     float left = rect.x;
-    for(int i = 0; i < labels.size(); ++i) {
+    for (int i = 0; i < labels.size(); ++i) {
       std::string& label = labels[i];
       float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
-      Vector2 text_size = MeasureTextEx(font, label.c_str(), tab_fontsize, 3.0f);
-      if(selected_tab != i) {
-        DrawRectangleRec({left, rect.y, text_size.x + 2.0f * TAB_LABEL_PADDING, TAB_LABEL_HEIGHT}, TAB_UNSELECTED_COLOR);
+      Vector2 text_size =
+        MeasureTextEx(font, label.c_str(), tab_fontsize, 3.0f);
+      if (selected_tab != i) {
+        DrawRectangleRec({ left,
+                           rect.y,
+                           text_size.x + 2.0f * TAB_LABEL_PADDING,
+                           TAB_LABEL_HEIGHT },
+                         TAB_UNSELECTED_COLOR);
       }
-      DrawTextEx(font, label.c_str(), {left + TAB_LABEL_PADDING, rect.y + TAB_LABEL_PADDING}, tab_fontsize, 3.0f, WHITE);
+      DrawTextEx(font,
+                 label.c_str(),
+                 { left + TAB_LABEL_PADDING, rect.y + TAB_LABEL_PADDING },
+                 tab_fontsize,
+                 3.0f,
+                 WHITE);
       left += text_size.x + 2.0f * TAB_LABEL_PADDING + TAB_LABEL_MARGIN_LEFT;
     }
-    if(selected_tab >= 0)
+    if (selected_tab >= 0)
       tabs[selected_tab].desenhar(font);
+  }
+
+  void intersecao(Font font, Vector2 mouse)
+  {
+    float left = rect.x;
+    for (int i = 0; i < labels.size(); ++i) {
+      std::string& label = labels[i];
+      float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
+      Vector2 text_size =
+        MeasureTextEx(font, label.c_str(), tab_fontsize, 3.0f);
+      Rectangle tab_rect = {
+        left, rect.y, text_size.x + 2.0f * TAB_LABEL_PADDING, TAB_LABEL_HEIGHT
+      };
+      if (CheckCollisionPointRec(mouse, tab_rect)) {
+        selected_tab = i;
+        TraceLog(LOG_INFO, "select_tab = %d", selected_tab);
+        return;
+      }
+      left += text_size.x + 2.0f * TAB_LABEL_PADDING + TAB_LABEL_MARGIN_LEFT;
+    }
+    if (selected_tab >= 0) {
+      tabs[selected_tab].intersecao(mouse);
+    }
   }
 
   void add_tab(std::string label)
@@ -284,6 +365,26 @@ struct TabbedPanel
     selected_tab = tabs.size();
     tabs.emplace_back(rect.x + 20.0f, rect.y + 10.0f + TAB_LABEL_HEIGHT);
     labels.emplace_back(label);
+  }
+
+  void add_element_tab(int tab_idx, TextBox& textbox)
+  {
+    tabs[tab_idx].add_element(textbox);
+  }
+
+  void add_element_tab(int tab_idx, Button& button)
+  {
+    tabs[tab_idx].add_element(button);
+  }
+
+  void add_element_tab(int tab_idx, Switch& switch_)
+  {
+    tabs[tab_idx].add_element(switch_);
+  }
+
+  void receber_input(int key, char key_char)
+  {
+    tabs[selected_tab].receber_input(key, key_char);
   }
 };
 
@@ -433,8 +534,10 @@ std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
                                 Objeto(topo_cilindro), Objeto(base_cilindro),
                                 Objeto(cone),          Objeto(base_cone) };
 
+RenderTexture2D tela;
+
 void
-renderizar(RenderTexture2D tela)
+renderizar()
 {
 
   BeginTextureMode(tela);
@@ -491,17 +594,17 @@ main(void)
 
   int objeto_selecionado = -1;
 
-  RenderTexture2D tela = LoadRenderTexture(W_C, H_C);
+  tela = LoadRenderTexture(W_C, H_C);
 
-  renderizar(tela);
+  renderizar();
 
-  /*
   TextBox caixa1("I.r", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f }, &I_F.x);
   TextBox caixa2("I.g", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f }, &I_F.y);
   TextBox caixa3("I.b", (Rectangle){ 520.0f, 140.0f, 260.0f, 20.0f }, &I_F.z);
   caixa1.atualizar_texto();
   caixa2.atualizar_texto();
   caixa3.atualizar_texto();
+  /*
   std::vector<TextBox> caixas;
   caixas.push_back(caixa1);
   caixas.push_back(caixa2);
@@ -514,15 +617,19 @@ main(void)
   bool luz = true;
   Switch switch_luz("Luz", (Rectangle){ 520.0f, 240.0f, 30.0f, 20.0f }, &luz);
   */
-  TabbedPanel panel({500.0f, 5.0f, 300.0f, 450.0f});
+  TabbedPanel panel({ 500.0f, 5.0f, 300.0f, 450.0f });
   panel.add_tab("geral");
   panel.add_tab("obj1");
+  panel.selected_tab = 0;
+  panel.add_element_tab(0, caixa1);
+  panel.add_element_tab(0, caixa2);
+  panel.add_element_tab(1, caixa3);
 
   while (!WindowShouldClose()) {
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-      //caixa_selecionada = -1;
+      // caixa_selecionada = -1;
       if (mouse.x < W_C && mouse.y < H_C) {
         int x_pos = mouse.x, y_pos = mouse.y;
         float yp =
@@ -536,28 +643,34 @@ main(void)
         if (t > 0.0f)
           objeto_selecionado = objeto;
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
-      }/* else {
-        for (int i = 0; i < caixas.size(); ++i) {
-          TextBox& caixa = caixas[i];
-          if (caixa.intersecao(mouse)) {
-            caixa_selecionada = i;
-          }
-        }
-        if (caixa_selecionada < 0) {
-          if (btn_atualizar.intersecao(mouse)) {
-            for (int i = 0; i < caixas.size(); ++i) {
-              caixas[i].atualizar_parametro();
-            }
-            renderizar(tela);
-          }
-          if (switch_luz.intersecao(mouse)) {
-            switch_luz.atualizar_parametro();
-            renderizar(tela);
-          }
-        }
-      }*/
+      } else {
+        panel.intersecao(font, mouse);
+        /*
+         for (int i = 0; i < caixas.size(); ++i) {
+           TextBox& caixa = caixas[i];
+           if (caixa.intersecao(mouse)) {
+             caixa_selecionada = i;
+           }
+         }
+         if (caixa_selecionada < 0) {
+           if (btn_atualizar.intersecao(mouse)) {
+             for (int i = 0; i < caixas.size(); ++i) {
+               caixas[i].atualizar_parametro();
+             }
+             renderizar(tela);
+           }
+           if (switch_luz.intersecao(mouse)) {
+             switch_luz.atualizar_parametro();
+             renderizar(tela);
+           }
+         }
+         */
+      }
     }
 
+    int key = GetKeyPressed();
+    char key_char = GetCharPressed();
+    panel.receber_input(key, key_char);
     /*
     if (caixa_selecionada >= 0) {
       TextBox* caixa = &caixas[caixa_selecionada];
