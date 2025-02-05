@@ -296,6 +296,69 @@ struct Tab
       textboxes[select_textbox].atualizar(key, key_char);
     }
   }
+
+  void add_vector_controls(Vetor3d* ponto, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    TextBox x_box(TextFormat("%s.x", label), rect, &ponto->x);
+    TextBox y_box(TextFormat("%s.y", label), rect, &ponto->y);
+    TextBox z_box(TextFormat("%s.z", label), rect, &ponto->z);
+    add_element(x_box);
+    add_element(y_box);
+    add_element(z_box);
+  }
+
+  void add_color_controls(Vetor3d* color, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    TextBox r_box(TextFormat("%s.r", label), rect, &color->x);
+    TextBox g_box(TextFormat("%s.g", label), rect, &color->y);
+    TextBox b_box(TextFormat("%s.b", label), rect, &color->z);
+    add_element(r_box);
+    add_element(g_box);
+    add_element(b_box);
+  }
+
+  void add_object_controls(Plano* plano, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&plano->normal, TextFormat("%s.normal", label));
+    add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_d", label));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_e", label));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_a", label));
+    TextBox m_box(TextFormat("%s.m", label), rect, &plano->m);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      // renderizar();
+    });
+    add_element(m_box);
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
+
+  void add_object_controls(Esfera* esfera, std::string label) {}
+
+  void add_object_controls(Cilindro* cilindro, std::string label) {}
+
+  void add_object_controls(Cone* cone, std::string label) {}
+
+  void add_object_controls(Circulo* circulo, std::string label) {}
+
+  void add_object_controls(Triangulo* triangulo, std::string label) {}
+
+  void add_object_controls(PlanoTextura* plano_textura, std::string label) {}
+
+  void add_object_controls(Malha* malha, std::string label) {}
+
+  void add_object_controls(Objeto* objeto, std::string label)
+  {
+    std::visit([this, label](auto&& obj) { add_object_controls(&obj, label); },
+               objeto->obj);
+  }
 };
 
 struct TabbedPanel
@@ -385,6 +448,31 @@ struct TabbedPanel
   void receber_input(int key, char key_char)
   {
     tabs[selected_tab].receber_input(key, key_char);
+  }
+
+  void add_tab_objeto(Plano* plano, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(plano, label);
+  }
+
+  void add_tab_objeto(Esfera* esfera, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(esfera, label);
+  }
+
+  void add_tab_objeto(Cilindro* cilindro, std::string label)
+  {
+
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(cilindro, label);
+  }
+
+  void add_tab_objeto(Cone* cone, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(cone, label);
   }
 };
 
@@ -534,6 +622,11 @@ std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
                                 Objeto(topo_cilindro), Objeto(base_cilindro),
                                 Objeto(cone),          Objeto(base_cone) };
 
+std::vector<std::string> objetos_labels = { "plano_fundo",   "plano_chao",
+                                            "esfera",        "cilindro",
+                                            "topo_cilindro", "base_cilindro",
+                                            "cone",          "base_cone" };
+
 RenderTexture2D tela;
 
 void
@@ -643,6 +736,15 @@ main(void)
         if (t > 0.0f)
           objeto_selecionado = objeto;
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+        std::visit(
+          [&panel, objeto](auto&& obj) {
+            using T = std::decay_t<decltype(obj)>;
+            if constexpr (std::is_same_v<T, Plano>) {
+              panel.add_tab_objeto(&obj, objetos_labels[objeto]);
+            } else {
+            }
+          },
+          objetos[objeto].obj);
       } else {
         panel.intersecao(font, mouse);
         /*
