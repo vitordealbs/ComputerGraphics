@@ -300,9 +300,9 @@ struct Tab
   void add_vector_controls(Vetor3d* ponto, std::string label)
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
-    TextBox x_box(TextFormat("%s.x", label), rect, &ponto->x);
-    TextBox y_box(TextFormat("%s.y", label), rect, &ponto->y);
-    TextBox z_box(TextFormat("%s.z", label), rect, &ponto->z);
+    TextBox x_box(TextFormat("%s.x", label.c_str()), rect, &ponto->x);
+    TextBox y_box(TextFormat("%s.y", label.c_str()), rect, &ponto->y);
+    TextBox z_box(TextFormat("%s.z", label.c_str()), rect, &ponto->z);
     add_element(x_box);
     add_element(y_box);
     add_element(z_box);
@@ -311,9 +311,9 @@ struct Tab
   void add_color_controls(Vetor3d* color, std::string label)
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
-    TextBox r_box(TextFormat("%s.r", label), rect, &color->x);
-    TextBox g_box(TextFormat("%s.g", label), rect, &color->y);
-    TextBox b_box(TextFormat("%s.b", label), rect, &color->z);
+    TextBox r_box(TextFormat("%s.r", label.c_str()), rect, &color->x);
+    TextBox g_box(TextFormat("%s.g", label.c_str()), rect, &color->y);
+    TextBox b_box(TextFormat("%s.b", label.c_str()), rect, &color->z);
     add_element(r_box);
     add_element(g_box);
     add_element(b_box);
@@ -323,11 +323,11 @@ struct Tab
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
     Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
-    add_vector_controls(&plano->normal, TextFormat("%s.normal", label));
-    add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_d", label));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_e", label));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_a", label));
+    add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
+    add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&plano->K_d, TextFormat("%s.K_a", label.c_str()));
     TextBox m_box(TextFormat("%s.m", label), rect, &plano->m);
     Button atualizar_btn("Atualizar", btn_rect, [this] {
       for (TextBox& textbox : this->textboxes)
