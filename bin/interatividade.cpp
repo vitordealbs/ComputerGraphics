@@ -37,6 +37,7 @@ const float TAB_LABEL_HEIGHT = 15.0f;
 const float TAB_LABEL_PADDING = 2.0f;
 const float TAB_LABEL_MARGIN_LEFT = 5.0f;
 const float SCROLL_AMOUNT = 10.0f;
+const float TAB_SCROLL_AMOUNT = 5.0f;
 const Color TAB_UNSELECTED_COLOR = { 84, 84, 84, 255 };
 
 struct TextBox
@@ -215,6 +216,7 @@ struct Tab
   std::vector<TextBox> textboxes;
   std::vector<Button> buttons;
   std::vector<Switch> switches;
+  std::function<void()> renderizar;
 
   float left;
   float top;
@@ -224,12 +226,16 @@ struct Tab
 
   int select_textbox = -1;
 
-  Tab(float left, float top, float lower_limit)
+  Tab(float left,
+      float top,
+      float lower_limit,
+      std::function<void()> renderizar)
     : left(left)
     , bottom(top)
     , top(top)
     , lower_limit(lower_limit)
     , scroll(lower_limit)
+    , renderizar(renderizar)
   {
   }
 
@@ -323,7 +329,7 @@ struct Tab
       Button& button = buttons[i];
       if (button.intersecao(mouse)) {
         button.action();
-        // renderizar();
+        renderizar();
         return;
       }
     }
@@ -331,7 +337,7 @@ struct Tab
       Switch& switch_ = switches[i];
       if (switch_.intersecao(mouse)) {
         switch_.atualizar_parametro();
-        // renderizar();
+        renderizar();
         return;
       }
     }
@@ -366,25 +372,45 @@ struct Tab
     add_element(b_box);
   }
 
+  void add_material_controls(MaterialSimples* material, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    add_color_controls(&material->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&material->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&material->K_a, TextFormat("%s.K_a", label.c_str()));
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &material->m);
+    add_element(m_box);
+  }
+
+  void add_object_controls(Objeto* objeto, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    std::visit(
+      [this, objeto, label](auto&& obj) {
+        // using T = std::decay_t<decltype(obj)>;
+        // if constexpr (std::is_same_v<T, Plano>) {
+        add_object_controls(&obj, label);
+        //}
+      },
+      objeto->obj);
+    add_material_controls(&objeto->material, label);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      renderizar();
+    });
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
+
   void add_object_controls(Plano* plano, std::string label)
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
     Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
     add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
     add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&plano->K_e, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&plano->K_a, TextFormat("%s.K_a", label.c_str()));
-    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &plano->m);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      // renderizar();
-    });
-    add_element(m_box);
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Esfera* esfera, std::string label)
@@ -396,19 +422,6 @@ struct Tab
     TextBox radius_box(
       TextFormat("%s.raio", label.c_str()), rect, &esfera->raio);
     add_element(radius_box);
-    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &esfera->m);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      // renderizar();
-    });
-    add_color_controls(&esfera->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&esfera->K_e, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&esfera->K_a, TextFormat("%s.K_a", label.c_str()));
-    add_element(m_box);
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Cilindro* cilindro, std::string label)
@@ -425,19 +438,6 @@ struct Tab
     add_element(height_box);
     add_vector_controls(&cilindro->direcao,
                         TextFormat("%s.direcao", label.c_str()));
-    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &cilindro->m);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      // renderizar();
-    });
-    add_color_controls(&cilindro->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&cilindro->K_e, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&cilindro->K_a, TextFormat("%s.K_a", label.c_str()));
-    add_element(m_box);
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Cone* cone, std::string label)
@@ -452,19 +452,6 @@ struct Tab
     add_element(height_box);
     add_vector_controls(&cone->direcao,
                         TextFormat("%s.direcao", label.c_str()));
-    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &cone->m);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      // renderizar();
-    });
-    add_color_controls(&cone->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&cone->K_e, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&cone->K_a, TextFormat("%s.K_a", label.c_str()));
-    add_element(m_box);
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Circulo* circulo, std::string label)
@@ -478,19 +465,6 @@ struct Tab
     add_element(radius_box);
     add_vector_controls(&circulo->normal,
                         TextFormat("%s.normal", label.c_str()));
-    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &circulo->m);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      // renderizar();
-    });
-    add_color_controls(&circulo->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&circulo->K_e, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&circulo->K_a, TextFormat("%s.K_a", label.c_str()));
-    add_element(m_box);
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Triangulo* triangulo, std::string label) {}
@@ -498,12 +472,6 @@ struct Tab
   void add_object_controls(PlanoTextura* plano_textura, std::string label) {}
 
   void add_object_controls(Malha* malha, std::string label) {}
-
-  void add_object_controls(Objeto* objeto, std::string label)
-  {
-    std::visit([this, label](auto&& obj) { add_object_controls(&obj, label); },
-               objeto->obj);
-  }
 };
 
 struct TabbedPanel
@@ -512,9 +480,18 @@ struct TabbedPanel
   std::vector<std::string> labels;
   int selected_tab = -1;
   Rectangle rect;
+  float scroll;
+  float right_limit;
+  float right = 0.0f;
+  Font font;
+  std::function<void()> renderizar;
 
-  TabbedPanel(Rectangle rect)
+  TabbedPanel(Rectangle rect, Font font, std::function<void()> renderizar)
     : rect(rect)
+    , scroll(rect.width)
+    , right_limit(rect.width)
+    , font(font)
+    , renderizar(renderizar)
   {
   }
 
@@ -530,13 +507,29 @@ struct TabbedPanel
       tabs[selected_tab].scroll_down();
   }
 
-  void desenhar(Font font)
+  void scroll_tabs_right()
+  {
+    scroll += TAB_SCROLL_AMOUNT;
+    if (scroll > right) {
+      scroll -= TAB_SCROLL_AMOUNT;
+    }
+  }
+
+  void scroll_tabs_left()
+  {
+    scroll -= TAB_SCROLL_AMOUNT;
+    if (scroll < right_limit) {
+      scroll += TAB_SCROLL_AMOUNT;
+    }
+  }
+
+  void desenhar()
   {
     if (selected_tab >= 0)
       tabs[selected_tab].desenhar(font);
     DrawRectangleRec({ rect.x, rect.y, rect.width, TAB_LABEL_HEIGHT },
                      BACKGROUND_COLOR);
-    float left = rect.x;
+    float left = rect.x - scroll + rect.width;
     float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
     for (int i = 0; i < labels.size(); ++i) {
       std::string& label = labels[i];
@@ -559,7 +552,7 @@ struct TabbedPanel
     }
   }
 
-  void intersecao(Font font, Vector2 mouse)
+  void intersecao(Vector2 mouse)
   {
     float left = rect.x;
     for (int i = 0; i < labels.size(); ++i) {
@@ -586,8 +579,11 @@ struct TabbedPanel
   {
     selected_tab = tabs.size();
     tabs.emplace_back(
-      rect.x + 20.0f, rect.y + 10.0f + TAB_LABEL_HEIGHT, 500.0f);
+      rect.x + 20.0f, rect.y + 10.0f + TAB_LABEL_HEIGHT, 500.0f, renderizar);
     labels.emplace_back(label);
+    float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
+    Vector2 text_size = MeasureTextEx(font, label.c_str(), tab_fontsize, 3.0f);
+    right += text_size.x + 2.0f * TAB_LABEL_PADDING + TAB_LABEL_MARGIN_LEFT;
   }
 
   void add_element_tab(int tab_idx, TextBox& textbox)
@@ -608,6 +604,12 @@ struct TabbedPanel
   void receber_input(int key, char key_char)
   {
     tabs[selected_tab].receber_input(key, key_char);
+  }
+
+  void add_tab_objeto(Objeto* objeto, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(objeto, label);
   }
 
   void add_tab_objeto(Plano* plano, std::string label)
@@ -899,7 +901,8 @@ main(void)
   bool luz = true;
   Switch switch_luz("Luz", (Rectangle){ 520.0f, 240.0f, 30.0f, 20.0f }, &luz);
   */
-  TabbedPanel panel({ 500.0f, 0.0f, 300.0f, 450.0f });
+  TabbedPanel panel(
+    { 500.0f, 0.0f, 300.0f, 450.0f }, font, []() { renderizar(); });
   panel.add_tab("geral");
   panel.add_element_tab(0, caixa1);
   panel.add_element_tab(0, caixa2);
@@ -926,16 +929,10 @@ main(void)
         if (t > 0.0f)
           objeto_selecionado = objeto;
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
-        std::visit(
-          [&panel, objeto](auto&& obj) {
-            // using T = std::decay_t<decltype(obj)>;
-            // if constexpr (std::is_same_v<T, Plano>) {
-            panel.add_tab_objeto(&obj, objetos_labels[objeto]);
-            //}
-          },
-          objetos[objeto].obj);
+        if (objeto_selecionado >= 0)
+          panel.add_tab_objeto(&objetos[objeto], objetos_labels[objeto]);
       } else {
-        panel.intersecao(font, mouse);
+        panel.intersecao(mouse);
         /*
          for (int i = 0; i < caixas.size(); ++i) {
            TextBox& caixa = caixas[i];
@@ -963,6 +960,10 @@ main(void)
       panel.scroll_up();
     } else if (IsKeyPressed(KEY_DOWN)) {
       panel.scroll_down();
+    } else if (IsKeyPressed(KEY_RIGHT)) {
+      panel.scroll_tabs_right();
+    } else if (IsKeyPressed(KEY_LEFT)) {
+      panel.scroll_tabs_left();
     }
 
     int key = GetKeyPressed();
@@ -979,9 +980,9 @@ main(void)
     BeginDrawing();
     {
       ClearBackground(BACKGROUND_COLOR);
+      panel.desenhar();
       DrawTextureRec(
         tela.texture, { 0.0f, 0.0f, W_C, -H_C }, { 0.0f, 0.0f }, WHITE);
-      panel.desenhar(font);
       /*
       for (TextBox& caixa : caixas) {
         caixa.desenhar(font);
