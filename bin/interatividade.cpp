@@ -36,6 +36,7 @@ const float ELEMENT_MARGIN = 20.0f;
 const float TAB_LABEL_HEIGHT = 15.0f;
 const float TAB_LABEL_PADDING = 2.0f;
 const float TAB_LABEL_MARGIN_LEFT = 5.0f;
+const float SCROLL_AMOUNT = 10.0f;
 const Color TAB_UNSELECTED_COLOR = { 84, 84, 84, 255 };
 
 struct TextBox
@@ -217,15 +218,61 @@ struct Tab
 
   float left;
   float top;
+  float lower_limit;
   float bottom;
+  float scroll;
 
   int select_textbox = -1;
 
-  Tab(float left, float top)
+  Tab(float left, float top, float lower_limit)
     : left(left)
     , bottom(top)
     , top(top)
+    , lower_limit(lower_limit)
+    , scroll(lower_limit)
   {
+  }
+
+  void scroll_down()
+  {
+    scroll += SCROLL_AMOUNT;
+    if (scroll > bottom) {
+      scroll -= SCROLL_AMOUNT;
+      return;
+    }
+
+    for (TextBox& textbox : textboxes) {
+      textbox.move({ textbox.rect.x, textbox.rect.y - SCROLL_AMOUNT });
+    }
+
+    for (Button& button : buttons) {
+      button.move({ button.rect.x, button.rect.y - SCROLL_AMOUNT });
+    }
+
+    for (Switch& switch_ : switches) {
+      switch_.move({ switch_.rect.x, switch_.rect.y - SCROLL_AMOUNT });
+    }
+  }
+
+  void scroll_up()
+  {
+    scroll -= SCROLL_AMOUNT;
+    if (scroll < lower_limit) {
+      scroll += SCROLL_AMOUNT;
+      return;
+    }
+
+    for (TextBox& textbox : textboxes) {
+      textbox.move({ textbox.rect.x, textbox.rect.y + SCROLL_AMOUNT });
+    }
+
+    for (Button& button : buttons) {
+      button.move({ button.rect.x, button.rect.y + SCROLL_AMOUNT });
+    }
+
+    for (Switch& switch_ : switches) {
+      switch_.move({ switch_.rect.x, switch_.rect.y + SCROLL_AMOUNT });
+    }
   }
 
   void add_element(TextBox& textbox)
@@ -326,9 +373,9 @@ struct Tab
     add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
     add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
     add_color_controls(&plano->K_d, TextFormat("%s.K_d", label.c_str()));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_e", label.c_str()));
-    add_color_controls(&plano->K_d, TextFormat("%s.K_a", label.c_str()));
-    TextBox m_box(TextFormat("%s.m", label), rect, &plano->m);
+    add_color_controls(&plano->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&plano->K_a, TextFormat("%s.K_a", label.c_str()));
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &plano->m);
     Button atualizar_btn("Atualizar", btn_rect, [this] {
       for (TextBox& textbox : this->textboxes)
         textbox.atualizar_parametro();
@@ -340,13 +387,111 @@ struct Tab
       textbox.atualizar_texto();
   }
 
-  void add_object_controls(Esfera* esfera, std::string label) {}
+  void add_object_controls(Esfera* esfera, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&esfera->centro,
+                        TextFormat("%s.centro", label.c_str()));
+    TextBox radius_box(
+      TextFormat("%s.raio", label.c_str()), rect, &esfera->raio);
+    add_element(radius_box);
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &esfera->m);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      // renderizar();
+    });
+    add_color_controls(&esfera->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&esfera->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&esfera->K_a, TextFormat("%s.K_a", label.c_str()));
+    add_element(m_box);
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
 
-  void add_object_controls(Cilindro* cilindro, std::string label) {}
+  void add_object_controls(Cilindro* cilindro, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&cilindro->centro,
+                        TextFormat("%s.centro", label.c_str()));
+    TextBox radius_box(
+      TextFormat("%s.raio", label.c_str()), rect, &cilindro->raio);
+    add_element(radius_box);
+    TextBox height_box(
+      TextFormat("%s.altura", label.c_str()), rect, &cilindro->altura);
+    add_element(height_box);
+    add_vector_controls(&cilindro->direcao,
+                        TextFormat("%s.direcao", label.c_str()));
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &cilindro->m);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      // renderizar();
+    });
+    add_color_controls(&cilindro->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&cilindro->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&cilindro->K_a, TextFormat("%s.K_a", label.c_str()));
+    add_element(m_box);
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
 
-  void add_object_controls(Cone* cone, std::string label) {}
+  void add_object_controls(Cone* cone, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&cone->centro, TextFormat("%s.centro", label.c_str()));
+    TextBox radius_box(TextFormat("%s.raio", label.c_str()), rect, &cone->raio);
+    add_element(radius_box);
+    TextBox height_box(
+      TextFormat("%s.altura", label.c_str()), rect, &cone->altura);
+    add_element(height_box);
+    add_vector_controls(&cone->direcao,
+                        TextFormat("%s.direcao", label.c_str()));
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &cone->m);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      // renderizar();
+    });
+    add_color_controls(&cone->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&cone->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&cone->K_a, TextFormat("%s.K_a", label.c_str()));
+    add_element(m_box);
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
 
-  void add_object_controls(Circulo* circulo, std::string label) {}
+  void add_object_controls(Circulo* circulo, std::string label)
+  {
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&circulo->centro,
+                        TextFormat("%s.centro", label.c_str()));
+    TextBox radius_box(
+      TextFormat("%s.raio", label.c_str()), rect, &circulo->raio);
+    add_element(radius_box);
+    add_vector_controls(&circulo->normal,
+                        TextFormat("%s.normal", label.c_str()));
+    TextBox m_box(TextFormat("%s.m", label.c_str()), rect, &circulo->m);
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+      // renderizar();
+    });
+    add_color_controls(&circulo->K_d, TextFormat("%s.K_d", label.c_str()));
+    add_color_controls(&circulo->K_e, TextFormat("%s.K_e", label.c_str()));
+    add_color_controls(&circulo->K_a, TextFormat("%s.K_a", label.c_str()));
+    add_element(m_box);
+    add_element(atualizar_btn);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
 
   void add_object_controls(Triangulo* triangulo, std::string label) {}
 
@@ -373,12 +518,28 @@ struct TabbedPanel
   {
   }
 
+  void scroll_up()
+  {
+    if (selected_tab > 0)
+      tabs[selected_tab].scroll_up();
+  }
+
+  void scroll_down()
+  {
+    if (selected_tab > 0)
+      tabs[selected_tab].scroll_down();
+  }
+
   void desenhar(Font font)
   {
+    if (selected_tab >= 0)
+      tabs[selected_tab].desenhar(font);
+    DrawRectangleRec({ rect.x, rect.y, rect.width, TAB_LABEL_HEIGHT },
+                     BACKGROUND_COLOR);
     float left = rect.x;
+    float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
     for (int i = 0; i < labels.size(); ++i) {
       std::string& label = labels[i];
-      float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
       Vector2 text_size =
         MeasureTextEx(font, label.c_str(), tab_fontsize, 3.0f);
       if (selected_tab != i) {
@@ -396,8 +557,6 @@ struct TabbedPanel
                  WHITE);
       left += text_size.x + 2.0f * TAB_LABEL_PADDING + TAB_LABEL_MARGIN_LEFT;
     }
-    if (selected_tab >= 0)
-      tabs[selected_tab].desenhar(font);
   }
 
   void intersecao(Font font, Vector2 mouse)
@@ -426,7 +585,8 @@ struct TabbedPanel
   void add_tab(std::string label)
   {
     selected_tab = tabs.size();
-    tabs.emplace_back(rect.x + 20.0f, rect.y + 10.0f + TAB_LABEL_HEIGHT);
+    tabs.emplace_back(
+      rect.x + 20.0f, rect.y + 10.0f + TAB_LABEL_HEIGHT, 500.0f);
     labels.emplace_back(label);
   }
 
@@ -464,7 +624,6 @@ struct TabbedPanel
 
   void add_tab_objeto(Cilindro* cilindro, std::string label)
   {
-
     add_tab(label);
     tabs[selected_tab].add_object_controls(cilindro, label);
   }
@@ -473,6 +632,30 @@ struct TabbedPanel
   {
     add_tab(label);
     tabs[selected_tab].add_object_controls(cone, label);
+  }
+
+  void add_tab_objeto(Circulo* circulo, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(circulo, label);
+  }
+
+  void add_tab_objeto(Triangulo* triangulo, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(triangulo, label);
+  }
+
+  void add_tab_objeto(PlanoTextura* plano_textura, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(plano_textura, label);
+  }
+
+  void add_tab_objeto(Malha* malha, std::string label)
+  {
+    add_tab(label);
+    tabs[selected_tab].add_object_controls(malha, label);
   }
 };
 
@@ -628,6 +811,7 @@ std::vector<std::string> objetos_labels = { "plano_fundo",   "plano_chao",
                                             "cone",          "base_cone" };
 
 RenderTexture2D tela;
+bool ortografica = false;
 
 void
 renderizar()
@@ -642,8 +826,13 @@ renderizar()
       for (int j = 0; j < nCol; ++j) {
         float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
         Vetor3d P = { xp, yp, zp };
-        Vetor3d dr = P.normalizado();
-        Raio raio(P0, dr);
+        Vetor3d dr;
+        if (ortografica) {
+          dr = { 0.0f, 0.0f, -1.0f };
+        } else {
+          dr = P.normalizado();
+        }
+        Raio raio(ortografica ? P : P0, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
         Vetor3d I_total = I_A;
         Vetor3d Pt = raio.no_ponto(t);
@@ -710,13 +899,14 @@ main(void)
   bool luz = true;
   Switch switch_luz("Luz", (Rectangle){ 520.0f, 240.0f, 30.0f, 20.0f }, &luz);
   */
-  TabbedPanel panel({ 500.0f, 5.0f, 300.0f, 450.0f });
+  TabbedPanel panel({ 500.0f, 0.0f, 300.0f, 450.0f });
   panel.add_tab("geral");
-  panel.add_tab("obj1");
-  panel.selected_tab = 0;
   panel.add_element_tab(0, caixa1);
   panel.add_element_tab(0, caixa2);
-  panel.add_element_tab(1, caixa3);
+  panel.add_element_tab(0, caixa3);
+  Switch switch_projecao(
+    "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 20.0f }, &ortografica);
+  panel.add_element_tab(0, switch_projecao);
 
   while (!WindowShouldClose()) {
 
@@ -738,11 +928,10 @@ main(void)
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
         std::visit(
           [&panel, objeto](auto&& obj) {
-            using T = std::decay_t<decltype(obj)>;
-            if constexpr (std::is_same_v<T, Plano>) {
-              panel.add_tab_objeto(&obj, objetos_labels[objeto]);
-            } else {
-            }
+            // using T = std::decay_t<decltype(obj)>;
+            // if constexpr (std::is_same_v<T, Plano>) {
+            panel.add_tab_objeto(&obj, objetos_labels[objeto]);
+            //}
           },
           objetos[objeto].obj);
       } else {
@@ -768,6 +957,12 @@ main(void)
          }
          */
       }
+    }
+
+    if (IsKeyPressed(KEY_UP)) {
+      panel.scroll_up();
+    } else if (IsKeyPressed(KEY_DOWN)) {
+      panel.scroll_down();
     }
 
     int key = GetKeyPressed();
