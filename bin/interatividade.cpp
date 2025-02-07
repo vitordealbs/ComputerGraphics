@@ -32,7 +32,7 @@ const float BUTTON_FONTSIZE = 20.0f;
 const float TEXTBOX_PADDING = 2.0f;
 const float SWITCH_LABEL_MARGIN = 5.0f;
 const float LABEL_MARGIN = 4.0f;
-const float ELEMENT_MARGIN = 20.0f;
+const float ELEMENT_MARGIN = 6.0f;
 const float TAB_LABEL_HEIGHT = 15.0f;
 const float TAB_LABEL_PADDING = 2.0f;
 const float TAB_LABEL_MARGIN_LEFT = 5.0f;
@@ -284,21 +284,21 @@ struct Tab
   void add_element(TextBox& textbox)
   {
     textbox.move({ left, bottom });
-    bottom += textbox.height();
+    bottom += textbox.height() + ELEMENT_MARGIN;
     textboxes.push_back(textbox);
   }
 
   void add_element(Button& button)
   {
     button.move({ left, bottom });
-    bottom += button.height();
+    bottom += button.height() + ELEMENT_MARGIN;
     buttons.push_back(button);
   }
 
   void add_element(Switch& switch_)
   {
     switch_.move({ left, bottom });
-    bottom += switch_.height();
+    bottom += switch_.height() + ELEMENT_MARGIN;
     switches.push_back(switch_);
   }
 
@@ -386,23 +386,25 @@ struct Tab
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
     Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
     std::visit(
       [this, objeto, label](auto&& obj) {
-        // using T = std::decay_t<decltype(obj)>;
-        // if constexpr (std::is_same_v<T, Plano>) {
+        using T = std::decay_t<decltype(obj)>;
+        Switch visivel_switch("Visivel", switch_rect, &objeto->visivel);
         add_object_controls(&obj, label);
-        //}
+        if constexpr (!std::is_same_v<T, PlanoTextura> && !std::is_same_v<T, Malha>) {
+          add_material_controls(&objeto->material, label);
+        }
+        Button atualizar_btn("Atualizar", btn_rect, [this] {
+          for (TextBox& textbox : this->textboxes)
+            textbox.atualizar_parametro();
+          renderizar();
+        });
+        add_element(atualizar_btn);
+        for (TextBox& textbox : textboxes)
+          textbox.atualizar_texto();
       },
       objeto->obj);
-    add_material_controls(&objeto->material, label);
-    Button atualizar_btn("Atualizar", btn_rect, [this] {
-      for (TextBox& textbox : this->textboxes)
-        textbox.atualizar_parametro();
-      renderizar();
-    });
-    add_element(atualizar_btn);
-    for (TextBox& textbox : textboxes)
-      textbox.atualizar_texto();
   }
 
   void add_object_controls(Plano* plano, std::string label)
@@ -668,7 +670,7 @@ calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
   float menor_t = -1.0f;
   float t;
   for (int i = 0; i < objetos.size(); ++i) {
-    if (i == excluir)
+    if (i == excluir || !objetos[i].visivel)
       continue;
     if ((t = raio.intersecao(objetos[i])) > 0.0f &&
         (menor_t < 0.0f || t < menor_t)) {

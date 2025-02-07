@@ -6,12 +6,14 @@ Objeto::Objeto(const Esfera& esfera)
   : obj(esfera)
 {
   material = MaterialSimples(esfera.K_d, esfera.K_e, esfera.K_a, esfera.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const Plano& plano)
   : obj(plano)
 {
   material = MaterialSimples(plano.K_d, plano.K_e, plano.K_a, plano.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const PlanoTextura& plano_tex)
@@ -21,6 +23,7 @@ Objeto::Objeto(const PlanoTextura& plano_tex)
                              { 0.5f, 0.5f, 0.5f },
                              { 0.5f, 0.5f, 0.5f },
                              1.0f); // Define o material conforme necessário
+  visivel = true;
 }
 
 Objeto::Objeto(const Cilindro& cilindro)
@@ -28,18 +31,21 @@ Objeto::Objeto(const Cilindro& cilindro)
 {
   material =
     MaterialSimples(cilindro.K_d, cilindro.K_e, cilindro.K_a, cilindro.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const Cone& cone)
   : obj(cone)
 {
   material = MaterialSimples(cone.K_d, cone.K_e, cone.K_a, cone.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const Circulo& circulo)
   : obj(circulo)
 {
   material = MaterialSimples(circulo.K_d, circulo.K_e, circulo.K_a, circulo.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const Triangulo& triangulo)
@@ -47,12 +53,14 @@ Objeto::Objeto(const Triangulo& triangulo)
 {
   material =
     MaterialSimples(triangulo.K_d, triangulo.K_e, triangulo.K_a, triangulo.m);
+  visivel = true;
 }
 
 Objeto::Objeto(const Malha& malha)
   : obj(malha)
 {
   material = malha.material;
+  visivel = true;
 }
 
 // Implementação da função normal usando std::visit
