@@ -388,11 +388,13 @@ struct Tab
     Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
     Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
     std::visit(
-      [this, objeto, label](auto&& obj) {
+      [this, objeto, label, btn_rect, switch_rect](auto&& obj) {
         using T = std::decay_t<decltype(obj)>;
         Switch visivel_switch("Visivel", switch_rect, &objeto->visivel);
+        add_element(visivel_switch);
         add_object_controls(&obj, label);
-        if constexpr (!std::is_same_v<T, PlanoTextura> && !std::is_same_v<T, Malha>) {
+        if constexpr (!std::is_same_v<T, PlanoTextura> &&
+                      !std::is_same_v<T, Malha>) {
           add_material_controls(&objeto->material, label);
         }
         Button atualizar_btn("Atualizar", btn_rect, [this] {
