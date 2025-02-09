@@ -79,7 +79,7 @@ main()
         Raio raio(camera.position, dr);
 
         auto [t, object] = calcular_intersecao(raio, objects_flat);
-        Vetor3d I_total = I_A;
+        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
         MaterialSimples material;
 
         if (t > 0.0f) {
@@ -103,16 +103,14 @@ main()
           if (auto [t_luz, _] =
                 calcular_intersecao(light_ray, objects_flat, object);
               t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
-            I_total =
-              iluminacao::modelo_phong(Pt,
-                                       raio.dr,
-                                       normal,
-                                       iluminacao::FontePontual(P_F, I_F),
-                                       I_A,
-                                       material);
-          } else {
-            I_total = iluminacao::luz_ambiente(I_A, material.K_a);
+            I_total = I_total + iluminacao::modelo_phong(
+                                  Pt,
+                                  raio.dr,
+                                  normal,
+                                  iluminacao::FontePontual(P_F, I_F),
+                                  material);
           }
+          I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
 
           pixel_buffer[i * nCol + j] = {
             static_cast<unsigned char>(fmin(I_total.x * 255, 255)),

@@ -53,7 +53,6 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          Vetor3d dr,
                          Vetor3d n,
                          FontePontual fonte,
-                         Vetor3d I_A,
                          MaterialSimples material)
 {
   Vetor3d v = dr * -1;
@@ -62,12 +61,11 @@ iluminacao::modelo_phong(Vetor3d Pt,
   Vetor3d r = 2 * dotproduct_nl * n - l;
   float dotproduct_vr = v.dot_product(r);
 
-  Vetor3d E_a = material.K_a * I_A;
   Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
   Vetor3d E_e =
     material.K_e * fonte.intensidade * pow(max(dotproduct_vr, 0.0), material.m);
 
-  Vetor3d E_total = E_d + E_e + E_a;
+  Vetor3d E_total = E_d + E_e;
   return E_total;
 }
 
@@ -76,7 +74,6 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          Vetor3d dr,
                          Vetor3d n,
                          FonteDirecional fonte,
-                         Vetor3d I_A,
                          MaterialSimples material)
 {
   Vetor3d v = dr * -1;
@@ -85,12 +82,11 @@ iluminacao::modelo_phong(Vetor3d Pt,
   Vetor3d r = 2 * dotproduct_nl * n - l;
   float dotproduct_vr = v.dot_product(r);
 
-  Vetor3d E_a = material.K_a * I_A;
   Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
   Vetor3d E_e =
     material.K_e * fonte.intensidade * pow(max(dotproduct_vr, 0.0), material.m);
 
-  Vetor3d E_total = E_d + E_e + E_a;
+  Vetor3d E_total = E_d + E_e;
   return E_total;
 }
 
@@ -99,7 +95,6 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          Vetor3d dr,
                          Vetor3d n,
                          FonteSpot fonte,
-                         Vetor3d I_A,
                          MaterialSimples material)
 {
   Vetor3d v = dr * -1;
@@ -109,15 +104,14 @@ iluminacao::modelo_phong(Vetor3d Pt,
   Vetor3d r = 2 * dotproduct_nl * n - l;
   float dotproduct_vr = v.dot_product(r);
 
+  Vetor3d I_F = fonte.intensidade;
   if (cos_alpha < fonte.cos_beta)
-    I_A = max(cos_alpha, 0.0f) * I_A;
+    I_F = max(cos_alpha, 0.0f) * I_F;
 
-  Vetor3d E_a = material.K_a * I_A;
-  Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
-  Vetor3d E_e =
-    material.K_e * fonte.intensidade * pow(max(dotproduct_vr, 0.0), material.m);
+  Vetor3d E_d = material.K_d * I_F * max(dotproduct_nl, 0.0);
+  Vetor3d E_e = material.K_e * I_F * pow(max(dotproduct_vr, 0.0), material.m);
 
-  Vetor3d E_total = E_d + E_e + E_a;
+  Vetor3d E_total = E_d + E_e;
   return E_total;
 }
 

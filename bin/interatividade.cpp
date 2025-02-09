@@ -401,7 +401,6 @@ struct Tab
         Button atualizar_btn("Atualizar", btn_rect, [this] {
           for (TextBox& textbox : this->textboxes)
             textbox.atualizar_parametro();
-          renderizar();
         });
         add_element(atualizar_btn);
         for (TextBox& textbox : textboxes)
@@ -462,7 +461,6 @@ struct Tab
   void add_object_controls(Circulo* circulo, std::string label)
   {
     Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
-    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
     add_vector_controls(&circulo->centro,
                         TextFormat("%s.centro", label.c_str()));
     TextBox radius_box(
@@ -487,6 +485,67 @@ struct Tab
     add_vector_controls(&camera->Up, TextFormat("%s.Up", label.c_str()));
     for (TextBox& textbox : textboxes)
       textbox.atualizar_texto();
+  }
+
+  void add_light_controls(iluminacao::FontePontual* fonte, std::string label)
+  {
+    Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&fonte->posicao,
+                        TextFormat("%s.posicao", label.c_str()));
+    add_vector_controls(&fonte->intensidade,
+                        TextFormat("%s.intensidade", label.c_str()));
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+    });
+    add_element(atualizar_btn);
+    Switch acesa_switch("Acesa", switch_rect, &fonte->acesa);
+    add_element(acesa_switch);
+  }
+  void add_light_controls(iluminacao::FonteDirecional* fonte, std::string label)
+  {
+    Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    add_vector_controls(&fonte->direcao,
+                        TextFormat("%s.direcao", label.c_str()));
+    add_vector_controls(&fonte->intensidade,
+                        TextFormat("%s.intensidade", label.c_str()));
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+    });
+    add_element(atualizar_btn);
+    Switch acesa_switch("Acesa", switch_rect, &fonte->acesa);
+    add_element(acesa_switch);
+  }
+  void add_light_controls(iluminacao::FonteSpot* fonte, std::string label)
+  {
+    Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
+    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
+    add_vector_controls(&fonte->posicao,
+                        TextFormat("%s.posicao", label.c_str()));
+    add_vector_controls(&fonte->intensidade,
+                        TextFormat("%s.intensidade", label.c_str()));
+    add_vector_controls(&fonte->direcao,
+                        TextFormat("%s.direcao", label.c_str()));
+    TextBox angle_box(
+      TextFormat("%s.cos_beta", label.c_str()), rect, &fonte->cos_beta);
+    add_element(angle_box);
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+    Button atualizar_btn("Atualizar", btn_rect, [this] {
+      for (TextBox& textbox : this->textboxes)
+        textbox.atualizar_parametro();
+    });
+    add_element(atualizar_btn);
+    Switch acesa_switch("Acesa", switch_rect, &fonte->acesa);
+    add_element(acesa_switch);
   }
 };
 
@@ -513,13 +572,13 @@ struct TabbedPanel
 
   void scroll_up()
   {
-    if (selected_tab > 0)
+    if (selected_tab >= 0)
       tabs[selected_tab].scroll_up();
   }
 
   void scroll_down()
   {
-    if (selected_tab > 0)
+    if (selected_tab >= 0)
       tabs[selected_tab].scroll_down();
   }
 
@@ -628,52 +687,20 @@ struct TabbedPanel
     tabs[selected_tab].add_object_controls(objeto, label);
   }
 
-  void add_tab_objeto(Plano* plano, std::string label)
+  void add_tab_luz(iluminacao::FontePontual* fonte, std::string label)
   {
     add_tab(label);
-    tabs[selected_tab].add_object_controls(plano, label);
+    tabs[selected_tab].add_light_controls(fonte, label);
   }
-
-  void add_tab_objeto(Esfera* esfera, std::string label)
+  void add_tab_luz(iluminacao::FonteDirecional* fonte, std::string label)
   {
     add_tab(label);
-    tabs[selected_tab].add_object_controls(esfera, label);
+    tabs[selected_tab].add_light_controls(fonte, label);
   }
-
-  void add_tab_objeto(Cilindro* cilindro, std::string label)
+  void add_tab_luz(iluminacao::FonteSpot* fonte, std::string label)
   {
     add_tab(label);
-    tabs[selected_tab].add_object_controls(cilindro, label);
-  }
-
-  void add_tab_objeto(Cone* cone, std::string label)
-  {
-    add_tab(label);
-    tabs[selected_tab].add_object_controls(cone, label);
-  }
-
-  void add_tab_objeto(Circulo* circulo, std::string label)
-  {
-    add_tab(label);
-    tabs[selected_tab].add_object_controls(circulo, label);
-  }
-
-  void add_tab_objeto(Triangulo* triangulo, std::string label)
-  {
-    add_tab(label);
-    tabs[selected_tab].add_object_controls(triangulo, label);
-  }
-
-  void add_tab_objeto(PlanoTextura* plano_textura, std::string label)
-  {
-    add_tab(label);
-    tabs[selected_tab].add_object_controls(plano_textura, label);
-  }
-
-  void add_tab_objeto(Malha* malha, std::string label)
-  {
-    add_tab(label);
-    tabs[selected_tab].add_object_controls(malha, label);
+    tabs[selected_tab].add_light_controls(fonte, label);
   }
 };
 
@@ -720,8 +747,13 @@ float zp = -d;
 Vetor3d P0 = { 0.0f, 0.0f, 0.0f };
 
 // definicao da fonte luminosa
-Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
-Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
+std::vector<iluminacao::FontePontual> fontes_pontuais;
+std::vector<iluminacao::FonteDirecional> fontes_direcionais;
+std::vector<iluminacao::FonteSpot> fontes_spot;
+
+std::vector<std::string> fontes_pontuais_labels;
+std::vector<std::string> fontes_direcionais_labels;
+std::vector<std::string> fontes_spot_labels;
 
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
@@ -783,7 +815,7 @@ inicializar_objetos()
                     K_e_cilindro,
                     K_a_cilindro,
                     m_cilindro);
-  Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
+  Circulo topo_cilindro(dir_cilindro * cilindro.altura + centro_cilindro,
                         R / 3.0f,
                         dir_cilindro,
                         K_d_cilindro,
@@ -813,13 +845,8 @@ inicializar_objetos()
             K_e_cone,
             K_a_cone,
             m_cone);
-  Circulo base_cone(centro_cone,
-                    R / 3.0f,
-                    -1.0f * dir_cone,
-                    K_d_cone,
-                    K_e_cone,
-                    K_a_cone,
-                    m_cone);
+  Circulo base_cone(
+    centro_cone, R, -1.0f * dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
 
   objetos.emplace_back(plano_fundo);
   objetos.emplace_back(plano_chao);
@@ -838,59 +865,106 @@ inicializar_objetos()
   objetos_labels.push_back("base_cilindro");
   objetos_labels.push_back("cone");
   objetos_labels.push_back("base_cone");
-}
 
-void
-aplicar_transformacao(Camera3de& camera)
-{
-  Matriz M_wc = camera.getTransformationMatrix();
-
-  P_F = (M_wc * P_F.ponto4d()).vetor3d();
-
-  for (Objeto& objeto : objetos) {
-    objeto.transformar(M_wc);
-  }
+  fontes_pontuais.push_back(
+    iluminacao::FontePontual({ 0.0f, 60.0f, -30.0f }, { 0.7f, 0.7f, 0.7f }));
+  fontes_pontuais_labels.push_back("luz_pontual");
 }
 
 RenderTexture2D tela;
 bool ortografica = false;
+Vetor3d Eye = { 0.0f, 0.0f, 0.0f };
+Vetor3d At = { 0.0f, 0.0f, -20.0f };
+Vetor3d Up = { 0.0f, 1.0f, 0.0f };
+Camera3de camera(Eye, At, Up);
 
 void
 renderizar()
 {
+  TraceLog(LOG_INFO, "Renderizando");
+
+  Matriz M_cw = camera.getMatrixCameraWorld();
+
+  Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+  Vetor3d right = { 1.0f, 0.0f, 0.0f };
+  Vetor3d down = { 0.0f, -1.0f, 0.0f };
+  Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+  right = (M_cw * right.vetor4d()).vetor3d();
+  down = (M_cw * down.vetor4d()).vetor3d();
+  forward = (M_cw * forward.vetor4d()).vetor3d();
 
   BeginTextureMode(tela);
   {
     ClearBackground(BLACK);
 
     for (int i = 0; i < nLin; ++i) {
-      float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
       for (int j = 0; j < nCol; ++j) {
-        float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
-        Vetor3d P = { xp, yp, zp };
+        Vetor3d P = PSE + right * (deltinhax * (j + 0.5f)) +
+                    down * (deltinhay * (i + 0.5f));
         Vetor3d dr;
         if (ortografica) {
-          dr = { 0.0f, 0.0f, -1.0f };
+          dr = forward;
         } else {
           dr = P.normalizado();
         }
-        Raio raio(ortografica ? P : P0, dr);
+        Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        Vetor3d I_total = I_A;
+        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
         Vetor3d Pt = raio.no_ponto(t);
-        Vetor3d dr_luz = (P_F - Pt).normalizado();
-        Raio raio_luz(Pt, dr_luz);
-        auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-        if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-          I_total = iluminacao::modelo_phong(Pt,
-                                             raio.dr,
-                                             objetos[objeto].normal(Pt),
-                                             iluminacao::FontePontual(P_F, I_F),
-                                             I_A,
-                                             objetos[objeto].material);
-        } else {
-          I_total = iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+        for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          if (dist_luz == 0.0f)
+            continue;
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
+          }
         }
+        for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.direcao;
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
+          }
+        }
+        for (const iluminacao::FonteSpot& fonte : fontes_spot) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
+          }
+        }
+
+        I_total =
+          I_total + iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
 
         DrawRectangle(
           Deltax * j,
@@ -905,6 +979,7 @@ renderizar()
     }
   }
   EndTextureMode();
+  TraceLog(LOG_INFO, "Renderizacao completa");
 }
 
 int
@@ -920,47 +995,66 @@ main(void)
 
   tela = LoadRenderTexture(W_C, H_C);
 
-  Vetor3d Eye = { 0.0f, 0.0f, 0.0f };
-  Vetor3d At = { 0.0f, 0.0f, -20.0f };
-  Vetor3d Up = { 0.0f, 1.0f, 0.0f };
-  Camera3de camera(Eye, At, Up);
-
   inicializar_objetos();
-
-  aplicar_transformacao(camera);
 
   renderizar();
 
   TabbedPanel panel(
     { 500.0f, 0.0f, 300.0f, 450.0f }, font, []() { renderizar(); });
-  panel.add_tab("geral");
-  panel.tabs[panel.selected_tab].add_camera_controls(&camera, "camera");
-  Button btn_camera(
-    "Atualizar Camera", { 0.0f, 0.0f, 260.0f, 30.0f }, [&camera, &panel]() {
-      for (TextBox& textbox : panel.tabs[panel.selected_tab].textboxes)
-        textbox.atualizar_parametro();
-      camera.updateCoordinates();
-      aplicar_transformacao(camera);
-      renderizar();
-    });
-  panel.add_element_tab(0, btn_camera);
+  panel.add_tab("camera");
+  int camera_tab = panel.selected_tab;
+  panel.tabs[camera_tab].add_camera_controls(&camera, "camera");
+  panel.tabs[camera_tab].add_color_controls(&I_A, "I_amb");
   Switch switch_projecao(
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
-  panel.add_element_tab(0, switch_projecao);
+  panel.add_element_tab(camera_tab, switch_projecao);
+  Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+  Button btn_camera("Atualizar Camera", btn_rect, [&panel, &camera_tab]() {
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_parametro();
+    camera.updateCoordinates();
+  });
+  panel.add_element_tab(camera_tab, btn_camera);
+  for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+    textbox.atualizar_texto();
+
+  for (size_t i = 0; i < fontes_pontuais.size(); ++i) {
+    panel.add_tab_luz(&fontes_pontuais[i], fontes_pontuais_labels[i]);
+  }
+
+  for (size_t i = 0; i < fontes_direcionais.size(); ++i) {
+    panel.add_tab_luz(&fontes_direcionais[i], fontes_direcionais_labels[i]);
+  }
+
+  for (size_t i = 0; i < fontes_spot.size(); ++i) {
+    panel.add_tab_luz(&fontes_spot[i], fontes_spot_labels[i]);
+  }
 
   while (!WindowShouldClose()) {
+
+    Matriz M_cw = camera.getMatrixCameraWorld();
+
+    Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+    Vetor3d right = { 1.0f, 0.0f, 0.0f };
+    Vetor3d down = { 0.0f, -1.0f, 0.0f };
+    Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+    right = (M_cw * right.vetor4d()).vetor3d();
+    down = (M_cw * down.vetor4d()).vetor3d();
+    forward = (M_cw * forward.vetor4d()).vetor3d();
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       if (mouse.x < W_C && mouse.y < H_C) {
         int x_pos = mouse.x, y_pos = mouse.y;
-        float yp =
-          Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - y_pos * deltinhay;
-        float xp =
-          Ponto_Superior_Esquerdo.x + deltinhax * x_pos + 0.5f * deltinhax;
-        Vetor3d P = { xp, yp, zp };
-        Vetor3d dr = P.normalizado();
-        Raio raio(P0, dr);
+        Vetor3d P = PSE + right * (deltinhax * (x_pos + 0.5f)) +
+                    down * (deltinhay * (y_pos + 0.5f));
+        Vetor3d dr;
+        if (ortografica) {
+          dr = forward;
+        } else {
+          dr = P.normalizado();
+        }
+        Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
         if (t > 0.0f)
           objeto_selecionado = objeto;
@@ -972,13 +1066,13 @@ main(void)
       }
     }
 
-    if (IsKeyPressed(KEY_UP)) {
+    if (IsKeyDown(KEY_UP)) {
       panel.scroll_up();
-    } else if (IsKeyPressed(KEY_DOWN)) {
+    } else if (IsKeyDown(KEY_DOWN)) {
       panel.scroll_down();
-    } else if (IsKeyPressed(KEY_RIGHT)) {
+    } else if (IsKeyDown(KEY_RIGHT)) {
       panel.scroll_tabs_right();
-    } else if (IsKeyPressed(KEY_LEFT)) {
+    } else if (IsKeyDown(KEY_LEFT)) {
       panel.scroll_tabs_left();
     }
 

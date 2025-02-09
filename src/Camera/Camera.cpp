@@ -7,15 +7,7 @@ Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up)
   , lookAt(lookAt)
   , Up(Up)
 {
-  // Calcula o vetor k (direção para trás)
-  k = (position - lookAt).normalizado();
-
-  Vetor3d viewUp = (Up - position);
-  // Calcula o vetor i (horizontal)
-  i = (viewUp.cross_product(k)).normalizado();
-
-  // Calcula o vetor j (vertical)
-  j = k.cross_product(i);
+  updateCoordinates();
 }
 
 void
@@ -25,7 +17,8 @@ Camera3de::updateCoordinates()
   k = (position - lookAt).normalizado();
 
   // Calcula o vetor i (horizontal)
-  i = (Up.cross_product(k)).normalizado();
+  Vetor3d viewUp = Up - position;
+  i = viewUp.cross_product(k).normalizado();
 
   // Calcula o vetor j (vertical)
   j = k.cross_product(i);

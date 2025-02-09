@@ -15,6 +15,8 @@ struct FontePontual
   Vetor3d posicao;
   Vetor3d intensidade;
 
+  bool acesa = true;
+
   FontePontual(Vetor3d posicao, Vetor3d intensidade);
 
   void transformar(Matriz mat);
@@ -24,6 +26,8 @@ struct FonteDirecional
 {
   Vetor3d direcao;
   Vetor3d intensidade;
+
+  bool acesa = true;
 
   FonteDirecional(Vetor3d posicao, Vetor3d intensidade);
 
@@ -36,6 +40,8 @@ struct FonteSpot
   Vetor3d direcao;
   float cos_beta;
   Vetor3d intensidade;
+
+  bool acesa = true;
 
   FonteSpot(Vetor3d posicao,
             Vetor3d direcao,
@@ -50,7 +56,6 @@ modelo_phong(Vetor3d Pt,
              Vetor3d dr,
              Vetor3d n,
              FontePontual fonte,
-             Vetor3d I_A,
              MaterialSimples material);
 
 Vetor3d
@@ -58,7 +63,6 @@ modelo_phong(Vetor3d Pt,
              Vetor3d dr,
              Vetor3d n,
              FonteDirecional fonte,
-             Vetor3d I_A,
              MaterialSimples material);
 
 Vetor3d
@@ -66,7 +70,6 @@ modelo_phong(Vetor3d Pt,
              Vetor3d dr,
              Vetor3d n,
              FonteSpot fonte,
-             Vetor3d I_A,
              MaterialSimples material);
 
 Vetor3d

@@ -183,23 +183,21 @@ main(void)
           Vetor3d dr = P.normalizado();
           Raio raio(P0, dr);
           auto [t, objeto] = calcular_intersecao(raio, objetos);
-          Vetor3d I_total = I_A;
+          Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
           Vetor3d Pt = raio.no_ponto(t);
           Vetor3d dr_luz = (P_F - Pt).normalizado();
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-            I_total =
-              iluminacao::modelo_phong(Pt,
-                                       raio.dr,
-                                       objetos[objeto].normal(Pt),
-                                       iluminacao::FontePontual(P_F, I_F),
-                                       I_A,
-                                       objetos[objeto].material);
-          } else {
-            I_total =
-              iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+            I_total = I_total + iluminacao::modelo_phong(
+                                  Pt,
+                                  raio.dr,
+                                  objetos[objeto].normal(Pt),
+                                  iluminacao::FontePontual(P_F, I_F),
+                                  objetos[objeto].material);
           }
+          I_total = I_total +
+                    iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
 
           DrawRectangle(
             Deltax * j,
