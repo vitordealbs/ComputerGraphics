@@ -18,6 +18,19 @@ Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up)
   j = k.cross_product(i);
 }
 
+void
+Camera3de::updateCoordinates()
+{
+  // Calcula o vetor k (direção para trás)
+  k = (position - lookAt).normalizado();
+
+  // Calcula o vetor i (horizontal)
+  i = (Up.cross_product(k)).normalizado();
+
+  // Calcula o vetor j (vertical)
+  j = k.cross_product(i);
+}
+
 Matriz
 Camera3de::getTransformationMatrix()
 {

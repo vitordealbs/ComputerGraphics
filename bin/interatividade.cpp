@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "./src/Camera/Camera3de.h"
 #include "./src/Cilindro/Cilindro.h"
 #include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
@@ -476,6 +477,17 @@ struct Tab
   void add_object_controls(PlanoTextura* plano_textura, std::string label) {}
 
   void add_object_controls(Malha* malha, std::string label) {}
+
+  void add_camera_controls(Camera3de* camera, std::string label)
+  {
+    add_vector_controls(&camera->position,
+                        TextFormat("%s.position", label.c_str()));
+    add_vector_controls(&camera->lookAt,
+                        TextFormat("%s.lookAt", label.c_str()));
+    add_vector_controls(&camera->Up, TextFormat("%s.Up", label.c_str()));
+    for (TextBox& textbox : textboxes)
+      textbox.atualizar_texto();
+  }
 };
 
 struct TabbedPanel
@@ -707,98 +719,6 @@ Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
 float zp = -d;
 Vetor3d P0 = { 0.0f, 0.0f, 0.0f };
 
-// definicao da esfera da cena
-Vetor3d K_d_esfera = { 0.7, 0.2, 0.2 };
-Vetor3d K_e_esfera = { 0.7, 0.2, 0.2 };
-Vetor3d K_a_esfera = { 0.7, 0.2, 0.2 };
-float R = 40.0f;
-float m_esfera = 10;
-Esfera esfera({ 0.0f, 0.0f, -100.0f },
-              R,
-              K_d_esfera,
-              K_e_esfera,
-              K_a_esfera,
-              m_esfera);
-
-// definicao do plano do chao
-Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
-Vetor3d K_e_plano_chao = { 0.0f, 0.0f, 0.0f };
-Vetor3d K_a_plano_chao = { 0.2f, 0.7f, 0.2f };
-float m_plano_chao = 1;
-Plano plano_chao({ 0.0f, -R, 0.0f },
-                 { 0.0f, 1.0f, 0.0f },
-                 K_d_plano_chao,
-                 K_e_plano_chao,
-                 K_a_plano_chao,
-                 m_plano_chao);
-
-// definicao do plano de fundo
-Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
-Vetor3d K_e_plano_fundo = { 0.0f, 0.0f, 0.0f };
-Vetor3d K_a_plano_fundo = { 0.3f, 0.3f, 0.7f };
-float m_plano_fundo = 1;
-Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
-                  { 0.0f, 0.0f, 1.0f },
-                  K_d_plano_fundo,
-                  K_e_plano_fundo,
-                  K_a_plano_fundo,
-                  m_plano_fundo);
-
-// definicao do cilindro
-Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
-Vetor3d K_e_cilindro = K_d_cilindro;
-Vetor3d K_a_cilindro = K_d_cilindro;
-float m_cilindro = 1;
-Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0),
-                         1.0f / sqrtf(3.0f),
-                         1.0f / sqrtf(3.0) };
-Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
-Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
-                  R / 3.0f,
-                  1.7f * R,
-                  dir_cilindro,
-                  K_d_cilindro,
-                  K_e_cilindro,
-                  K_a_cilindro,
-                  m_cilindro);
-Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
-                      R / 3.0f,
-                      dir_cilindro,
-                      K_d_cilindro,
-                      K_e_cilindro,
-                      K_a_cilindro,
-                      m_cilindro);
-Circulo base_cilindro(centro_cilindro,
-                      R / 3.0f,
-                      -1.0f * dir_cilindro,
-                      K_d_cilindro,
-                      K_e_cilindro,
-                      K_a_cilindro,
-                      m_cilindro);
-
-// definicao do cone
-Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
-Vetor3d K_e_cone = K_d_cone;
-Vetor3d K_a_cone = K_d_cone;
-float m_cone = 1;
-Vetor3d centro_cone = topo_cilindro.centro;
-Vetor3d dir_cone = cilindro.direcao;
-Cone cone(centro_cone,
-          R * 1,
-          (R * 1.5f) / 3.0f,
-          dir_cone,
-          K_d_cone,
-          K_e_cone,
-          K_a_cone,
-          m_cone);
-Circulo base_cone(centro_cone,
-                  R / 3.0f,
-                  -1.0f * dir_cone,
-                  K_d_cone,
-                  K_e_cone,
-                  K_a_cone,
-                  m_cone);
-
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
 Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
@@ -806,15 +726,131 @@ Vetor3d P_F = { 0.0f, 60.0f, -30.0f };
 // definicao da iluminacao ambiente
 Vetor3d I_A = { 0.3f, 0.3f, 0.3f };
 
-std::vector<Objeto> objetos = { Objeto(plano_fundo),   Objeto(plano_chao),
-                                Objeto(esfera),        Objeto(cilindro),
-                                Objeto(topo_cilindro), Objeto(base_cilindro),
-                                Objeto(cone),          Objeto(base_cone) };
+std::vector<Objeto> objetos;
 
-std::vector<std::string> objetos_labels = { "plano_fundo",   "plano_chao",
-                                            "esfera",        "cilindro",
-                                            "topo_cilindro", "base_cilindro",
-                                            "cone",          "base_cone" };
+std::vector<std::string> objetos_labels;
+
+void
+inicializar_objetos()
+{
+  // definicao da esfera da cena
+  Vetor3d K_d_esfera = { 0.7, 0.2, 0.2 };
+  Vetor3d K_e_esfera = { 0.7, 0.2, 0.2 };
+  Vetor3d K_a_esfera = { 0.7, 0.2, 0.2 };
+  float R = 40.0f;
+  float m_esfera = 10;
+  Esfera esfera(
+    { 0.0f, 0.0f, -100.0f }, R, K_d_esfera, K_e_esfera, K_a_esfera, m_esfera);
+
+  // definicao do plano do chao
+  Vetor3d K_d_plano_chao = { 0.2f, 0.7f, 0.2f };
+  Vetor3d K_e_plano_chao = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_chao = { 0.2f, 0.7f, 0.2f };
+  float m_plano_chao = 1;
+  Plano plano_chao({ 0.0f, -R, 0.0f },
+                   { 0.0f, 1.0f, 0.0f },
+                   K_d_plano_chao,
+                   K_e_plano_chao,
+                   K_a_plano_chao,
+                   m_plano_chao);
+
+  // definicao do plano de fundo
+  Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_fundo = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_fundo = { 0.3f, 0.3f, 0.7f };
+  float m_plano_fundo = 1;
+  Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
+                    { 0.0f, 0.0f, 1.0f },
+                    K_d_plano_fundo,
+                    K_e_plano_fundo,
+                    K_a_plano_fundo,
+                    m_plano_fundo);
+
+  // definicao do cilindro
+  Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
+  Vetor3d K_e_cilindro = K_d_cilindro;
+  Vetor3d K_a_cilindro = K_d_cilindro;
+  float m_cilindro = 1;
+  Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0),
+                           1.0f / sqrtf(3.0f),
+                           1.0f / sqrtf(3.0) };
+  Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
+  Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
+                    R / 3.0f,
+                    1.7f * R,
+                    dir_cilindro,
+                    K_d_cilindro,
+                    K_e_cilindro,
+                    K_a_cilindro,
+                    m_cilindro);
+  Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
+                        R / 3.0f,
+                        dir_cilindro,
+                        K_d_cilindro,
+                        K_e_cilindro,
+                        K_a_cilindro,
+                        m_cilindro);
+  Circulo base_cilindro(centro_cilindro,
+                        R / 3.0f,
+                        -1.0f * dir_cilindro,
+                        K_d_cilindro,
+                        K_e_cilindro,
+                        K_a_cilindro,
+                        m_cilindro);
+
+  // definicao do cone
+  Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
+  Vetor3d K_e_cone = K_d_cone;
+  Vetor3d K_a_cone = K_d_cone;
+  float m_cone = 1;
+  Vetor3d centro_cone = topo_cilindro.centro;
+  Vetor3d dir_cone = cilindro.direcao;
+  Cone cone(centro_cone,
+            R * 1,
+            (R * 1.5f) / 3.0f,
+            dir_cone,
+            K_d_cone,
+            K_e_cone,
+            K_a_cone,
+            m_cone);
+  Circulo base_cone(centro_cone,
+                    R / 3.0f,
+                    -1.0f * dir_cone,
+                    K_d_cone,
+                    K_e_cone,
+                    K_a_cone,
+                    m_cone);
+
+  objetos.emplace_back(plano_fundo);
+  objetos.emplace_back(plano_chao);
+  objetos.emplace_back(esfera);
+  objetos.emplace_back(cilindro);
+  objetos.emplace_back(topo_cilindro);
+  objetos.emplace_back(base_cilindro);
+  objetos.emplace_back(cone);
+  objetos.emplace_back(base_cone);
+
+  objetos_labels.push_back("plano_fundo");
+  objetos_labels.push_back("plano_chao");
+  objetos_labels.push_back("esfera");
+  objetos_labels.push_back("cilindro");
+  objetos_labels.push_back("topo_cilindro");
+  objetos_labels.push_back("base_cilindro");
+  objetos_labels.push_back("cone");
+  objetos_labels.push_back("base_cone");
+}
+
+void
+aplicar_transformacao(Camera3de& camera)
+{
+  Matriz M_wc = camera.getTransformationMatrix();
+
+  P_F = (M_wc * P_F.ponto4d()).vetor3d();
+
+  for (Objeto& objeto : objetos) {
+    objeto.transformar(M_wc);
+  }
+}
 
 RenderTexture2D tela;
 bool ortografica = false;
@@ -884,42 +920,38 @@ main(void)
 
   tela = LoadRenderTexture(W_C, H_C);
 
+  Vetor3d Eye = { 0.0f, 0.0f, 0.0f };
+  Vetor3d At = { 0.0f, 0.0f, -20.0f };
+  Vetor3d Up = { 0.0f, 1.0f, 0.0f };
+  Camera3de camera(Eye, At, Up);
+
+  inicializar_objetos();
+
+  aplicar_transformacao(camera);
+
   renderizar();
 
-  TextBox caixa1("I.r", (Rectangle){ 520.0f, 20.0f, 260.0f, 20.0f }, &I_F.x);
-  TextBox caixa2("I.g", (Rectangle){ 520.0f, 80.0f, 260.0f, 20.0f }, &I_F.y);
-  TextBox caixa3("I.b", (Rectangle){ 520.0f, 140.0f, 260.0f, 20.0f }, &I_F.z);
-  caixa1.atualizar_texto();
-  caixa2.atualizar_texto();
-  caixa3.atualizar_texto();
-  /*
-  std::vector<TextBox> caixas;
-  caixas.push_back(caixa1);
-  caixas.push_back(caixa2);
-  caixas.push_back(caixa3);
-  int caixa_selecionada = -1;
-
-  Button btn_atualizar("atualizar",
-                       (Rectangle){ 520.0f, 200.0f, 260.0f, 30.0f });
-
-  bool luz = true;
-  Switch switch_luz("Luz", (Rectangle){ 520.0f, 240.0f, 30.0f, 20.0f }, &luz);
-  */
   TabbedPanel panel(
     { 500.0f, 0.0f, 300.0f, 450.0f }, font, []() { renderizar(); });
   panel.add_tab("geral");
-  panel.add_element_tab(0, caixa1);
-  panel.add_element_tab(0, caixa2);
-  panel.add_element_tab(0, caixa3);
+  panel.tabs[panel.selected_tab].add_camera_controls(&camera, "camera");
+  Button btn_camera(
+    "Atualizar Camera", { 0.0f, 0.0f, 260.0f, 30.0f }, [&camera, &panel]() {
+      for (TextBox& textbox : panel.tabs[panel.selected_tab].textboxes)
+        textbox.atualizar_parametro();
+      camera.updateCoordinates();
+      aplicar_transformacao(camera);
+      renderizar();
+    });
+  panel.add_element_tab(0, btn_camera);
   Switch switch_projecao(
-    "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 20.0f }, &ortografica);
+    "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(0, switch_projecao);
 
   while (!WindowShouldClose()) {
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-      // caixa_selecionada = -1;
       if (mouse.x < W_C && mouse.y < H_C) {
         int x_pos = mouse.x, y_pos = mouse.y;
         float yp =
@@ -937,26 +969,6 @@ main(void)
           panel.add_tab_objeto(&objetos[objeto], objetos_labels[objeto]);
       } else {
         panel.intersecao(mouse);
-        /*
-         for (int i = 0; i < caixas.size(); ++i) {
-           TextBox& caixa = caixas[i];
-           if (caixa.intersecao(mouse)) {
-             caixa_selecionada = i;
-           }
-         }
-         if (caixa_selecionada < 0) {
-           if (btn_atualizar.intersecao(mouse)) {
-             for (int i = 0; i < caixas.size(); ++i) {
-               caixas[i].atualizar_parametro();
-             }
-             renderizar(tela);
-           }
-           if (switch_luz.intersecao(mouse)) {
-             switch_luz.atualizar_parametro();
-             renderizar(tela);
-           }
-         }
-         */
       }
     }
 
@@ -973,13 +985,6 @@ main(void)
     int key = GetKeyPressed();
     char key_char = GetCharPressed();
     panel.receber_input(key, key_char);
-    /*
-    if (caixa_selecionada >= 0) {
-      TextBox* caixa = &caixas[caixa_selecionada];
-      int key = GetKeyPressed();
-      char key_char = GetCharPressed();
-      caixa->atualizar(key, key_char);
-    }*/
 
     BeginDrawing();
     {
@@ -987,13 +992,6 @@ main(void)
       panel.desenhar();
       DrawTextureRec(
         tela.texture, { 0.0f, 0.0f, W_C, -H_C }, { 0.0f, 0.0f }, WHITE);
-      /*
-      for (TextBox& caixa : caixas) {
-        caixa.desenhar(font);
-      }
-      btn_atualizar.desenhar(font);
-      switch_luz.desenhar(font);
-      */
     }
     EndDrawing();
   }
