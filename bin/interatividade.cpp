@@ -869,6 +869,16 @@ inicializar_objetos()
   fontes_pontuais.push_back(
     iluminacao::FontePontual({ 0.0f, 60.0f, -30.0f }, { 0.7f, 0.7f, 0.7f }));
   fontes_pontuais_labels.push_back("luz_pontual");
+
+  fontes_direcionais.push_back(
+    iluminacao::FonteDirecional({ 1.0f, 1.0f, 0.0f }, { 0.5f, 0.1f, 0.1f }));
+  fontes_direcionais_labels.push_back("luz_dir");
+
+  fontes_spot.push_back(iluminacao::FonteSpot({ 0.0f, 0.0f, 0.0f },
+                                              { 0.0f, 0.0f, -1.0f },
+                                              PI / 3.0f,
+                                              { 0.6f, 0.6f, 0.6f }));
+  fontes_spot_labels.push_back("luz_spot");
 }
 
 RenderTexture2D tela;

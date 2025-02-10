@@ -29,7 +29,7 @@ struct FonteDirecional
 
   bool acesa = true;
 
-  FonteDirecional(Vetor3d posicao, Vetor3d intensidade);
+  FonteDirecional(Vetor3d direcao, Vetor3d intensidade);
 
   void transformar(Matriz mat);
 };
