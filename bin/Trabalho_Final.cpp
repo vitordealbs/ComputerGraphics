@@ -779,6 +779,10 @@ renderizar()
 {
   TraceLog(LOG_INFO, "Renderizando");
 
+  for(int i = 0; i < pixel_buffer.size(); ++i) {
+    pixel_buffer[i] = WHITE;
+  }
+
   Matriz M_cw = camera.getMatrixCameraWorld();
 
   Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
