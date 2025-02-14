@@ -5,6 +5,7 @@
 #include <omp.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <string>
 #include <vector>
 
 #include "./src/Camera/Camera3de.h"
@@ -469,7 +470,13 @@ struct Tab
 
   void add_object_controls(Triangulo* triangulo, std::string label) {}
 
-  void add_object_controls(PlanoTextura* plano_textura, std::string label) {}
+  void add_object_controls(PlanoTextura* plano_textura, std::string label)
+  {
+    add_vector_controls(&plano_textura->normal,
+                        TextFormat("%s.normal", label.c_str()));
+    add_vector_controls(&plano_textura->ponto,
+                        TextFormat("%s.ponto", label.c_str()));
+  }
 
   void add_object_controls(Malha* malha, std::string label) {}
 
@@ -706,8 +713,8 @@ const int W_C = 500;
 const int H_C = 500;
 
 // definicao das dimensoes do frame
-const float W_J = 60.0f;
-const float H_J = 60.0f;
+float W_J = 60.0f;
+float H_J = 60.0f;
 
 // definicao do numero de linhas do frame
 const int nLin = 500;
@@ -764,7 +771,7 @@ renderizar()
   down = (M_cw * down.vetor4d()).vetor3d();
   forward = (M_cw * forward.vetor4d()).vetor3d();
 
-  std::cout << "Objetos na cena: " << objetos.size() << "\n";
+  deltinhax = W_J / nCol, deltinhay = H_J / nLin;
 
   BeginTextureMode(tela);
   {
@@ -899,6 +906,10 @@ main()
   int camera_tab = panel.selected_tab;
   panel.tabs[camera_tab].add_camera_controls(&camera, "camera");
   panel.tabs[camera_tab].add_color_controls(&I_A, "I_amb");
+  TextBox janela_width("janela.largura", { 0.0f, 0.0f, 260.0f, 20.0f }, &W_J);
+  TextBox janela_height("janela.altura", { 0.0f, 0.0f, 260.0f, 20.0f }, &H_J);
+  panel.add_element_tab(camera_tab, janela_width);
+  panel.add_element_tab(camera_tab, janela_height);
   Switch switch_projecao(
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);

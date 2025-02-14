@@ -470,16 +470,15 @@ struct Tab
 
   void add_object_controls(Triangulo* triangulo, std::string label) {}
 
-  void add_object_controls(PlanoTextura* plano_textura, std::string label) 
+  void add_object_controls(PlanoTextura* plano_textura, std::string label)
   {
-    add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
-    add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
+    add_vector_controls(&plano_textura->normal,
+                        TextFormat("%s.normal", label.c_str()));
+    add_vector_controls(&plano_textura->ponto,
+                        TextFormat("%s.ponto", label.c_str()));
   }
 
-  void add_object_controls(Malha* malha, std::string label) 
-  {
-
-  }
+  void add_object_controls(Malha* malha, std::string label) {}
 
   void add_camera_controls(Camera3de* camera, std::string label)
   {
