@@ -629,7 +629,7 @@ struct TabbedPanel
 
   void intersecao(Vector2 mouse)
   {
-    float left = rect.x;
+    float left = rect.x - scroll + rect.width;
     for (int i = 0; i < labels.size(); ++i) {
       std::string& label = labels[i];
       float tab_fontsize = TAB_LABEL_HEIGHT - 2.0f * TAB_LABEL_PADDING;
@@ -744,7 +744,6 @@ double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
 int Deltax = W_C / nCol, Deltay = H_C / nLin;
 Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
 float zp = -d;
-Vetor3d P0 = { 0.0f, 0.0f, 0.0f };
 
 // definicao da fonte luminosa
 std::vector<iluminacao::FontePontual> fontes_pontuais;
@@ -915,7 +914,7 @@ renderizar()
         if (ortografica) {
           dr = forward;
         } else {
-          dr = P.normalizado();
+          dr = (P - camera.position).normalizado();
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
@@ -1062,7 +1061,7 @@ main(void)
         if (ortografica) {
           dr = forward;
         } else {
-          dr = P.normalizado();
+          dr = (P - camera.position).normalizado();
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
