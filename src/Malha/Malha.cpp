@@ -16,14 +16,14 @@ Malha::inicializar_cubo(const Vetor3d& centro,
   float h = tamanho / 2.0f;
 
   // Criar vértices do cubo
-  vertices = { { centro.x - h, centro.y - h, centro.z - h },
-               { centro.x + h, centro.y - h, centro.z - h },
-               { centro.x + h, centro.y + h, centro.z - h },
-               { centro.x - h, centro.y + h, centro.z - h },
-               { centro.x - h, centro.y - h, centro.z + h },
+  vertices = { { centro.x - h, centro.y - h, centro.z + h },
                { centro.x + h, centro.y - h, centro.z + h },
                { centro.x + h, centro.y + h, centro.z + h },
-               { centro.x - h, centro.y + h, centro.z + h } };
+               { centro.x - h, centro.y + h, centro.z + h },
+               { centro.x - h, centro.y - h, centro.z - h },
+               { centro.x + h, centro.y - h, centro.z - h },
+               { centro.x + h, centro.y + h, centro.z - h },
+               { centro.x - h, centro.y + h, centro.z - h } };
 
   // Criar faces do cubo (6 faces, 2 triângulos por face)
   faces = {
@@ -48,6 +48,7 @@ Malha::inicializar_cubo(const Vetor3d& centro,
 void
 Malha::transformar(Matriz mat)
 {
+  ancora = (mat * ancora.ponto4d()).vetor3d();
   for (size_t i = 0; i < vertices.size(); ++i) {
     vertices[i] = (mat * vertices[i].ponto4d()).vetor3d();
   }

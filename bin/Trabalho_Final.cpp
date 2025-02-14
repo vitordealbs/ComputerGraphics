@@ -408,7 +408,10 @@ struct Tab
             for (TextBox& textbox : this->textboxes)
               textbox.atualizar_parametro();
             Vetor3d ancora_nova = obj.ancora;
+            TraceLog(LOG_INFO, "ancora_antiga = (%f, %f, %f)", ancora_antiga.x, ancora_antiga.y, ancora_antiga.z);
+            TraceLog(LOG_INFO, "ancora_nova = (%f, %f, %f)", ancora_nova.x, ancora_nova.y, ancora_nova.z);
             obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
+            obj.ancora = ancora_nova;
           });
           add_element(atualizar_btn);
         }
@@ -929,7 +932,7 @@ main()
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);
   Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
-  Button btn_camera("Atualizar Camera", btn_rect, [&panel, &camera_tab]() {
+  Button btn_camera("Atualizar Camera", btn_rect, [&panel, camera_tab]() {
     for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
       textbox.atualizar_parametro();
     camera.updateCoordinates();
