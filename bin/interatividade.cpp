@@ -411,8 +411,6 @@ struct Tab
 
   void add_object_controls(Plano* plano, std::string label)
   {
-    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
-    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
     add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
     add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
   }
@@ -472,9 +470,16 @@ struct Tab
 
   void add_object_controls(Triangulo* triangulo, std::string label) {}
 
-  void add_object_controls(PlanoTextura* plano_textura, std::string label) {}
+  void add_object_controls(PlanoTextura* plano_textura, std::string label) 
+  {
+    add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
+    add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
+  }
 
-  void add_object_controls(Malha* malha, std::string label) {}
+  void add_object_controls(Malha* malha, std::string label) 
+  {
+
+  }
 
   void add_camera_controls(Camera3de* camera, std::string label)
   {
@@ -728,8 +733,8 @@ const int W_C = 500;
 const int H_C = 500;
 
 // definicao das dimensoes do frame
-const float W_J = 60.0f;
-const float H_J = 60.0f;
+float W_J = 60.0f;
+float H_J = 60.0f;
 
 // definicao do numero de linhas do frame
 const int nLin = 500;
@@ -740,7 +745,7 @@ const int nCol = 500;
 // distancia do frame ao olho
 float d = 30.0f;
 
-double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+double deltinhax, deltinhay;
 int Deltax = W_C / nCol, Deltay = H_C / nLin;
 Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
 float zp = -d;
@@ -902,6 +907,8 @@ renderizar()
   down = (M_cw * down.vetor4d()).vetor3d();
   forward = (M_cw * forward.vetor4d()).vetor3d();
 
+  deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+
   BeginTextureMode(tela);
   {
     ClearBackground(BLACK);
@@ -1014,6 +1021,10 @@ main(void)
   int camera_tab = panel.selected_tab;
   panel.tabs[camera_tab].add_camera_controls(&camera, "camera");
   panel.tabs[camera_tab].add_color_controls(&I_A, "I_amb");
+  TextBox janela_width("janela.largura", { 0.0f, 0.0f, 260.0f, 20.0f }, &W_J);
+  TextBox janela_height("janela.altura", { 0.0f, 0.0f, 260.0f, 20.0f }, &H_J);
+  panel.add_element_tab(camera_tab, janela_width);
+  panel.add_element_tab(camera_tab, janela_height);
   Switch switch_projecao(
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);
@@ -1050,6 +1061,8 @@ main(void)
     right = (M_cw * right.vetor4d()).vetor3d();
     down = (M_cw * down.vetor4d()).vetor3d();
     forward = (M_cw * forward.vetor4d()).vetor3d();
+
+    deltinhax = W_J / nCol, deltinhay = H_J / nLin;
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
