@@ -11,6 +11,7 @@ Malha::inicializar_cubo(const Vetor3d& centro,
                         const Vetor3d& K_a,
                         float m)
 {
+  ancora = centro;
   material = MaterialSimples(K_d, K_e, K_a, m);
   float h = tamanho / 2.0f;
 

@@ -9,6 +9,7 @@
 
 struct Malha
 {
+  Vetor3d ancora;
   std::vector<Vetor3d> vertices; // Lista de vértices
   std::vector<Aresta> arestas;   // Lista de arestas
   std::vector<Triangulo> faces;  // Lista de faces (Triângulos)

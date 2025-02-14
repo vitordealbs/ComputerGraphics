@@ -396,11 +396,22 @@ struct Tab
         if constexpr (!std::is_same_v<T, PlanoTextura>) {
           add_material_controls(&objeto->material, label);
         }
-        Button atualizar_btn("Atualizar", btn_rect, [this] {
-          for (TextBox& textbox : this->textboxes)
-            textbox.atualizar_parametro();
-        });
-        add_element(atualizar_btn);
+        if constexpr (!std::is_same_v<T, Malha>) {
+          Button atualizar_btn("Atualizar", btn_rect, [this] {
+            for (TextBox& textbox : this->textboxes)
+              textbox.atualizar_parametro();
+          });
+          add_element(atualizar_btn);
+        } else {
+          Button atualizar_btn("Atualizar", btn_rect, [this, &obj] {
+            Vetor3d ancora_antiga = obj.ancora;
+            for (TextBox& textbox : this->textboxes)
+              textbox.atualizar_parametro();
+            Vetor3d ancora_nova = obj.ancora;
+            obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
+          });
+          add_element(atualizar_btn);
+        }
         for (TextBox& textbox : textboxes)
           textbox.atualizar_texto();
       },
@@ -478,7 +489,10 @@ struct Tab
                         TextFormat("%s.ponto", label.c_str()));
   }
 
-  void add_object_controls(Malha* malha, std::string label) {}
+  void add_object_controls(Malha* malha, std::string label) {
+    add_vector_controls(&malha->ancora, 
+                        TextFormat("%s.ancora", label.c_str()));
+  }
 
   void add_camera_controls(Camera3de* camera, std::string label)
   {
@@ -509,6 +523,7 @@ struct Tab
     Switch acesa_switch("Acesa", switch_rect, &fonte->acesa);
     add_element(acesa_switch);
   }
+
   void add_light_controls(iluminacao::FonteDirecional* fonte, std::string label)
   {
     Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
