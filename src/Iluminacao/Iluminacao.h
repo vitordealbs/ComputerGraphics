@@ -36,7 +36,7 @@ luz_ambiente(Vetor3d I_A, Vetor3d K_a);
         Vetor3d intensidade;
 
         FonteDirecional(Vetor3d direcao, Vetor3d intensidade);
-        void transformar(Matriz mat); // Útil se quiser girar a direção da luz
+        void transformar(Matriz mat);
     };
 
     class FonteSpot {
