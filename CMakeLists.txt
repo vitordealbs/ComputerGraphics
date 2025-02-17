@@ -32,6 +32,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 # Define o executável
 add_executable(${PROJECT_NAME}
         Algebra.cpp
+
         src/Plano/Plano.cpp
         src/Circulo/Circulo.cpp
         src/Triangulo/Triangulo.cpp
@@ -49,7 +50,13 @@ add_executable(${PROJECT_NAME}
         src/PlanoTextura/PlanoTextura.cpp
         src/Camera/Camera.cpp
         src/ObjetoComplexo/ObjetoComplexo.cpp
-        bin/tarefa6.cpp
+        bin/Trabalho_Final.cpp
+        src/calcular_intersecao.cpp
+        src/calcular_intersecao.h
+        src/inicializar_objetos.cpp
+        src/inicializar_objetos.h
+        src/objetosTrabalhofinal.cpp
+        src/objetosTrabalhofinal.h
 )
 
 

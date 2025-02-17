@@ -4,7 +4,7 @@
 
 #include "Iluminacao.h"
 #include <math.h>
-
+using namespace iluminacao;
 iluminacao::FontePontual::FontePontual(Vetor3d posicao, Vetor3d intensidade)
   : posicao(posicao)
   , intensidade(intensidade)

@@ -97,7 +97,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
 
   // 4) BOLA NO CENTRO (raio maior, se quiser)
   Esfera bola({ 150.0f, 10.0f, 300.0f },
-              10.0f, // Aumentei o raio para 10.0f
+              10.0f,
               { 1.0f, 0.2f, 0.2f },
               { 1.0f, 1.0f, 1.0f },
               { 0.1f, 0.1f, 0.1f },
@@ -141,10 +141,13 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
 
   // 6) DUAS TRAVES
   auto criarTrave = [&](float zPos) {
-    float xLeft = 50.0f, xRight = 200.0f;
+    float xLeft = 50.0f;
+    float xRight = 200.0f;
     float altura = 150.0f;
 
     ObjetoComplexo trave;
+
+    // Poste esquerdo
     Cilindro posteE({ xLeft, 0.0f, zPos },
                     5.0f,
                     altura,
@@ -191,45 +194,70 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   auto criarCestaBasquete = [&](float x, float z) {
     ObjetoComplexo cesta;
 
-    Cilindro aro({ x, 150.0f, z },
-                 5.0f,
-                 2.0f,
-                 { 0.0f, 0.0f, 1.0f },
-                 { 1.0f, 0.5f, 0.0f },
-                 { 1.0f, 0.5f, 0.0f },
-                 { 0.2f, 0.1f, 0.0f },
-                 16.0f // M
-    );
-
-    // Aste vertical (cilindro branco)
     Cilindro asteVertical({ x, 0.0f, z },
                           2.0f,
-                          150.0f,
+                          200.0f,
                           { 0.0f, 1.0f, 0.0f },
                           { 1.0f, 1.0f, 1.0f },
                           { 1.0f, 1.0f, 1.0f },
                           { 0.2f, 0.2f, 0.2f },
                           16.0f);
 
-    // Aste horizontal (cilindro branco)
-    Cilindro asteHorizontal({ x, 150.0f, z - 20.0f },
+    Cilindro asteHorizontal({ x, 200.0f, z - 20.0f },
                             2.0f,
-                            40.0f,
-                            { 1.0f, 0.0f, 0.0f },
+                            50.0f,
+                            { 0.0f, 0.0f, -1.0f },
                             { 1.0f, 1.0f, 1.0f },
                             { 1.0f, 1.0f, 1.0f },
                             { 0.2f, 0.2f, 0.2f },
                             16.0f);
 
-    cesta.adicionar_objeto(aro);
     cesta.adicionar_objeto(asteVertical);
     cesta.adicionar_objeto(asteHorizontal);
+    Cilindro aro1({ 125, 200.0f, -25.0f },
+                  30.0f,
+                  10.0f,
+                  { 0.0f, 1.0f, 0.0f },
+                  { 1.0f, 0.5f, 0.0f },
+                  { 1.0f, 0.5f, 0.0f },
+                  { 0.2f, 0.1f, 0.0f },
+                  16.0f);
+    Cilindro aro2({ 125, 200.0f, 800.0f },
+                  30.0f,
+                  10.0f,
+                  { 0.0f, 1.0f, 0.0f },
+                  { 1.0f, 0.5f, 0.0f },
+                  { 1.0f, 0.5f, 0.0f },
+                  { 0.2f, 0.1f, 0.0f },
+                  16.0f);
+    cesta.adicionar_objeto(aro1);
+    cesta.adicionar_objeto(aro2);
+
+    Malha malha_back1, malha_back2;
+    malha_back1.inicializar_cubo({ 0, 0, 0 },
+                                 1.0f,
+                                 { 1.0f, 1.0f, 1.0f },
+                                 { 1.0f, 1.0f, 1.0f },
+                                 { 1.0f, 1.0f, 1.0f },
+                                 16.0f);
+    malha_back2.inicializar_cubo({ 0, 0, 0 },
+                                 1.0f,
+                                 { 1.0f, 1.0f, 1.0f },
+                                 { 1.0f, 1.0f, 1.0f },
+                                 { 1.0f, 1.0f, 1.0f },
+                                 16.0f);
+    malha_back1.transformar(Matriz::translacao({ 125.0f, 230.0f, 830.0f }) *
+                            Matriz::escala({ 100.0f, 100.0f, 10.0f }));
+    malha_back2.transformar(Matriz::translacao({ 125.0f, 230.0f, -75.0f }) *
+                            Matriz::escala({ 100.0f, 100.0f, 10.0f }));
+    cesta.adicionar_objeto(malha_back1);
+    cesta.adicionar_objeto(malha_back2);
 
     return cesta;
   };
 
-  ObjetoComplexo cesta1 = criarCestaBasquete(50.0f, -100.0f);
-  ObjetoComplexo cesta2 = criarCestaBasquete(200.0f, 800.0f);
+  ObjetoComplexo cesta1 = criarCestaBasquete(125.0f, -80.0f);
+  ObjetoComplexo cesta2 = criarCestaBasquete(125.0f, 820.0f);
 
   complexObjects.push_back(cesta1);
   complexObjects.push_back(cesta2);
