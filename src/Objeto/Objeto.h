@@ -28,6 +28,7 @@ struct Objeto
                Malha>
     obj;
   MaterialSimples material;
+  bool visivel;
 
   // Construtores para cada tipo de objeto
   Objeto(const Esfera& esfera);

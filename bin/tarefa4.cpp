@@ -1,22 +1,21 @@
-#include <math.h>
 #include <cstdio>
+#include <math.h>
 
 #include <raylib.h>
 #include <vector>
 
-#include "funcoes_auxiliares.h"
-#include "./src/Circulo/Circulo.h"
 #include "./src/Cilindro/Cilindro.h"
+#include "./src/Circulo/Circulo.h"
 #include "./src/Cone/Cone.h"
 #include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
 #include "./src/Material/Material.h"
+#include "./src/Objeto/Objeto.h"
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
-#include "./src/Objeto/Objeto.h"
+#include "funcoes_auxiliares.h"
 using namespace funcoes_auxiliares;
-
 
 std::pair<float, int>
 calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
@@ -96,7 +95,9 @@ Vetor3d K_d_cilindro = { 0.2, 0.3, 0.8 };
 Vetor3d K_e_cilindro = K_d_cilindro;
 Vetor3d K_a_cilindro = K_d_cilindro;
 float m_cilindro = 1;
-Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0), 1.0f / sqrtf(3.0f), 1.0f / sqrtf(3.0) };
+Vetor3d dir_cilindro = { -1.0f / sqrtf(3.0),
+                         1.0f / sqrtf(3.0f),
+                         1.0f / sqrtf(3.0) };
 Vetor3d centro_cilindro = { 0.0f, 0.0f, -100.0f };
 Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   R / 3.0f,
@@ -106,9 +107,20 @@ Cilindro cilindro({ 0.0f, 0.0f, -100.0f },
                   K_e_cilindro,
                   K_a_cilindro,
                   m_cilindro);
-Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro, R / 3.0f, dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
-Circulo base_cilindro(centro_cilindro, R / 3.0f, -1.0f * dir_cilindro, K_d_cilindro, K_e_cilindro, K_a_cilindro, m_cilindro);
-
+Circulo topo_cilindro(dir_cilindro * (1.4f * R) + centro_cilindro,
+                      R / 3.0f,
+                      dir_cilindro,
+                      K_d_cilindro,
+                      K_e_cilindro,
+                      K_a_cilindro,
+                      m_cilindro);
+Circulo base_cilindro(centro_cilindro,
+                      R / 3.0f,
+                      -1.0f * dir_cilindro,
+                      K_d_cilindro,
+                      K_e_cilindro,
+                      K_a_cilindro,
+                      m_cilindro);
 
 // definicao do cone
 Vetor3d K_d_cone = { 0.8, 0.3, 0.2 };
@@ -125,7 +137,13 @@ Cone cone(centro_cone,
           K_e_cone,
           K_a_cone,
           m_cone);
-Circulo base_cone(centro_cone, R / 3.0f, -1.0f * dir_cone, K_d_cone, K_e_cone, K_a_cone, m_cone);
+Circulo base_cone(centro_cone,
+                  R / 3.0f,
+                  -1.0f * dir_cone,
+                  K_d_cone,
+                  K_e_cone,
+                  K_a_cone,
+                  m_cone);
 
 // definicao da fonte luminosa
 Vetor3d I_F = { 0.7f, 0.7f, 0.7f };
@@ -165,22 +183,21 @@ main(void)
           Vetor3d dr = P.normalizado();
           Raio raio(P0, dr);
           auto [t, objeto] = calcular_intersecao(raio, objetos);
-          Vetor3d I_total = I_A;
+          Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
           Vetor3d Pt = raio.no_ponto(t);
           Vetor3d dr_luz = (P_F - Pt).normalizado();
           Raio raio_luz(Pt, dr_luz);
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           if (t_luz < 0.0 || t_luz > (P_F - Pt).tamanho()) {
-            I_total = iluminacao::modelo_phong(Pt,
-                                               raio.dr,
-                                               objetos[objeto].normal(Pt),
-                                               { P_F, I_F },
-                                               I_A,
-                                               objetos[objeto].material);
-          } else {
-            I_total =
-              iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+            I_total = I_total + iluminacao::modelo_phong(
+                                  Pt,
+                                  raio.dr,
+                                  objetos[objeto].normal(Pt),
+                                  iluminacao::FontePontual(P_F, I_F),
+                                  objetos[objeto].material);
           }
+          I_total = I_total +
+                    iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
 
           DrawRectangle(
             Deltax * j,

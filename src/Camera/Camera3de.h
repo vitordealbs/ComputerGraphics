@@ -15,11 +15,12 @@ public:
   Vetor3d j{}; // Vetor vertical
   Vetor3d k{}; // Vetor direção para trás
 
-  Matriz transformationMatrix{};
-
   Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up);
 
+  void updateCoordinates();
+
   Matriz getTransformationMatrix();
+  Matriz getMatrixCameraWorld();
 };
 
 #endif

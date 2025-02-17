@@ -41,22 +41,6 @@ Vetor3d P_F = { 0.0, 5.0, 0.0 };
 // vetor representando a luz ambiente
 const Vetor3d I_A = { 0.1, 0.1, 0.1 };
 
-// funcao auxiliar que retorna o maximo
-// de dois numeros
-double
-max(double a, double b)
-{
-  return a + (b - a) * (a < b);
-}
-
-// funcao auxiliar que retorna o minimo
-// de dois numeros
-double
-min(double a, double b)
-{
-  return a + (b - a) * (a > b);
-}
-
 int
 main(void)
 {

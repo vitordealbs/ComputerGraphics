@@ -1,9 +1,9 @@
+#include <cmath>
 #include <cstdio>
 #include <iostream>
-#include <cmath>
+#include <omp.h>
 #include <raylib.h>
 #include <vector>
-#include <omp.h>
 
 #include "./src/Camera/Camera3de.h"
 #include "./src/Iluminacao/Iluminacao.h"
@@ -33,7 +33,8 @@ Vetor3d I_F = { 1.0f, 1.0f, 1.0f };
 std::vector<ObjetoComplexo> complexObjects;
 std::vector<Objeto> objects_flat;
 
-int main()
+int
+main()
 {
   omp_set_num_threads(16);
   InitWindow(W_C, H_C, "Tarefa06 ");
@@ -50,7 +51,7 @@ int main()
 
   inicializar_objetos(objects_flat, complexObjects);
 
-  for (ObjetoComplexo &objeto_complexo : complexObjects) {
+  for (ObjetoComplexo& objeto_complexo : complexObjects) {
     flatten_objetos(objeto_complexo, objects_flat);
   }
   // Cada objeto irá transformar em 4x4
@@ -68,62 +69,67 @@ int main()
 
     std::vector pixel_buffer(nLin * nCol, WHITE);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < nLin; ++i) {
-        for (int j = 0; j < nCol; ++j) {
-            float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
-            float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
-            Vetor3d P = { xp, yp, -d };
-            Vetor3d dr = P.normalizado();
-            Raio raio(camera.position, dr);
+      for (int j = 0; j < nCol; ++j) {
+        float yp = Ponto_Superior_Esquerdo.y - deltinhay * 0.5f - i * deltinhay;
+        float xp = Ponto_Superior_Esquerdo.x + deltinhax * j + 0.5f * deltinhax;
+        Vetor3d P = { xp, yp, -d };
+        Vetor3d dr = P.normalizado();
+        Raio raio(camera.position, dr);
 
-            auto [t, object] = calcular_intersecao(raio, objects_flat);
-            Vetor3d I_total = I_A;
-            MaterialSimples material;
+        auto [t, object] = calcular_intersecao(raio, objects_flat);
+        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
+        MaterialSimples material;
 
-            if (t > 0.0f) {
-                Vetor3d Pt = raio.no_ponto(t);
-                Vetor3d normal = objects_flat[object].normal(Pt);
+        if (t > 0.0f) {
+          Vetor3d Pt = raio.no_ponto(t);
+          Vetor3d normal = objects_flat[object].normal(Pt);
 
-                std::visit(
-                    [&](auto&& obj) {
-                        using T = std::decay_t<decltype(obj)>;
-                        if constexpr (std::is_same_v<T, PlanoTextura>) {
-                            material = obj.material(Pt);
-                        } else {
-                            material = objects_flat[object].material;
-                        }
-                    },
-                    objects_flat[object].obj);
+          std::visit(
+            [&](auto&& obj) {
+              using T = std::decay_t<decltype(obj)>;
+              if constexpr (std::is_same_v<T, PlanoTextura>) {
+                material = obj.material(Pt);
+              } else {
+                material = objects_flat[object].material;
+              }
+            },
+            objects_flat[object].obj);
 
-                Vetor3d dr_luz = (P_F - Pt).normalizado();
-                Raio light_ray(Pt, dr_luz);
+          Vetor3d dr_luz = (P_F - Pt).normalizado();
+          Raio light_ray(Pt, dr_luz);
 
-                if (auto [t_luz, _] = calcular_intersecao(light_ray, objects_flat, object); t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
-                    I_total = iluminacao::modelo_phong(
-                        Pt, raio.dr, normal, { P_F, I_F }, I_A, material);
-                } else {
-                    I_total = iluminacao::luz_ambiente(I_A, material.K_a);
-                }
+          if (auto [t_luz, _] =
+                calcular_intersecao(light_ray, objects_flat, object);
+              t_luz < 0.0f || t_luz > (P_F - Pt).tamanho()) {
+            I_total = I_total + iluminacao::modelo_phong(
+                                  Pt,
+                                  raio.dr,
+                                  normal,
+                                  iluminacao::FontePontual(P_F, I_F),
+                                  material);
+          }
+          I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
 
-                pixel_buffer[i * nCol + j] = {
-                    static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
-                    static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
-                    static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
-                    255
-                };
-            } else {
-                pixel_buffer[i * nCol + j] = WHITE;
+          pixel_buffer[i * nCol + j] = {
+            static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
+            static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
+            static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
+            255
+          };
+        } else {
+          pixel_buffer[i * nCol + j] = WHITE;
         }
+      }
     }
-}
 
-// Depois que os threads terminam de trabalhar, o código desenha os pixels
-for (int i = 0; i < nLin; ++i) {
-    for (int j = 0; j < nCol; ++j) {
+    // Depois que os threads terminam de trabalhar, o código desenha os pixels
+    for (int i = 0; i < nLin; ++i) {
+      for (int j = 0; j < nCol; ++j) {
         DrawPixel(j, i, pixel_buffer[i * nCol + j]);
+      }
     }
-}
 
     EndDrawing();
   }

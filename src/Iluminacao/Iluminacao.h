@@ -15,7 +15,38 @@ struct FontePontual
   Vetor3d posicao;
   Vetor3d intensidade;
 
+  bool acesa = true;
+
   FontePontual(Vetor3d posicao, Vetor3d intensidade);
+
+  void transformar(Matriz mat);
+};
+
+struct FonteDirecional
+{
+  Vetor3d direcao;
+  Vetor3d intensidade;
+
+  bool acesa = true;
+
+  FonteDirecional(Vetor3d direcao, Vetor3d intensidade);
+
+  void transformar(Matriz mat);
+};
+
+struct FonteSpot
+{
+  Vetor3d posicao;
+  Vetor3d direcao;
+  float cos_beta;
+  Vetor3d intensidade;
+
+  bool acesa = true;
+
+  FonteSpot(Vetor3d posicao,
+            Vetor3d direcao,
+            float angulo,
+            Vetor3d intensidade);
 
   void transformar(Matriz mat);
 };
@@ -25,31 +56,25 @@ modelo_phong(Vetor3d Pt,
              Vetor3d dr,
              Vetor3d n,
              FontePontual fonte,
-             Vetor3d I_A,
              MaterialSimples material);
+
 Vetor3d
+modelo_phong(Vetor3d Pt,
+             Vetor3d dr,
+             Vetor3d n,
+             FonteDirecional fonte,
+             MaterialSimples material);
 
+Vetor3d
+modelo_phong(Vetor3d Pt,
+             Vetor3d dr,
+             Vetor3d n,
+             FonteSpot fonte,
+             MaterialSimples material);
+
+Vetor3d
 luz_ambiente(Vetor3d I_A, Vetor3d K_a);
-    class FonteDirecional {
-    public:
-        Vetor3d direcao;
-        Vetor3d intensidade;
 
-        FonteDirecional(Vetor3d direcao, Vetor3d intensidade);
-        void transformar(Matriz mat);
-    };
-
-    class FonteSpot {
-    public:
-        Vetor3d posicao;
-        Vetor3d direcao;
-        float anguloCutOff;
-        float expoente;
-        Vetor3d intensidade;
-
-        FonteSpot(Vetor3d pos, Vetor3d dir, float angulo, float expoente, Vetor3d I);
-        void transformar(Matriz mat);
-    };
 }
 
 #endif // ILUMINACAO_H
