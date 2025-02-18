@@ -14,6 +14,7 @@ struct Malha
   std::vector<Aresta> arestas;   // Lista de arestas
   std::vector<Triangulo> faces;  // Lista de faces (Triângulos)
   MaterialSimples material;
+  size_t triangulo_atingido = -1;
 
   Malha(); // Construtor padrão
   void inicializar_cubo(const Vetor3d& centro,
