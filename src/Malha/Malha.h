@@ -6,6 +6,7 @@
 #include "./src/Material/Material.h"
 #include "./src/Triangulo/Triangulo.h"
 #include <vector>
+#include "src/BoundingBoxes/BoundigBoxes.h"
 
 struct Malha
 {
@@ -25,6 +26,8 @@ struct Malha
   void imprimir();
 
   void transformar(Matriz mat);
+
+    BoundingBoxA getBoundingBox() const;
 };
 
 #endif // MALHA_H

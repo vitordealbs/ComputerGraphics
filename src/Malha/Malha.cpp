@@ -67,3 +67,16 @@ Malha::transformar(Matriz mat)
       P0, P1, P2, material.K_d, material.K_e, material.K_a, material.m);
   }
 }
+BoundingBoxA Malha::getBoundingBox() const
+{
+
+  if (vertices.empty()) {
+    return BoundingBoxA();
+  }
+
+  BoundingBoxA box;
+  for (const auto &v : vertices) {
+    box.expand(v);
+  }
+  return box;
+}

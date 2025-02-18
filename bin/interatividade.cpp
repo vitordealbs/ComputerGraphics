@@ -953,7 +953,7 @@ renderizar()
           auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
           if (t_luz < 0.0) {
             I_total =
-              I_total + iluminacao::modelo_phong(Pt,
+              I_total + modelo_phong(Pt,
                                                  raio.dr,
                                                  objetos[objeto].normal(Pt),
                                                  fonte,

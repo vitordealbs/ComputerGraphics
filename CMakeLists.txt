@@ -50,13 +50,16 @@ add_executable(${PROJECT_NAME}
         src/PlanoTextura/PlanoTextura.cpp
         src/Camera/Camera.cpp
         src/ObjetoComplexo/ObjetoComplexo.cpp
-        bin/Trabalho_Final.cpp
         src/calcular_intersecao.cpp
         src/calcular_intersecao.h
         src/inicializar_objetos.cpp
         src/inicializar_objetos.h
         src/objetosTrabalhofinal.cpp
         src/objetosTrabalhofinal.h
+        bin/Trabalho_Final.cpp
+        src/rayTracer/RayTracer.cpp
+        src/rayTracer/RayTracer.h
+        bin/Trabalho_Final.cpp
 )
 
 

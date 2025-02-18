@@ -1,5 +1,4 @@
 #include "ObjetoComplexo.h"
-
 void
 ObjetoComplexo::transformar(Matriz mat)
 {
