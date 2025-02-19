@@ -512,6 +512,16 @@ struct Tab
     add_vector_controls(&camera->lookAt,
                         TextFormat("%s.lookAt", label.c_str()));
     add_vector_controls(&camera->Up, TextFormat("%s.Up", label.c_str()));
+    TextBox d_box("d", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->d);
+    TextBox xmin_box("x_min", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->xmin);
+    TextBox ymin_box("y_min", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->ymin);
+    TextBox xmax_box("x_max", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->xmax);
+    TextBox ymax_box("y_max", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->ymax);
+    add_element(d_box);
+    add_element(xmin_box);
+    add_element(ymin_box);
+    add_element(xmax_box);
+    add_element(ymax_box);
     for (TextBox& textbox : textboxes)
       textbox.atualizar_texto();
   }
@@ -817,15 +827,15 @@ renderizar()
 
   Matriz M_cw = camera.getMatrixCameraWorld();
 
-  Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+  Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
   Vetor3d right = { 1.0f, 0.0f, 0.0f };
   Vetor3d down = { 0.0f, -1.0f, 0.0f };
-  Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+  Vetor3d forward = camera.get_center().normalizado();
   right = (M_cw * right.vetor4d()).vetor3d();
   down = (M_cw * down.vetor4d()).vetor3d();
   forward = (M_cw * forward.vetor4d()).vetor3d();
 
-  deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+  deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
   BeginTextureMode(tela);
   {
@@ -939,10 +949,6 @@ main(void)
   int camera_tab = panel.selected_tab;
   panel.tabs[camera_tab].add_camera_controls(&camera, "camera");
   panel.tabs[camera_tab].add_color_controls(&I_A, "I_amb");
-  TextBox janela_width("janela.largura", { 0.0f, 0.0f, 260.0f, 20.0f }, &W_J);
-  TextBox janela_height("janela.altura", { 0.0f, 0.0f, 260.0f, 20.0f }, &H_J);
-  panel.add_element_tab(camera_tab, janela_width);
-  panel.add_element_tab(camera_tab, janela_height);
   Switch switch_projecao(
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);
@@ -999,15 +1005,15 @@ main(void)
 
     Matriz M_cw = camera.getMatrixCameraWorld();
 
-    Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+    Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
     Vetor3d right = { 1.0f, 0.0f, 0.0f };
     Vetor3d down = { 0.0f, -1.0f, 0.0f };
-    Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+    Vetor3d forward = camera.get_center().normalizado();
     right = (M_cw * right.vetor4d()).vetor3d();
     down = (M_cw * down.vetor4d()).vetor3d();
     forward = (M_cw * forward.vetor4d()).vetor3d();
 
-    deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+    deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {

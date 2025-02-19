@@ -113,7 +113,7 @@ struct TextBox
 
   void atualizar_texto()
   {
-    cursor += snprintf(texto, capacidade, "%f", *parametro);
+    cursor = snprintf(texto, capacidade, "%f", *parametro);
   }
 
   float height() { return 2.0f * rect.height + LABEL_MARGIN; }
@@ -408,8 +408,16 @@ struct Tab
             for (TextBox& textbox : this->textboxes)
               textbox.atualizar_parametro();
             Vetor3d ancora_nova = obj.ancora;
-            TraceLog(LOG_INFO, "ancora_antiga = (%f, %f, %f)", ancora_antiga.x, ancora_antiga.y, ancora_antiga.z);
-            TraceLog(LOG_INFO, "ancora_nova = (%f, %f, %f)", ancora_nova.x, ancora_nova.y, ancora_nova.z);
+            TraceLog(LOG_INFO,
+                     "ancora_antiga = (%f, %f, %f)",
+                     ancora_antiga.x,
+                     ancora_antiga.y,
+                     ancora_antiga.z);
+            TraceLog(LOG_INFO,
+                     "ancora_nova = (%f, %f, %f)",
+                     ancora_nova.x,
+                     ancora_nova.y,
+                     ancora_nova.z);
             obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
             obj.ancora = ancora_nova;
           });
@@ -492,9 +500,9 @@ struct Tab
                         TextFormat("%s.ponto", label.c_str()));
   }
 
-  void add_object_controls(Malha* malha, std::string label) {
-    add_vector_controls(&malha->ancora, 
-                        TextFormat("%s.ancora", label.c_str()));
+  void add_object_controls(Malha* malha, std::string label)
+  {
+    add_vector_controls(&malha->ancora, TextFormat("%s.ancora", label.c_str()));
   }
 
   void add_camera_controls(Camera3de* camera, std::string label)
@@ -779,7 +787,7 @@ renderizar()
 {
   TraceLog(LOG_INFO, "Renderizando");
 
-  for(int i = 0; i < pixel_buffer.size(); ++i) {
+  for (int i = 0; i < pixel_buffer.size(); ++i) {
     pixel_buffer[i] = WHITE;
   }
 
