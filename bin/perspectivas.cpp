@@ -1051,6 +1051,44 @@ main(void)
       textbox.atualizar_texto();
   });
   panel.add_element_tab(camera_tab, btn_obliqua);
+  Button btn_zoom_in("Zoom in", btn_rect, [&panel, &camera_tab]() {
+    if (ortografica) {
+      Vetor3d centro = camera.get_center();
+      float dx = (camera.xmax - centro.x) * 0.10f;
+      float dy = (camera.ymax - centro.y) * 0.10f;
+      camera.xmax -= dx;
+      camera.xmin += dx;
+      camera.ymax -= dy;
+      camera.ymin += dy;
+    } else {
+      Vetor3d dv = (camera.lookAt - camera.position) * 0.40f;
+      camera.position = camera.position + dv;
+      camera.lookAt = camera.lookAt + dv;
+    }
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_zoom_in);
+  Button btn_zoom_out("Zoom out", btn_rect, [&panel, &camera_tab]() {
+    if (ortografica) {
+      Vetor3d centro = camera.get_center();
+      float dx = (camera.xmax - centro.x) * 0.10f;
+      float dy = (camera.ymax - centro.y) * 0.10f;
+      camera.xmax += dx;
+      camera.xmin -= dx;
+      camera.ymax += dy;
+      camera.ymin -= dy;
+    } else {
+      Vetor3d dv = (camera.lookAt - camera.position) * 0.40f;
+      camera.position = camera.position - dv;
+      camera.lookAt = camera.lookAt - dv;
+    }
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_zoom_out);
   for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
     textbox.atualizar_texto();
 
