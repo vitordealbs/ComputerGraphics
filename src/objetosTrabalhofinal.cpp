@@ -106,12 +106,12 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
                      Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
                      Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
 
-  degrau22.transformar(Matriz::translacao({ -550.0f, 0.0f, 250.0f }) *
+  degrau22.transformar(Matriz::translacao({ -450.0f, 0.0f, 250.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
                        Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
 
-  degrau32.transformar(Matriz::translacao({ -600.0f, 0.0f, 250.0f }) *
+  degrau32.transformar(Matriz::translacao({ -500.0f, 0.0f, 250.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
                        Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
@@ -261,41 +261,46 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   viga22.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
 
-  coluna12.transformar(Matriz::translacao({ 0.0f, 250.0f, 1001.0f }) *
+  coluna12.transformar(Matriz::translacao({ -100.0f, 250.0f, 1001.0f }) *
                        Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  coluna22.transformar(Matriz::translacao({ 600.0f, 250.0f, 1001.0f }) *
+  coluna22.transformar(Matriz::translacao({ 700.0f, 250.0f, 1001.0f }) *
                        Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  viga12.transformar(Matriz::translacao({ 150.0f, 587.5f, 1001.0f }) *
-                     Matriz::cisalhamento_xy_y(atan(0.75)) *
-                     Matriz::escala({ 300.0f, 50.0f, 30.0f }));
-  viga22.transformar(Matriz::translacao({ 450.0f, 587.5f, 1001.0f }) *
-                     Matriz::cisalhamento_xy_y(atan(-0.75)) *
-                     Matriz::escala({ 300.0f, 50.0f, 30.0f }));
+  viga12.transformar(Matriz::translacao({ 90.0f, 650.0f, 1001.0f }) *
+                     Matriz::cisalhamento_xy_y(atan(0.85)) *
+                     Matriz::escala({ 410.0f, 50.0f, 30.0f }));
+  viga22.transformar(Matriz::translacao({ 500.0f, 650.0f, 1001.0f }) *
+                     Matriz::cisalhamento_xy_y(atan(-0.85)) *
+                     Matriz::escala({ 400.0f, 50.0f, 30.0f }));
 
   ObjetoComplexo portico2;
   portico2.adicionar_objeto(coluna12);
   portico2.adicionar_objeto(coluna22);
   portico2.adicionar_objeto(viga12);
   portico2.adicionar_objeto(viga22);
-  complexObjects.push_back(portico2);
 
-  Vetor3d K_telhado = { 1.0f, 0.0f, 0.0f };
+
+  Vetor3d K_telhado = { 0.5f, 0.5f, 0.5f };
   float m_parede = 1.0f;
   // --- TELHADO ESQUERDO ---
   Malha telhado_esq;
   telhado_esq.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
-  telhado_esq.transformar(Matriz::translacao({ 150.0f, 600.0f, 500.0f }) *
-                          Matriz::cisalhamento_xy_y(atan(0.75)) *
-                          Matriz::escala({ 300.0f, 20.0f, 1000.0f }));
+  telhado_esq.transformar(Matriz::translacao({ 100.0f, 650.0f, 500.0f }) *
+                          Matriz::cisalhamento_xy_y(atan(0.85)) *
+                          Matriz::escala({ 350.0f, 20.0f, 1000.0f }));
 
   // --- TELHADO DIREITO ---
   Malha telhado_dir;
   telhado_dir.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
-  telhado_dir.transformar(Matriz::translacao({ 450.0f, 600.0f, 500.0f }) *
-                          Matriz::cisalhamento_xy_y(atan(-0.75)) *
-                          Matriz::escala({ 300.0f, 20.0f, 1000.0f }));
+  telhado_dir.transformar(Matriz::translacao({ 450.0f, 650.0f, 500.0f }) *
+                          Matriz::cisalhamento_xy_y(atan(-0.85)) *
+                          Matriz::escala({ 350.0f, 20.0f, 1000.0f }));
+
+
+  portico2.adicionar_objeto(telhado_esq);
+  portico2.adicionar_objeto(telhado_dir);
+  complexObjects.push_back(portico2);
   // 7) CESTA DE BASQUETE
   auto criarCestaBasquete = [&](float x, float z) {
     ObjetoComplexo cesta;
