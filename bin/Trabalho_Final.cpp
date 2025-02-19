@@ -774,7 +774,7 @@ std::vector<Objeto> objetos;
 RenderTexture2D tela;
 bool ortografica = false;
 // Inicializar câmera
-Vetor3d Eye = { 140.0f, 125.0f, 800.0f };
+Vetor3d Eye = { -500.0f, 125.0f, 1700.0f };
 Vetor3d At = { 140.0f, 125.0f, 500.0f };
 Vetor3d Up = { 140.0f, 325.0f, 500.0f };
 Camera3de camera(Eye, At, Up);
@@ -848,7 +848,7 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total = I_total + iluminacao::modelo_phong(
+              I_total = I_total + modelo_phong(
                                     Pt, raio.dr, normal, fonte, material);
             }
           }
@@ -859,7 +859,7 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0) {
-              I_total = I_total + iluminacao::modelo_phong(
+              I_total = I_total + modelo_phong(
                                     Pt, raio.dr, normal, fonte, material);
             }
           }
@@ -872,7 +872,7 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total = I_total + iluminacao::modelo_phong(
+              I_total = I_total + modelo_phong(
                                     Pt, raio.dr, normal, fonte, material);
             }
           }
@@ -899,13 +899,20 @@ renderizar()
   TraceLog(LOG_INFO, "Renderizacao completa");
 }
 
-void
-inicializar_luzes()
-{
+void inicializar_luzes() {
   fontes_pontuais.push_back(iluminacao::FontePontual(
-    { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
+      { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_pontuais_labels.push_back("luz_pontual");
+
+  fontes_direcionais.push_back(iluminacao::FonteDirecional(
+      { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+  fontes_direcionais_labels.push_back("luz_direcional");
+
+  fontes_spot.push_back(iluminacao::FonteSpot(
+      { 500.0f, 500.0f, 1000.0f }, { 1.0f, 1.0f, 1.0f }, cosf(M_PI / 6),{ -0.5f, -1.0f, -1.0f } ));
+  fontes_spot_labels.push_back("luz_spot");
 }
+
 
 int
 main()
