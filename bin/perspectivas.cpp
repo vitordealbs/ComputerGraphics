@@ -512,11 +512,21 @@ struct Tab
     add_vector_controls(&camera->lookAt,
                         TextFormat("%s.lookAt", label.c_str()));
     add_vector_controls(&camera->Up, TextFormat("%s.Up", label.c_str()));
-    TextBox d_box("d", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->d);
-    TextBox xmin_box("x_min", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->xmin);
-    TextBox ymin_box("y_min", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->ymin);
-    TextBox xmax_box("x_max", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->xmax);
-    TextBox ymax_box("y_max", { 0.0f, 0.0f, 260.0f, 20.0f }, &camera->ymax);
+    TextBox d_box(TextFormat("%s.d", label.c_str()),
+                  { 0.0f, 0.0f, 260.0f, 20.0f },
+                  &camera->d);
+    TextBox xmin_box(TextFormat("%s.x_min", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->xmin);
+    TextBox ymin_box(TextFormat("%s.y_min", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->ymin);
+    TextBox xmax_box(TextFormat("%s.x_max", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->xmax);
+    TextBox ymax_box(TextFormat("%s.y_max", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->ymax);
     add_element(d_box);
     add_element(xmin_box);
     add_element(ymin_box);
@@ -796,6 +806,28 @@ inicializar_objetos()
                     K_a_plano_fundo,
                     m_plano_fundo);
 
+  Vetor3d K_d_plano_esq = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_esq = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_esq = { 0.3f, 0.3f, 0.7f };
+  float m_plano_esq = 1;
+  Plano plano_esq({ -100.0f, 0.0f, 0.0f },
+                  { 1.0f, 0.0f, 0.0f },
+                  K_d_plano_esq,
+                  K_e_plano_esq,
+                  K_a_plano_esq,
+                  m_plano_esq);
+
+  Vetor3d K_d_plano_dir = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_dir = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_dir = { 0.3f, 0.3f, 0.7f };
+  float m_plano_dir = 1;
+  Plano plano_dir({ 100.0f, 0.0f, 0.0f },
+                  { -1.0f, 0.0f, 0.0f },
+                  K_d_plano_dir,
+                  K_e_plano_dir,
+                  K_a_plano_dir,
+                  m_plano_dir);
+
   Malha cubo;
   Vetor3d K_cubo = { 0.7f, 0.3f, 0.3f };
   float m_cubo = 1.0f;
@@ -803,9 +835,13 @@ inicializar_objetos()
     { 0.0f, 0.0f, -100.0f }, 30.0f, K_cubo, K_cubo, K_cubo, m_cubo);
 
   objetos.emplace_back(plano_fundo);
+  objetos.emplace_back(plano_esq);
+  objetos.emplace_back(plano_dir);
   objetos.emplace_back(cubo);
 
   objetos_labels.push_back("plano_fundo");
+  objetos_labels.push_back("plano_esq");
+  objetos_labels.push_back("plano_dir");
   objetos_labels.push_back("cubo");
 
   fontes_pontuais.push_back(
@@ -963,6 +999,11 @@ main(void)
     camera.position = { 0.0f, 30.0f, 0.0f };
     camera.lookAt = { 0.0f, 30.0f, -20.0f };
     camera.Up = { 0.0f, 31.0f, 0.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
     camera.updateCoordinates();
     for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
       textbox.atualizar_texto();
@@ -972,6 +1013,11 @@ main(void)
     camera.position = { 100.0f, 0.0f, 0.0f };
     camera.lookAt = { 0.0f, 0.0f, -100.0f };
     camera.Up = { 100.0f, 1.0f, 0.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
     camera.updateCoordinates();
     for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
       textbox.atualizar_texto();
@@ -981,11 +1027,30 @@ main(void)
     camera.position = { 60.0f, 50.0f, -40.0f };
     camera.lookAt = { 0.0f, 0.0f, -100.0f };
     camera.Up = { 60.0f, 51.0f, -40.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
     camera.updateCoordinates();
     for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
       textbox.atualizar_texto();
   });
   panel.add_element_tab(camera_tab, btn_fuga3);
+  Button btn_obliqua("Obliqua", btn_rect, [&panel, &camera_tab]() {
+    camera.position = { 50.0f, -30.0f, 0.0f };
+    camera.lookAt = { 50.0f, -30.0f, -10.0f };
+    camera.Up = { 50.0f, 0.0f, 0.0f };
+    camera.xmin = -50.0f;
+    camera.ymin = -20.0f;
+    camera.xmax = 10.0f;
+    camera.ymax = 40.0f;
+    ortografica = true;
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_obliqua);
   for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
     textbox.atualizar_texto();
 

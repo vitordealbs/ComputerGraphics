@@ -3,7 +3,7 @@
 #ifndef Camera_H
 #define Camera_H
 
-const float DEFAULT_D = 10.0f;
+const float DEFAULT_D = 30.0f;
 const float DEFAULT_XMIN = -30.0f;
 const float DEFAULT_YMIN = -30.0f;
 const float DEFAULT_XMAX = 30.0f;
