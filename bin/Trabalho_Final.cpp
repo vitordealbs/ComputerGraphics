@@ -408,16 +408,6 @@ struct Tab
             for (TextBox& textbox : this->textboxes)
               textbox.atualizar_parametro();
             Vetor3d ancora_nova = obj.ancora;
-            TraceLog(LOG_INFO,
-                     "ancora_antiga = (%f, %f, %f)",
-                     ancora_antiga.x,
-                     ancora_antiga.y,
-                     ancora_antiga.z);
-            TraceLog(LOG_INFO,
-                     "ancora_nova = (%f, %f, %f)",
-                     ancora_nova.x,
-                     ancora_nova.y,
-                     ancora_nova.z);
             obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
             obj.ancora = ancora_nova;
           });
@@ -794,7 +784,7 @@ std::vector<Objeto> objetos;
 RenderTexture2D tela;
 bool ortografica = false;
 // Inicializar câmera
-Vetor3d Eye = { -500.0f, 125.0f, 1700.0f };
+Vetor3d Eye = { 500.0f, 125.0f, 1700.0f };
 Vetor3d At = { 140.0f, 125.0f, 500.0f };
 Vetor3d Up = { 140.0f, 325.0f, 500.0f };
 Camera3de camera(Eye, At, Up);

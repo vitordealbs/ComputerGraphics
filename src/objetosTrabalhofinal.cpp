@@ -63,7 +63,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
                           { 0.7f, 0.7f, 0.7f },
                           { 0.7f, 0.7f, 0.7f },
                           32);
-  quadra.transformar(Matriz::translacao({ 150.0f, 0.0f, 300.0f }) *
+  quadra.transformar(Matriz::translacao({ 650.0f, 0.0f, 700.0f }) *
                      Matriz::escala({ 400.0f, 0.00000000000001f, 1000.0f }));
   ObjetoComplexo quadraElevada;
   quadraElevada.adicionar_objeto(quadra);
@@ -92,27 +92,26 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   degrau32.inicializar_cubo(
     { 0, 0, 0 }, 1.0f, corArquib3, corArquib3, corArquib3, m_arquib);
 
-  degrau1.transformar(Matriz::translacao({ 500.0f, 0.0f, 250.0f }) *
+  degrau1.transformar(Matriz::translacao({ 1000.0f, 0.0f, 650.0f }) *
                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
-  degrau2.transformar(Matriz::translacao({ 550.0f, 0.0f, 250.0f }) *
+  degrau2.transformar(Matriz::translacao({ 1050.0f, 0.0f, 650.0f }) *
                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
-  degrau3.transformar(Matriz::translacao({ 600.0f, 0.0f, 250.0f }) *
+  degrau3.transformar(Matriz::translacao({ 1100.0f, 0.0f, 650.0f }) *
                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
 
-  degrau12.transformar(Matriz::translacao({ -400.0f, 0.0f, 250.0f }) *
+  degrau12.transformar(Matriz::translacao({ 100.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                        Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
-
-  degrau22.transformar(Matriz::translacao({ -450.0f, 0.0f, 250.0f }) *
+  degrau22.transformar(Matriz::translacao({ 50.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                        Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
 
-  degrau32.transformar(Matriz::translacao({ -500.0f, 0.0f, 250.0f }) *
+  degrau32.transformar(Matriz::translacao({ 0.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                        Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
@@ -126,7 +125,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   complexObjects.push_back(arquibancada);
 
   // 4) BOLA NO CENTRO (raio maior, se quiser)
-  Esfera bola({ 150.0f, 10.0f, 300.0f },
+  Esfera bola({ 650.0f, 10.0f, 700.0f },
               10.0f,
               { 1.0f, 0.2f, 0.2f },
               { 1.0f, 1.0f, 1.0f },
@@ -163,16 +162,16 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
     return arvore;
   };
 
-  ObjetoComplexo arv1 = criarArvore(500.0f, -400.0f);
-  ObjetoComplexo arv2 = criarArvore(500.0f, 850.0f);
+  ObjetoComplexo arv1 = criarArvore(1000.0f, 0.0f);
+  ObjetoComplexo arv2 = criarArvore(1000.0f, 1250.0f);
 
   complexObjects.push_back(arv1);
   complexObjects.push_back(arv2);
 
   // 6) DUAS TRAVES
   auto criarTrave = [&](float zPos) {
-    float xLeft = 50.0f;
-    float xRight = 200.0f;
+    float xLeft = 580.0f;
+    float xRight = 720.0f;
     float altura = 150.0f;
 
     ObjetoComplexo trave;
@@ -197,7 +196,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
                     { 0.2f, 0.2f, 0.2f },
                     16.0f);
 
-    float xCenter = (xLeft + xRight) * 0.2f;
+    float xCenter = 575;
     float travessaComprimento = 150.0f;
     Cilindro barra({ xCenter, altura, zPos },
                    5.0f,
@@ -214,8 +213,8 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
 
     return trave;
   };
-  ObjetoComplexo trave1 = criarTrave(-100.0f);
-  ObjetoComplexo trave2 = criarTrave(800.0f);
+  ObjetoComplexo trave1 = criarTrave(300.0f);
+  ObjetoComplexo trave2 = criarTrave(1200.0f);
 
   complexObjects.push_back(trave1);
   complexObjects.push_back(trave2);
@@ -232,15 +231,15 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   viga2.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
 
-  coluna1.transformar(Matriz::translacao({ -100.0f, 250.0f, 0.0f }) *
+  coluna1.transformar(Matriz::translacao({ 400.0f, 250.0f, 400.0f }) *
                       Matriz::escala({ 50.0f, 500.0f, 30.0f }));
   // 0, 250, 600,1
-  coluna2.transformar(Matriz::translacao({ 700.0f, 250.0f, 0.0f }) *
+  coluna2.transformar(Matriz::translacao({ 1200.0f, 250.0f, 400.0f }) *
                       Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  viga1.transformar(Matriz::translacao({ 90.0f, 650.0f, 0.0f }) *
+  viga1.transformar(Matriz::translacao({ 590.0f, 650.0f, 400.0f }) *
                     Matriz::cisalhamento_xy_y(atan(0.85)) *
                     Matriz::escala({ 410.0f, 50.0f, 30.0f }));
-  viga2.transformar(Matriz::translacao({ 500.0f, 650.0f, 0.0f }) *
+  viga2.transformar(Matriz::translacao({ 1000.0f, 650.0f, 400.0f }) *
                     Matriz::cisalhamento_xy_y(atan(-0.85)) *
                     Matriz::escala({ 400.0f, 50.0f, 30.0f }));
 
@@ -262,14 +261,14 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   viga22.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_tampo, K_tampo, K_tampo, m_tampo);
 
-  coluna12.transformar(Matriz::translacao({ -100.0f, 250.0f, 1001.0f }) *
+  coluna12.transformar(Matriz::translacao({ 400.0f, 250.0f, 1401.0f }) *
                        Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  coluna22.transformar(Matriz::translacao({ 700.0f, 250.0f, 1001.0f }) *
+  coluna22.transformar(Matriz::translacao({ 1200.0f, 250.0f, 1401.0f }) *
                        Matriz::escala({ 50.0f, 500.0f, 30.0f }));
-  viga12.transformar(Matriz::translacao({ 90.0f, 650.0f, 1001.0f }) *
+  viga12.transformar(Matriz::translacao({ 590.0f, 650.0f, 1401.0f }) *
                      Matriz::cisalhamento_xy_y(atan(0.85)) *
                      Matriz::escala({ 410.0f, 50.0f, 30.0f }));
-  viga22.transformar(Matriz::translacao({ 500.0f, 650.0f, 1001.0f }) *
+  viga22.transformar(Matriz::translacao({ 1000.0f, 650.0f, 1401.0f }) *
                      Matriz::cisalhamento_xy_y(atan(-0.85)) *
                      Matriz::escala({ 400.0f, 50.0f, 30.0f }));
 
@@ -285,7 +284,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   Malha telhado_esq;
   telhado_esq.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
-  telhado_esq.transformar(Matriz::translacao({ 100.0f, 650.0f, 500.0f }) *
+  telhado_esq.transformar(Matriz::translacao({ 600.0f, 650.0f, 900.0f }) *
                           Matriz::cisalhamento_xy_y(atan(0.85)) *
                           Matriz::escala({ 350.0f, 20.0f, 1000.0f }));
 
@@ -293,7 +292,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   Malha telhado_dir;
   telhado_dir.inicializar_cubo(
     { 0.0f, 0.0f, 0.0f }, 1.0f, K_telhado, K_telhado, K_telhado, m_parede);
-  telhado_dir.transformar(Matriz::translacao({ 450.0f, 650.0f, 500.0f }) *
+  telhado_dir.transformar(Matriz::translacao({ 950.0f, 650.0f, 900.0f }) *
                           Matriz::cisalhamento_xy_y(atan(-0.85)) *
                           Matriz::escala({ 350.0f, 20.0f, 1000.0f }));
 
@@ -324,7 +323,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
 
     cesta.adicionar_objeto(asteVertical);
     cesta.adicionar_objeto(asteHorizontal);
-    Cilindro aro1({ 125, 200.0f, -25.0f },
+    Cilindro aro1({ 625, 200.0f, 425.0f },
                   30.0f,
                   10.0f,
                   { 0.0f, 1.0f, 0.0f },
@@ -332,7 +331,7 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
                   { 1.0f, 0.5f, 0.0f },
                   { 0.2f, 0.1f, 0.0f },
                   16.0f);
-    Cilindro aro2({ 125, 200.0f, 800.0f },
+    Cilindro aro2({ 625, 200.0f, 1200.0f },
                   30.0f,
                   10.0f,
                   { 0.0f, 1.0f, 0.0f },
@@ -356,9 +355,9 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
                                  { 1.0f, 1.0f, 1.0f },
                                  { 1.0f, 1.0f, 1.0f },
                                  16.0f);
-    malha_back1.transformar(Matriz::translacao({ 125.0f, 230.0f, 830.0f }) *
+    malha_back1.transformar(Matriz::translacao({ 625.0f, 230.0f, 1230.0f }) *
                             Matriz::escala({ 100.0f, 100.0f, 10.0f }));
-    malha_back2.transformar(Matriz::translacao({ 125.0f, 230.0f, -75.0f }) *
+    malha_back2.transformar(Matriz::translacao({ 625.0f, 230.0f, 325.0f }) *
                             Matriz::escala({ 100.0f, 100.0f, 10.0f }));
     cesta.adicionar_objeto(malha_back1);
     cesta.adicionar_objeto(malha_back2);
@@ -366,8 +365,8 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
     return cesta;
   };
 
-  ObjetoComplexo cesta1 = criarCestaBasquete(125.0f, -80.0f);
-  ObjetoComplexo cesta2 = criarCestaBasquete(125.0f, 820.0f);
+  ObjetoComplexo cesta1 = criarCestaBasquete(625.0f, 320.0f);
+  ObjetoComplexo cesta2 = criarCestaBasquete(625.0f, 1220.0f);
 
   complexObjects.push_back(cesta1);
   complexObjects.push_back(cesta2);
