@@ -766,7 +766,7 @@ std::vector<Objeto> objetos;
 RenderTexture2D tela;
 bool ortografica = false;
 // Inicializar câmera
-Vetor3d Eye = { -500.0f, 125.0f, 1700.0f };
+Vetor3d Eye = { 500.0f, 125.0f, 1700.0f };
 Vetor3d At = { 140.0f, 125.0f, 500.0f };
 Vetor3d Up = { 140.0f, 325.0f, 500.0f };
 Camera3de camera(Eye, At, Up);
