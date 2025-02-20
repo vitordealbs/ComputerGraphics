@@ -155,7 +155,7 @@ Raio::intersecao(const Triangulo& triangulo)
 {
   Vetor3d v = P0 - triangulo.P0;
   double a = dr.dot_product(triangulo.normal);
-  if (a >= 0.0) {
+  if (a == 0.0) {
     return -1.0f;
   }
   double b = v.dot_product(triangulo.normal);

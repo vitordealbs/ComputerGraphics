@@ -84,8 +84,10 @@ Objeto::normal(Vetor3d Pt)
         return objeto.normal;
       else if constexpr (std::is_same_v<T, Malha>)
         return objeto.faces[objeto.triangulo_atingido].normal;
-      else
+      else {
+        TraceLog(LOG_INFO, "Problema: normal de objeto não suportada");
         return { 0.0f, 0.0f, 0.0f };
+      }
     },
     obj);
 }

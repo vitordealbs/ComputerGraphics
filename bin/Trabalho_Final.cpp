@@ -512,6 +512,26 @@ struct Tab
     add_vector_controls(&camera->lookAt,
                         TextFormat("%s.lookAt", label.c_str()));
     add_vector_controls(&camera->Up, TextFormat("%s.Up", label.c_str()));
+    TextBox d_box(TextFormat("%s.d", label.c_str()),
+                  { 0.0f, 0.0f, 260.0f, 20.0f },
+                  &camera->d);
+    TextBox xmin_box(TextFormat("%s.x_min", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->xmin);
+    TextBox ymin_box(TextFormat("%s.y_min", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->ymin);
+    TextBox xmax_box(TextFormat("%s.x_max", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->xmax);
+    TextBox ymax_box(TextFormat("%s.y_max", label.c_str()),
+                     { 0.0f, 0.0f, 260.0f, 20.0f },
+                     &camera->ymax);
+    add_element(d_box);
+    add_element(xmin_box);
+    add_element(ymin_box);
+    add_element(xmax_box);
+    add_element(ymax_box);
     for (TextBox& textbox : textboxes)
       textbox.atualizar_texto();
   }
@@ -793,15 +813,15 @@ renderizar()
 
   Matriz M_cw = camera.getMatrixCameraWorld();
 
-  Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+  Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
   Vetor3d right = { 1.0f, 0.0f, 0.0f };
   Vetor3d down = { 0.0f, -1.0f, 0.0f };
-  Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+  Vetor3d forward = camera.get_center().normalizado();
   right = (M_cw * right.vetor4d()).vetor3d();
   down = (M_cw * down.vetor4d()).vetor3d();
   forward = (M_cw * forward.vetor4d()).vetor3d();
 
-  deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+  deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
   BeginTextureMode(tela);
   {
@@ -907,13 +927,13 @@ inicializar_luzes()
   fontes_pontuais_labels.push_back("luz_pontual");
 
   fontes_direcionais.push_back(
-    iluminacao::FonteDirecional({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+    iluminacao::FonteDirecional({ -1.0f, 1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_direcionais_labels.push_back("luz_direcional");
 
   fontes_spot.push_back(iluminacao::FonteSpot({ 500.0f, 500.0f, 1000.0f },
                                               { 1.0f, 1.0f, 1.0f },
-                                              cosf(PI / 6),
-                                              { -0.5f, -1.0f, -1.0f }));
+                                              PI / 6,
+                                              { 0.5f, 1.0f, 1.0f }));
   fontes_spot_labels.push_back("luz_spot");
 }
 
@@ -946,14 +966,48 @@ main()
   int camera_tab = panel.selected_tab;
   panel.tabs[camera_tab].add_camera_controls(&camera, "camera");
   panel.tabs[camera_tab].add_color_controls(&I_A, "I_amb");
-  TextBox janela_width("janela.largura", { 0.0f, 0.0f, 260.0f, 20.0f }, &W_J);
-  TextBox janela_height("janela.altura", { 0.0f, 0.0f, 260.0f, 20.0f }, &H_J);
-  panel.add_element_tab(camera_tab, janela_width);
-  panel.add_element_tab(camera_tab, janela_height);
   Switch switch_projecao(
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);
   Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+  Button btn_zoom_in("Zoom in", btn_rect, [&panel, &camera_tab]() {
+    if (ortografica) {
+      Vetor3d centro = camera.get_center();
+      float dx = (camera.xmax - centro.x) * 0.10f;
+      float dy = (camera.ymax - centro.y) * 0.10f;
+      camera.xmax -= dx;
+      camera.xmin += dx;
+      camera.ymax -= dy;
+      camera.ymin += dy;
+    } else {
+      Vetor3d dv = (camera.lookAt - camera.position) * 0.40f;
+      camera.position = camera.position + dv;
+      camera.lookAt = camera.lookAt + dv;
+    }
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_zoom_in);
+  Button btn_zoom_out("Zoom out", btn_rect, [&panel, &camera_tab]() {
+    if (ortografica) {
+      Vetor3d centro = camera.get_center();
+      float dx = (camera.xmax - centro.x) * 0.10f;
+      float dy = (camera.ymax - centro.y) * 0.10f;
+      camera.xmax += dx;
+      camera.xmin -= dx;
+      camera.ymax += dy;
+      camera.ymin -= dy;
+    } else {
+      Vetor3d dv = (camera.lookAt - camera.position) * 0.40f;
+      camera.position = camera.position - dv;
+      camera.lookAt = camera.lookAt - dv;
+    }
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_zoom_out);
   Button btn_camera("Atualizar Camera", btn_rect, [&panel, camera_tab]() {
     for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
       textbox.atualizar_parametro();
@@ -980,13 +1034,15 @@ main()
 
     Matriz M_cw = camera.getMatrixCameraWorld();
 
-    Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+    Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
     Vetor3d right = { 1.0f, 0.0f, 0.0f };
     Vetor3d down = { 0.0f, -1.0f, 0.0f };
-    Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+    Vetor3d forward = camera.get_center().normalizado();
     right = (M_cw * right.vetor4d()).vetor3d();
     down = (M_cw * down.vetor4d()).vetor3d();
     forward = (M_cw * forward.vetor4d()).vetor3d();
+
+    deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {

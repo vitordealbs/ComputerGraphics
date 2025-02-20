@@ -7,7 +7,7 @@ calcular_intersecao(Raio& raio, std::vector<Objeto>& objetos, int excluir)
   float menor_t = -1.0f;
 
   for (int i = 0; i < objetos.size(); ++i) {
-    if (i == excluir || !objetos[i].visivel)
+    if (/*i == excluir ||*/ !objetos[i].visivel)
       continue;
 
     float t;

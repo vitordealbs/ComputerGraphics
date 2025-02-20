@@ -56,13 +56,6 @@ Malha::transformar(Matriz mat)
     arestas[i].p2 = (mat * arestas[i].p2.ponto4d()).vetor3d();
   }
   for (size_t i = 0; i < faces.size(); ++i) {
-    Vetor3d P0 = faces[i].P0;
-    Vetor3d P1 = faces[i].P1;
-    Vetor3d P2 = faces[i].P2;
-    P0 = (mat * P0.ponto4d()).vetor3d();
-    P1 = (mat * P1.ponto4d()).vetor3d();
-    P2 = (mat * P2.ponto4d()).vetor3d();
-    faces[i] = Triangulo(
-      P0, P1, P2, material.K_d, material.K_e, material.K_a, material.m);
+    faces[i].transformar(mat);
   }
 }
