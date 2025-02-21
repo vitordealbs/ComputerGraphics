@@ -758,7 +758,7 @@ std::vector<std::string> fontes_direcionais_labels;
 std::vector<std::string> fontes_spot_labels;
 
 // definicao da iluminacao ambiente
-Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
+Vetor3d I_A = { 0.4f, 0.4f, 0.4f };
 
 std::vector<ObjetoComplexo> complexObjects;
 std::vector<Objeto> objetos;
@@ -893,15 +893,15 @@ renderizar()
 
 void inicializar_luzes() {
   fontes_pontuais.push_back(iluminacao::FontePontual(
-      { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
+      { 600.0f, 200.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_pontuais_labels.push_back("luz_pontual");
 
   fontes_direcionais.push_back(iluminacao::FonteDirecional(
-      { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+      { 1.0f, -1.0f, 100.0f }, { 0.2f, 0.3f, .2f }));
   fontes_direcionais_labels.push_back("luz_direcional");
 
   fontes_spot.push_back(iluminacao::FonteSpot(
-      { 500.0f, 500.0f, 1000.0f }, { 1.0f, 1.0f, 1.0f }, cosf(M_PI / 6),{ -0.5f, -1.0f, -1.0f } ));
+      { 800.0f, 600.0f, 200.0f }, { 1.0f, 1.0f, 1.0f }, cosf(M_PI / 6),{ 0.5f, 1.0f, 1.0f } ));
   fontes_spot_labels.push_back("luz_spot");
 }
 
@@ -909,7 +909,7 @@ void inicializar_luzes() {
 int
 main()
 {
-  omp_set_num_threads(16);
+  omp_set_num_threads(8);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Trabalho Final");
   SetTargetFPS(60);
 

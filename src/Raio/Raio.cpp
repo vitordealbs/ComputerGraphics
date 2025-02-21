@@ -150,43 +150,50 @@ Raio::intersecao(const Circulo& circulo)
   return t;
 }
 
-float
-Raio::intersecao(const Triangulo& triangulo)
+float Raio::intersecao(const Triangulo& triangulo)
 {
   Vetor3d v = P0 - triangulo.P0;
   double a = dr.dot_product(triangulo.normal);
-  if (a >= 0.0) {
+
+
+  constexpr double EPSILON = 1e-6;
+
+  if (fabs(a) < EPSILON) {
     return -1.0f;
   }
+
   double b = v.dot_product(triangulo.normal);
   double t = -b / a;
+
+  if (t < 0.0) {
+    return -1.0f;
+  }
+
   Vetor3d Pt = no_ponto(t);
   Vetor3d r1 = triangulo.P0 - Pt;
   Vetor3d r2 = triangulo.P1 - Pt;
   Vetor3d r3 = triangulo.P2 - Pt;
-  float s1 =
-    r3.cross_product(r1).dot_product(triangulo.normal) / triangulo.area2;
-  if (s1 < 0.0f)
-    return -1.0f;
-  float s2 =
-    r1.cross_product(r2).dot_product(triangulo.normal) / triangulo.area2;
-  if (s2 < 0.0f)
-    return -1.0f;
-  float s3 = 1 - s1 - s2;
-  if (s3 < 0.0f)
-    return -1.0f;
-  return t;
-}
 
-float
-Raio::intersecao(const Malha& malha)
+  float s1 = r3.cross_product(r1).dot_product(triangulo.normal) / triangulo.area2;
+  float s2 = r1.cross_product(r2).dot_product(triangulo.normal) / triangulo.area2;
+  float s3 = 1.0f - s1 - s2;
+
+  if (s1 < -EPSILON || s2 < -EPSILON || s3 < -EPSILON) {
+    return -1.0f;
+  }
+
+  return static_cast<float>(t);
+}
+float Raio::intersecao(const Malha& malha)
 {
-  float menor_t = -1.0f;
-  float t;
-  for (Triangulo triangulo : malha.faces) {
-    if ((t = intersecao(triangulo)) > 0.0f && (menor_t < 0.0f || t < menor_t)) {
+  float menor_t = std::numeric_limits<float>::infinity();
+
+  for (const Triangulo& triangulo : malha.faces) {
+    float t = intersecao(triangulo);
+    if (t > 0.0f && t < menor_t) {
       menor_t = t;
     }
   }
-  return menor_t;
+
+  return (menor_t == std::numeric_limits<float>::infinity()) ? -1.0f : menor_t;
 }
