@@ -766,9 +766,9 @@ std::vector<Objeto> objetos;
 RenderTexture2D tela;
 bool ortografica = false;
 // Inicializar câmera
-Vetor3d Eye = { 140.0f, 125.0f, 1000.0f };
-Vetor3d At = { 400.0f, 125.0f, 500.0f };
-Vetor3d Up = { 400.0f, 325.0f, 500.0f };
+Vetor3d Eye = { 500.0f, 125.0f, 1700.0f };
+Vetor3d At = { 140.0f, 125.0f, 500.0f };
+Vetor3d Up = { 140.0f, 325.0f, 500.0f };
 Camera3de camera(Eye, At, Up);
 
 std::vector<Color>
@@ -891,18 +891,17 @@ renderizar()
   TraceLog(LOG_INFO, "Renderizacao completa");
 }
 
-void inicializar_luzes()
-{
+void inicializar_luzes() {
   fontes_pontuais.push_back(iluminacao::FontePontual(
-      { 300.0f, 300.0f, 1500.0f }, { 0.2f, 0.2f, 0.2f }));
+      { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_pontuais_labels.push_back("luz_pontual");
 
   fontes_direcionais.push_back(iluminacao::FonteDirecional(
-      { 0.0f, 0.0f, -1500.0f }, { 0.2f, 0.2f, 0.2f  }));
+      { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_direcionais_labels.push_back("luz_direcional");
 
   fontes_spot.push_back(iluminacao::FonteSpot(
-      { 500.0f, 500.0f, 1000.0f }, { 0.2f, 0.2f, 0.2f  }, cosf(M_PI / 8),{ -0.5f, -1.0f, -1.0f } ));
+      { 500.0f, 500.0f, 1000.0f }, { 1.0f, 1.0f, 1.0f }, cosf(M_PI / 6),{ -0.5f, -1.0f, -1.0f } ));
   fontes_spot_labels.push_back("luz_spot");
 }
 

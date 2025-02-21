@@ -3,9 +3,9 @@
 //
 
 #include "objetosTrabalhofinal.h"
+#include <cmath>
 #include <iostream>
 #include <raylib.h>
-#include <cmath>
 
 #include "./Malha/Malha.h"
 #include "./PlanoTextura/PlanoTextura.h"
@@ -13,7 +13,8 @@
 
 void
 inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
-                         std::vector<ObjetoComplexo>& complexObjects) {
+                         std::vector<ObjetoComplexo>& complexObjects)
+{
   Image textura_grama = LoadImage("../assets/grama.png");
   Color* pixels_textura_grama = LoadImageColors(textura_grama);
   if (!textura_grama.data) {
@@ -91,29 +92,29 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   degrau32.inicializar_cubo(
     { 0, 0, 0 }, 1.0f, corArquib3, corArquib3, corArquib3, m_arquib);
 
+
   degrau1.transformar(Matriz::translacao({ 1000.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-M_PI/2)*
+                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
                       Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
   degrau2.transformar(Matriz::translacao({ 1050.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-M_PI/2)*
+                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
                       Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
   degrau3.transformar(Matriz::translacao({ 1100.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-M_PI/2)*
+                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
                       Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
 
   degrau12.transformar(Matriz::translacao({ 100.0f, 0.0f, 650.0f }) *
                      Matriz::espelhamento_yz() *
-                     Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
+                     Matriz::rotacao_eixo({0, 1, 0}, -PI/2) *
                      Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
-
   degrau22.transformar(Matriz::translacao({ 50.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
-                       Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
+                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                        Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
 
   degrau32.transformar(Matriz::translacao({ 0.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
-                       Matriz::rotacao_eixo({0, 1, 0}, -M_PI/2) *
+                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                        Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
 
   arquibancada.adicionar_objeto(degrau1);
@@ -278,7 +279,6 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   portico2.adicionar_objeto(viga12);
   portico2.adicionar_objeto(viga22);
 
-
   Vetor3d K_telhado = { 0.5f, 0.5f, 0.5f };
   float m_parede = 1.0f;
   // --- TELHADO ESQUERDO ---
@@ -296,7 +296,6 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   telhado_dir.transformar(Matriz::translacao({ 950.0f, 650.0f, 900.0f }) *
                           Matriz::cisalhamento_xy_y(atan(-0.85)) *
                           Matriz::escala({ 350.0f, 20.0f, 1000.0f }));
-
 
   portico2.adicionar_objeto(telhado_esq);
   portico2.adicionar_objeto(telhado_dir);
@@ -365,7 +364,6 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
     cesta.adicionar_objeto(malha_back2);
 
     return cesta;
-
   };
 
   ObjetoComplexo cesta1 = criarCestaBasquete(625.0f, 320.0f);
