@@ -797,20 +797,6 @@ renderizar()
   for (int i = 0; i < pixel_buffer.size(); ++i) {
     pixel_buffer[i] = WHITE;
   }
-  for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
-    TraceLog(LOG_INFO,
-             "pontual.pos = (%f, %f, %f)",
-             fonte.posicao.x,
-             fonte.posicao.y,
-             fonte.posicao.z);
-  }
-  for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
-    TraceLog(LOG_INFO,
-             "direcional.intensidade = (%f, %f, %f)",
-             fonte.intensidade.x,
-             fonte.intensidade.y,
-             fonte.intensidade.z);
-  }
 
   Matriz M_cw = camera.getMatrixCameraWorld();
 
@@ -828,7 +814,6 @@ renderizar()
   {
     ClearBackground(BLACK);
 
-#pragma omp parallel for
     for (int i = 0; i < nLin; ++i) {
       for (int j = 0; j < nCol; ++j) {
         Vetor3d P = PSE + right * (deltinhax * (j + 0.5f)) +
@@ -841,74 +826,74 @@ renderizar()
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        // if (t > 0.0f) {
-        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
-        Vetor3d Pt = raio.no_ponto(t);
-        Vetor3d normal = objetos[objeto].normal(Pt);
-        MaterialSimples material;
+        if (t > 0.0f) {
+          Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
+          Vetor3d Pt = raio.no_ponto(t);
+          Vetor3d normal = objetos[objeto].normal(Pt);
+          MaterialSimples material;
 
-        std::visit(
-          [&](auto&& obj) {
-            using T = std::decay_t<decltype(obj)>;
-            if constexpr (std::is_same_v<T, PlanoTextura>) {
-              material = obj.material(Pt);
-            } else {
-              material = objetos[objeto].material;
+          std::visit(
+            [&](auto&& obj) {
+              using T = std::decay_t<decltype(obj)>;
+              if constexpr (std::is_same_v<T, PlanoTextura>) {
+                material = obj.material(Pt);
+              } else {
+                material = objetos[objeto].material;
+              }
+            },
+            objetos[objeto].obj);
+
+          for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.posicao - Pt;
+            float dist_luz = dr_luz.tamanho();
+            if (dist_luz == 0.0f)
+              continue;
+            dr_luz = dr_luz * (1.0f / dist_luz);
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (t_luz < 0.0 || t_luz > dist_luz) {
+              I_total =
+                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
             }
-          },
-          objetos[objeto].obj);
-
-        for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
-          if (!fonte.acesa)
-            continue;
-          Vetor3d dr_luz = fonte.posicao - Pt;
-          float dist_luz = dr_luz.tamanho();
-          if (dist_luz == 0.0f)
-            continue;
-          dr_luz = dr_luz * (1.0f / dist_luz);
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          if (t_luz < 0.0 || t_luz > dist_luz) {
-            I_total =
-              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
           }
-        }
-        for (iluminacao::FonteDirecional& fonte : fontes_direcionais) {
-          if (!fonte.acesa)
-            continue;
-          Vetor3d dr_luz = fonte.direcao.normalizado();
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          if (t_luz < 0.0) {
-            Vetor3d cor_direcional =
-              modelo_phong(Pt, raio.dr, normal, fonte, material);
-            I_total =
-              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+          for (iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.direcao.normalizado();
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (t_luz < 0.0) {
+              Vetor3d cor_direcional =
+                modelo_phong(Pt, raio.dr, normal, fonte, material);
+              I_total =
+                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+            }
           }
-        }
-        for (const iluminacao::FonteSpot& fonte : fontes_spot) {
-          if (!fonte.acesa)
-            continue;
-          Vetor3d dr_luz = fonte.posicao - Pt;
-          float dist_luz = dr_luz.tamanho();
-          dr_luz = dr_luz * (1.0f / dist_luz);
-          Raio raio_luz(Pt, dr_luz);
-          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-          if (t_luz < 0.0 || t_luz > dist_luz) {
-            I_total =
-              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+          for (const iluminacao::FonteSpot& fonte : fontes_spot) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.posicao - Pt;
+            float dist_luz = dr_luz.tamanho();
+            dr_luz = dr_luz * (1.0f / dist_luz);
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (t_luz < 0.0 || t_luz > dist_luz) {
+              I_total =
+                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+            }
           }
+
+          I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
+
+          pixel_buffer[i * nCol + j] = {
+            static_cast<unsigned char>(fmin(I_total.x * 255.0f, 255.0f)),
+            static_cast<unsigned char>(fmin(I_total.y * 255.0f, 255.0f)),
+            static_cast<unsigned char>(fmin(I_total.z * 255.0f, 255.0f)),
+            255
+          };
         }
-
-        I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
-
-        pixel_buffer[i * nCol + j] = {
-          static_cast<unsigned char>(fmin(I_total.x * 255.0f, 255.0f)),
-          static_cast<unsigned char>(fmin(I_total.y * 255.0f, 255.0f)),
-          static_cast<unsigned char>(fmin(I_total.z * 255.0f, 255.0f)),
-          255
-        };
-        //}
       }
     }
 
