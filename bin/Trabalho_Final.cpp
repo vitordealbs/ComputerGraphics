@@ -408,16 +408,8 @@ struct Tab
             for (TextBox& textbox : this->textboxes)
               textbox.atualizar_parametro();
             Vetor3d ancora_nova = obj.ancora;
-            TraceLog(LOG_INFO,
-                     "ancora_antiga = (%f, %f, %f)",
-                     ancora_antiga.x,
-                     ancora_antiga.y,
-                     ancora_antiga.z);
-            TraceLog(LOG_INFO,
-                     "ancora_nova = (%f, %f, %f)",
-                     ancora_nova.x,
-                     ancora_nova.y,
-                     ancora_nova.z);
+            TraceLog(LOG_INFO, "ancora_antiga = (%f, %f, %f)", ancora_antiga.x, ancora_antiga.y, ancora_antiga.z);
+            TraceLog(LOG_INFO, "ancora_nova = (%f, %f, %f)", ancora_nova.x, ancora_nova.y, ancora_nova.z);
             obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
             obj.ancora = ancora_nova;
           });
@@ -500,9 +492,9 @@ struct Tab
                         TextFormat("%s.ponto", label.c_str()));
   }
 
-  void add_object_controls(Malha* malha, std::string label)
-  {
-    add_vector_controls(&malha->ancora, TextFormat("%s.ancora", label.c_str()));
+  void add_object_controls(Malha* malha, std::string label) {
+    add_vector_controls(&malha->ancora, 
+                        TextFormat("%s.ancora", label.c_str()));
   }
 
   void add_camera_controls(Camera3de* camera, std::string label)
@@ -766,7 +758,7 @@ std::vector<std::string> fontes_direcionais_labels;
 std::vector<std::string> fontes_spot_labels;
 
 // definicao da iluminacao ambiente
-Vetor3d I_A = { 0.7f, 0.7f, 0.7f };
+Vetor3d I_A = { 0.4f, 0.4f, 0.4f };
 
 std::vector<ObjetoComplexo> complexObjects;
 std::vector<Objeto> objetos;
@@ -787,7 +779,7 @@ renderizar()
 {
   TraceLog(LOG_INFO, "Renderizando");
 
-  for (int i = 0; i < pixel_buffer.size(); ++i) {
+  for(int i = 0; i < pixel_buffer.size(); ++i) {
     pixel_buffer[i] = WHITE;
   }
 
@@ -848,8 +840,8 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+              I_total = I_total + modelo_phong(
+                                    Pt, raio.dr, normal, fonte, material);
             }
           }
           for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
@@ -859,8 +851,8 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+              I_total = I_total + modelo_phong(
+                                    Pt, raio.dr, normal, fonte, material);
             }
           }
           for (const iluminacao::FonteSpot& fonte : fontes_spot) {
@@ -872,8 +864,8 @@ renderizar()
             Raio raio_luz(Pt, dr_luz);
             auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
             if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+              I_total = I_total + modelo_phong(
+                                    Pt, raio.dr, normal, fonte, material);
             }
           }
 
@@ -899,28 +891,25 @@ renderizar()
   TraceLog(LOG_INFO, "Renderizacao completa");
 }
 
-void
-inicializar_luzes()
-{
+void inicializar_luzes() {
   fontes_pontuais.push_back(iluminacao::FontePontual(
-    { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
+      { 600.0f, 200.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
   fontes_pontuais_labels.push_back("luz_pontual");
 
-  fontes_direcionais.push_back(
-    iluminacao::FonteDirecional({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+  fontes_direcionais.push_back(iluminacao::FonteDirecional(
+      { 1.0f, -1.0f, 100.0f }, { 0.2f, 0.3f, .2f }));
   fontes_direcionais_labels.push_back("luz_direcional");
 
-  fontes_spot.push_back(iluminacao::FonteSpot({ 500.0f, 500.0f, 1000.0f },
-                                              { 1.0f, 1.0f, 1.0f },
-                                              cosf(PI / 6),
-                                              { -0.5f, -1.0f, -1.0f }));
+  fontes_spot.push_back(iluminacao::FonteSpot(
+      { 800.0f, 600.0f, 200.0f }, { 1.0f, 1.0f, 1.0f }, cosf(M_PI / 6),{ 0.5f, 1.0f, 1.0f } ));
   fontes_spot_labels.push_back("luz_spot");
 }
+
 
 int
 main()
 {
-  omp_set_num_threads(16);
+  omp_set_num_threads(8);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Trabalho Final");
   SetTargetFPS(60);
 
