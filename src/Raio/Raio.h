@@ -22,7 +22,7 @@ struct Raio
 
   Raio(Vetor3d P0, Vetor3d dr);
   Vetor3d no_ponto(float t);
-  float intersecao(const Objeto& objeto);
+  float intersecao(Objeto& objeto);
   float intersecao(const Esfera& esfera);
   float intersecao(const Plano& plano); // Função de intersecção com Plano
   float intersecao(const PlanoTextura& plano_tex);
@@ -30,8 +30,7 @@ struct Raio
   float intersecao(const Cilindro& cilindro);
   float intersecao(const Circulo& circulo);
   float intersecao(const Triangulo& triangulo);
-  float intersecao(const Malha& malha);
-
+  float intersecao(Malha& malha);
 };
 
 // calculo do material para calcular iluminação

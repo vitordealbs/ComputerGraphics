@@ -1,7 +1,5 @@
 #include "Objeto.h"
 
-
-
 Objeto::Objeto(const Esfera& esfera)
   : obj(esfera)
 {
@@ -84,8 +82,12 @@ Objeto::normal(Vetor3d Pt)
         return objeto.normal;
       else if constexpr (std::is_same_v<T, Triangulo>)
         return objeto.normal;
-      else
+      else if constexpr (std::is_same_v<T, Malha>)
+        return objeto.faces[objeto.triangulo_atingido].normal;
+      else {
+        TraceLog(LOG_INFO, "Problema: normal de objeto não suportada");
         return { 0.0f, 0.0f, 0.0f };
+      }
     },
     obj);
 }

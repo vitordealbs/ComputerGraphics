@@ -92,21 +92,20 @@ inicializar_objetosfinal(std::vector<Objeto>& objects_flat,
   degrau32.inicializar_cubo(
     { 0, 0, 0 }, 1.0f, corArquib3, corArquib3, corArquib3, m_arquib);
 
-
   degrau1.transformar(Matriz::translacao({ 1000.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
+                      Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
   degrau2.transformar(Matriz::translacao({ 1050.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
+                      Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 150.0f, 50.0f }));
   degrau3.transformar(Matriz::translacao({ 1100.0f, 0.0f, 650.0f }) *
-                      Matriz::rotacao_eixo({0, 1, 0},-PI/2)*
+                      Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
                       Matriz::escala({ 1000.0f, 200.0f, 50.0f }));
 
   degrau12.transformar(Matriz::translacao({ 100.0f, 0.0f, 650.0f }) *
-                     Matriz::espelhamento_yz() *
-                     Matriz::rotacao_eixo({0, 1, 0}, -PI/2) *
-                     Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
+                       Matriz::espelhamento_yz() *
+                       Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *
+                       Matriz::escala({ 1000.0f, 125.0f, 50.0f }));
   degrau22.transformar(Matriz::translacao({ 50.0f, 0.0f, 650.0f }) *
                        Matriz::espelhamento_yz() *
                        Matriz::rotacao_eixo({ 0, 1, 0 }, -PI / 2) *

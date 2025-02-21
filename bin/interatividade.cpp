@@ -19,6 +19,7 @@
 #include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
 #include "./src/Triangulo/Triangulo.h"
+#include "./src/calcular_intersecao.h"
 #include "funcoes_auxiliares.h"
 using namespace funcoes_auxiliares;
 
@@ -114,7 +115,7 @@ struct TextBox
 
   void atualizar_texto()
   {
-    cursor += snprintf(texto, capacidade, "%f", *parametro);
+    cursor = snprintf(texto, capacidade, "%f", *parametro);
   }
 
   float height() { return 2.0f * rect.height + LABEL_MARGIN; }
@@ -708,25 +709,6 @@ struct TabbedPanel
   }
 };
 
-std::pair<float, int>
-calcular_intersecao(Raio raio, std::vector<Objeto> objetos, int excluir = -1)
-{
-  int objeto = -1;
-  float menor_t = -1.0f;
-  float t;
-  for (int i = 0; i < objetos.size(); ++i) {
-    if (i == excluir || !objetos[i].visivel)
-      continue;
-    if ((t = raio.intersecao(objetos[i])) > 0.0f &&
-        (menor_t < 0.0f || t < menor_t)) {
-      menor_t = t;
-      objeto = i;
-    }
-  }
-
-  return { menor_t, objeto };
-}
-
 // definicao das dimensoes da janela
 const int W_C = 500;
 const int H_C = 500;
@@ -898,7 +880,7 @@ renderizar()
 
   Matriz M_cw = camera.getMatrixCameraWorld();
 
-  Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+  Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
   Vetor3d right = { 1.0f, 0.0f, 0.0f };
   Vetor3d down = { 0.0f, -1.0f, 0.0f };
   Vetor3d forward = { 0.0f, 0.0f, -1.0f };
@@ -906,7 +888,7 @@ renderizar()
   down = (M_cw * down.vetor4d()).vetor3d();
   forward = (M_cw * forward.vetor4d()).vetor3d();
 
-  deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+  deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
   BeginTextureMode(tela);
   {
@@ -1053,15 +1035,15 @@ main(void)
 
     Matriz M_cw = camera.getMatrixCameraWorld();
 
-    Vetor3d PSE = (M_cw * Ponto_Superior_Esquerdo.ponto4d()).vetor3d();
+    Vetor3d PSE = (M_cw * camera.get_PSE().ponto4d()).vetor3d();
     Vetor3d right = { 1.0f, 0.0f, 0.0f };
     Vetor3d down = { 0.0f, -1.0f, 0.0f };
-    Vetor3d forward = { 0.0f, 0.0f, -1.0f };
+    Vetor3d forward = camera.get_center().normalizado();
     right = (M_cw * right.vetor4d()).vetor3d();
     down = (M_cw * down.vetor4d()).vetor3d();
     forward = (M_cw * forward.vetor4d()).vetor3d();
 
-    deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+    deltinhax = camera.get_W_J() / nCol, deltinhay = camera.get_H_J() / nLin;
 
     Vector2 mouse = GetMousePosition();
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {

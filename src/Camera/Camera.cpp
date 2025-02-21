@@ -2,10 +2,35 @@
 #include "Camera3de.h"
 using namespace funcoes_auxiliares;
 
+Camera3de::Camera3de(Vetor3d position,
+                     Vetor3d lookAt,
+                     Vetor3d Up,
+                     float d,
+                     float xmin,
+                     float ymin,
+                     float xmax,
+                     float ymax)
+  : position(position)
+  , lookAt(lookAt)
+  , Up(Up)
+  , d(d)
+  , xmin(xmin)
+  , ymin(ymin)
+  , xmax(xmax)
+  , ymax(ymax)
+{
+  updateCoordinates();
+}
+
 Camera3de::Camera3de(Vetor3d position, Vetor3d lookAt, Vetor3d Up)
   : position(position)
   , lookAt(lookAt)
   , Up(Up)
+  , d(DEFAULT_D)
+  , xmin(DEFAULT_XMIN)
+  , ymin(DEFAULT_YMIN)
+  , xmax(DEFAULT_XMAX)
+  , ymax(DEFAULT_YMAX)
 {
   updateCoordinates();
 }
@@ -70,4 +95,28 @@ Camera3de::getMatrixCameraWorld()
   viewMatrix.data[2][3] = position.z;
 
   return viewMatrix;
+}
+
+Vetor3d
+Camera3de::get_PSE()
+{
+  return { xmin, ymax, -d };
+}
+
+Vetor3d
+Camera3de::get_center()
+{
+  return { 0.5f * (xmax + xmin), 0.5f * (ymax + ymin), -d };
+}
+
+float
+Camera3de::get_H_J()
+{
+  return ymax - ymin;
+}
+
+float
+Camera3de::get_W_J()
+{
+  return xmax - xmin;
 }

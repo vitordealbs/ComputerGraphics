@@ -19,7 +19,7 @@ iluminacao::FontePontual::transformar(Matriz mat)
 
 iluminacao::FonteDirecional::FonteDirecional(Vetor3d direcao,
                                              Vetor3d intensidade)
-  : direcao(direcao)
+  : direcao(direcao.normalizado())
   , intensidade(intensidade)
 {
 }
@@ -35,7 +35,7 @@ iluminacao::FonteSpot::FonteSpot(Vetor3d posicao,
                                  float angulo,
                                  Vetor3d intensidade)
   : posicao(posicao)
-  , direcao(direcao)
+  , direcao(direcao.normalizado())
   , cos_beta(cos(angulo))
   , intensidade(intensidade)
 {
@@ -55,11 +55,14 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FontePontual fonte,
                          MaterialSimples material)
 {
-  Vetor3d v = dr * -1;
+  n = n.normalizado();
+  Vetor3d v = dr.normalizado() * -1;
   Vetor3d l = (fonte.posicao - Pt).normalizado();
-  float dotproduct_nl = n.dot_product(l);
-  Vetor3d r = 2 * dotproduct_nl * n - l;
-  float dotproduct_vr = v.dot_product(r);
+  if (v.dot_product(l) <= 0.0f)
+    return { 0.0f, 0.0f, 0.0f };
+  double dotproduct_nl = n.dot_product(l);
+  Vetor3d r = 2.0 * dotproduct_nl * n - l;
+  double dotproduct_vr = v.dot_product(r);
 
   Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
   Vetor3d E_e =
@@ -76,11 +79,14 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FonteDirecional fonte,
                          MaterialSimples material)
 {
-  Vetor3d v = dr * -1;
-  Vetor3d l = fonte.direcao;
-  float dotproduct_nl = n.dot_product(l);
-  Vetor3d r = 2 * dotproduct_nl * n - l;
-  float dotproduct_vr = v.dot_product(r);
+  n = n.normalizado();
+  Vetor3d v = dr.normalizado() * -1;
+  Vetor3d l = fonte.direcao.normalizado();
+  if (v.dot_product(l) <= 0.0f)
+    return { 0.0f, 0.0f, 0.0f };
+  double dotproduct_nl = n.dot_product(l);
+  Vetor3d r = 2.0 * dotproduct_nl * n - l;
+  double dotproduct_vr = v.dot_product(r);
 
   Vetor3d E_d = material.K_d * fonte.intensidade * max(dotproduct_nl, 0.0);
   Vetor3d E_e =
@@ -97,12 +103,15 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FonteSpot fonte,
                          MaterialSimples material)
 {
-  Vetor3d v = dr * -1;
+  n = n.normalizado();
+  Vetor3d v = dr.normalizado() * -1;
   Vetor3d l = (fonte.posicao - Pt).normalizado();
-  float cos_alpha = -l.dot_product(fonte.direcao);
-  float dotproduct_nl = n.dot_product(l);
-  Vetor3d r = 2 * dotproduct_nl * n - l;
-  float dotproduct_vr = v.dot_product(r);
+  if (v.dot_product(l) <= 0.0f)
+    return { 0.0f, 0.0f, 0.0f };
+  double cos_alpha = -l.dot_product(fonte.direcao.normalizado());
+  double dotproduct_nl = n.dot_product(l);
+  Vetor3d r = 2.0 * dotproduct_nl * n - l;
+  double dotproduct_vr = v.dot_product(r);
 
   Vetor3d I_F = fonte.intensidade;
   if (cos_alpha < fonte.cos_beta)

@@ -1,24 +1,26 @@
-#include <cmath>
 #include <cstdio>
-#include <functional>
-#include <iostream>
-#include <omp.h>
+#include <math.h>
+
 #include <raylib.h>
 #include <raymath.h>
+
+#include <functional>
 #include <string>
 #include <vector>
 
 #include "./src/Camera/Camera3de.h"
+#include "./src/Cilindro/Cilindro.h"
+#include "./src/Circulo/Circulo.h"
+#include "./src/Cone/Cone.h"
+#include "./src/Esfera/Esfera.h"
 #include "./src/Iluminacao/Iluminacao.h"
 #include "./src/Material/Material.h"
 #include "./src/Objeto/Objeto.h"
+#include "./src/Plano/Plano.h"
 #include "./src/Raio/Raio.h"
+#include "./src/Triangulo/Triangulo.h"
 #include "funcoes_auxiliares.h"
-#include "src/ObjetoComplexo/ObjetoComplexo.h"
 #include "src/calcular_intersecao.h"
-#include "src/inicializar_objetos.h"
-#include "src/objetosTrabalhofinal.h"
-
 using namespace funcoes_auxiliares;
 
 const int SCREEN_WIDTH = 800;
@@ -408,10 +410,16 @@ struct Tab
             for (TextBox& textbox : this->textboxes)
               textbox.atualizar_parametro();
             Vetor3d ancora_nova = obj.ancora;
-            
-            TraceLog(LOG_INFO, "ancora_antiga = (%f, %f, %f)", ancora_antiga.x, ancora_antiga.y, ancora_antiga.z);
-            TraceLog(LOG_INFO, "ancora_nova = (%f, %f, %f)", ancora_nova.x, ancora_nova.y, ancora_nova.z);
-
+            TraceLog(LOG_INFO,
+                     "ancora_antiga = (%f, %f, %f)",
+                     ancora_antiga.x,
+                     ancora_antiga.y,
+                     ancora_antiga.z);
+            TraceLog(LOG_INFO,
+                     "ancora_nova = (%f, %f, %f)",
+                     ancora_nova.x,
+                     ancora_nova.y,
+                     ancora_nova.z);
             obj.transformar(Matriz::translacao(ancora_nova - ancora_antiga));
             obj.ancora = ancora_nova;
           });
@@ -492,9 +500,9 @@ struct Tab
                         TextFormat("%s.ponto", label.c_str()));
   }
 
-  void add_object_controls(Malha* malha, std::string label) {
-    add_vector_controls(&malha->ancora, 
-                        TextFormat("%s.ancora", label.c_str()));
+  void add_object_controls(Malha* malha, std::string label)
+  {
+    add_vector_controls(&malha->ancora, TextFormat("%s.ancora", label.c_str()));
   }
 
   void add_camera_controls(Camera3de* camera, std::string label)
@@ -762,7 +770,7 @@ const int nCol = 500;
 // distancia do frame ao olho
 float d = 30.0f;
 
-double deltinhax = W_J / nCol, deltinhay = H_J / nLin;
+double deltinhax, deltinhay;
 int Deltax = W_C / nCol, Deltay = H_C / nLin;
 Vetor3d Ponto_Superior_Esquerdo = { -W_J * 0.5f, W_J * 0.5f, -d };
 float zp = -d;
@@ -777,29 +785,87 @@ std::vector<std::string> fontes_direcionais_labels;
 std::vector<std::string> fontes_spot_labels;
 
 // definicao da iluminacao ambiente
-Vetor3d I_A = { 0.4f, 0.4f, 0.4f };
+Vetor3d I_A = { 1.0f, 1.0f, 1.0f };
 
-std::vector<ObjetoComplexo> complexObjects;
 std::vector<Objeto> objetos;
+
+std::vector<std::string> objetos_labels;
+
+void
+inicializar_objetos()
+{
+  // definicao do plano de fundo
+  Vetor3d K_d_plano_fundo = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_fundo = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_fundo = { 0.3f, 0.3f, 0.7f };
+  float m_plano_fundo = 1;
+  Plano plano_fundo({ 0.0f, 0.0f, -200.0f },
+                    { 0.0f, 0.0f, 1.0f },
+                    K_d_plano_fundo,
+                    K_e_plano_fundo,
+                    K_a_plano_fundo,
+                    m_plano_fundo);
+
+  Vetor3d K_d_plano_esq = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_esq = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_esq = { 0.3f, 0.3f, 0.7f };
+  float m_plano_esq = 1;
+  Plano plano_esq({ -100.0f, 0.0f, 0.0f },
+                  { 1.0f, 0.0f, 0.0f },
+                  K_d_plano_esq,
+                  K_e_plano_esq,
+                  K_a_plano_esq,
+                  m_plano_esq);
+
+  Vetor3d K_d_plano_dir = { 0.3f, 0.3f, 0.7f };
+  Vetor3d K_e_plano_dir = { 0.0f, 0.0f, 0.0f };
+  Vetor3d K_a_plano_dir = { 0.3f, 0.3f, 0.7f };
+  float m_plano_dir = 1;
+  Plano plano_dir({ 100.0f, 0.0f, 0.0f },
+                  { -1.0f, 0.0f, 0.0f },
+                  K_d_plano_dir,
+                  K_e_plano_dir,
+                  K_a_plano_dir,
+                  m_plano_dir);
+
+  Malha cubo;
+  Vetor3d K_cubo = { 0.7f, 0.3f, 0.3f };
+  float m_cubo = 1.0f;
+  cubo.inicializar_cubo(
+    { 0.0f, 0.0f, -100.0f }, 30.0f, K_cubo, K_cubo, K_cubo, m_cubo);
+
+  objetos.emplace_back(plano_fundo);
+  objetos.emplace_back(plano_esq);
+  objetos.emplace_back(plano_dir);
+  objetos.emplace_back(cubo);
+
+  objetos_labels.push_back("plano_fundo");
+  objetos_labels.push_back("plano_esq");
+  objetos_labels.push_back("plano_dir");
+  objetos_labels.push_back("cubo");
+
+  fontes_pontuais.push_back(
+    iluminacao::FontePontual({ 0.0f, 60.0f, -30.0f }, { 0.7f, 0.7f, 0.7f }));
+  fontes_pontuais_labels.push_back("luz_pontual");
+}
 
 RenderTexture2D tela;
 bool ortografica = false;
-// Inicializar câmera
-Vetor3d Eye = { 500.0f, 125.0f, 1700.0f };
-Vetor3d At = { 650.0f, 10.0f, 700.0f };
-Vetor3d Up = { 500.0f, 200.0f, 1700.0f };
+Vetor3d Eye = { 0.0f, 0.0f, 0.0f };
+Vetor3d At = { 0.0f, 0.0f, -20.0f };
+Vetor3d Up = { 0.0f, 1.0f, 0.0f };
 Camera3de camera(Eye, At, Up);
-
-std::vector<Color>
-pixel_buffer(nLin* nCol, WHITE);
 
 void
 renderizar()
 {
   TraceLog(LOG_INFO, "Renderizando");
-
-  for(int i = 0; i < pixel_buffer.size(); ++i) {
-    pixel_buffer[i] = WHITE;
+  for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+    TraceLog(LOG_INFO,
+             "pontual.pos = (%f, %f, %f)",
+             fonte.posicao.x,
+             fonte.posicao.y,
+             fonte.posicao.z);
   }
 
   Matriz M_cw = camera.getMatrixCameraWorld();
@@ -830,82 +896,72 @@ renderizar()
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        if (t > 0.0f) {
-          Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d normal = objetos[objeto].normal(Pt);
-          MaterialSimples material;
-
-          std::visit(
-            [&](auto&& obj) {
-              using T = std::decay_t<decltype(obj)>;
-              if constexpr (std::is_same_v<T, PlanoTextura>) {
-                material = obj.material(Pt);
-              } else {
-                material = objetos[objeto].material;
-              }
-            },
-            objetos[objeto].obj);
-
-          for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            if (dist_luz == 0.0f)
-              continue;
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total = I_total + modelo_phong(
-                                    Pt, raio.dr, normal, fonte, material);
-            }
+        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
+        Vetor3d Pt = raio.no_ponto(t);
+        for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          if (dist_luz == 0.0f)
+            continue;
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
           }
-          for (iluminacao::FonteDirecional& fonte : fontes_direcionais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.direcao.normalizado();
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0) {
-
-              Vetor3d cor_direcional =
-                modelo_phong(Pt, raio.dr, normal, fonte, material);
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
-
-            }
-          }
-          for (const iluminacao::FonteSpot& fonte : fontes_spot) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total = I_total + modelo_phong(
-                                    Pt, raio.dr, normal, fonte, material);
-            }
-          }
-
-          I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
-
-          pixel_buffer[i * nCol + j] = {
-            static_cast<unsigned char>(fmin(I_total.x * 255.0f, 255.0f)),
-            static_cast<unsigned char>(fmin(I_total.y * 255.0f, 255.0f)),
-            static_cast<unsigned char>(fmin(I_total.z * 255.0f, 255.0f)),
-            255
-          };
         }
-      }
-    }
+        for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.direcao;
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
+          }
+        }
+        for (const iluminacao::FonteSpot& fonte : fontes_spot) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + iluminacao::modelo_phong(Pt,
+                                                 raio.dr,
+                                                 objetos[objeto].normal(Pt),
+                                                 fonte,
+                                                 objetos[objeto].material);
+          }
+        }
 
-    for (int i = 0; i < nLin; ++i) {
-      for (int j = 0; j < nCol; ++j) {
-        DrawPixel(j, i, pixel_buffer[i * nCol + j]);
+        I_total =
+          I_total + iluminacao::luz_ambiente(I_A, objetos[objeto].material.K_a);
+
+        DrawRectangle(
+          Deltax * j,
+          Deltay * i,
+          Deltax,
+          Deltay,
+          (Color){ static_cast<unsigned char>(min(I_total.x * 255.0f, 255.0f)),
+                   static_cast<unsigned char>(min(I_total.y * 255.0f, 255.0f)),
+                   static_cast<unsigned char>(min(I_total.z * 255.0f, 255.0f)),
+                   255 });
       }
     }
   }
@@ -913,31 +969,11 @@ renderizar()
   TraceLog(LOG_INFO, "Renderizacao completa");
 }
 
-
-void
-inicializar_luzes()
-{
-  fontes_pontuais.push_back(
-    iluminacao::FontePontual({ 600.0f, 200.0f, 1500.0f }, { 0.8f, 0.8f, 0.8f }));
-  fontes_pontuais_labels.push_back("luz_pontual");
-
-  fontes_direcionais.push_back(
-    iluminacao::FonteDirecional({ -1.0f, 1.0f, -1.0f }, { 0.5f, 0.5f, 0.5f }));
-  fontes_direcionais_labels.push_back("luz_direcional");
-
-  fontes_spot.push_back(iluminacao::FonteSpot({ 800.0f, 600.0f, 200.0f },
-                                              { 1.0f, 1.0f, 1.0f },
-                                              PI / 6,
-                                              { 0.5f, 0.8f, 0.8f }));
-  fontes_spot_labels.push_back("luz_spot");
-}
-
-
 int
-main()
+main(void)
 {
-  omp_set_num_threads(8);
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Trabalho Final");
+
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Interatividade");
   SetTargetFPS(60);
 
   Font font = GetFontDefault();
@@ -946,13 +982,7 @@ main()
 
   tela = LoadRenderTexture(W_C, H_C);
 
-  inicializar_objetosfinal(objetos, complexObjects);
-  for (ObjetoComplexo& objeto_complexo : complexObjects) {
-    flatten_objetos(objeto_complexo, objetos);
-  }
-  std::cout << "Objetos na cena: " << objetos.size() << "\n";
-
-  inicializar_luzes();
+  inicializar_objetos();
 
   renderizar();
 
@@ -966,6 +996,68 @@ main()
     "Projecao Ortografica", { 0.0f, 0.0f, 30.0f, 15.0f }, &ortografica);
   panel.add_element_tab(camera_tab, switch_projecao);
   Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
+  Button btn_camera("Atualizar Camera", btn_rect, [&panel, &camera_tab]() {
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_parametro();
+    camera.updateCoordinates();
+  });
+  panel.add_element_tab(camera_tab, btn_camera);
+  Button btn_fuga1("1 Ponto de Fuga", btn_rect, [&panel, &camera_tab]() {
+    camera.position = { 0.0f, 30.0f, 0.0f };
+    camera.lookAt = { 0.0f, 30.0f, -20.0f };
+    camera.Up = { 0.0f, 31.0f, 0.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_fuga1);
+  Button btn_fuga2("2 Pontos de Fuga", btn_rect, [&panel, &camera_tab]() {
+    camera.position = { 100.0f, 0.0f, 0.0f };
+    camera.lookAt = { 0.0f, 0.0f, -100.0f };
+    camera.Up = { 100.0f, 1.0f, 0.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_fuga2);
+  Button btn_fuga3("3+ Pontos de Fuga", btn_rect, [&panel, &camera_tab]() {
+    camera.position = { 60.0f, 50.0f, -40.0f };
+    camera.lookAt = { 0.0f, 0.0f, -100.0f };
+    camera.Up = { 60.0f, 51.0f, -40.0f };
+    camera.xmin = -30.0f;
+    camera.ymin = -30.0f;
+    camera.xmax = 30.0f;
+    camera.ymax = 30.0f;
+    ortografica = false;
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_fuga3);
+  Button btn_obliqua("Obliqua", btn_rect, [&panel, &camera_tab]() {
+    camera.position = { 50.0f, -30.0f, 0.0f };
+    camera.lookAt = { 50.0f, -30.0f, -10.0f };
+    camera.Up = { 50.0f, 0.0f, 0.0f };
+    camera.xmin = -50.0f;
+    camera.ymin = -20.0f;
+    camera.xmax = 10.0f;
+    camera.ymax = 40.0f;
+    ortografica = true;
+    camera.updateCoordinates();
+    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
+      textbox.atualizar_texto();
+  });
+  panel.add_element_tab(camera_tab, btn_obliqua);
   Button btn_zoom_in("Zoom in", btn_rect, [&panel, &camera_tab]() {
     if (ortografica) {
       Vetor3d centro = camera.get_center();
@@ -1004,12 +1096,6 @@ main()
       textbox.atualizar_texto();
   });
   panel.add_element_tab(camera_tab, btn_zoom_out);
-  Button btn_camera("Atualizar Camera", btn_rect, [&panel, camera_tab]() {
-    for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
-      textbox.atualizar_parametro();
-    camera.updateCoordinates();
-  });
-  panel.add_element_tab(camera_tab, btn_camera);
   for (TextBox& textbox : panel.tabs[camera_tab].textboxes)
     textbox.atualizar_texto();
 
@@ -1025,7 +1111,6 @@ main()
     panel.add_tab_luz(&fontes_spot[i], fontes_spot_labels[i]);
   }
 
-  // Loop principal
   while (!WindowShouldClose()) {
 
     Matriz M_cw = camera.getMatrixCameraWorld();
@@ -1054,58 +1139,11 @@ main()
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        if (t > 0.0f) {
+        if (t > 0.0f)
           objeto_selecionado = objeto;
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d normal = objetos[objeto].normal(Pt);
-          TraceLog(LOG_INFO,
-                   "normal(Pt) = (%f, %f, %f)",
-                   normal.x,
-                   normal.y,
-                   normal.z);
-
-          for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            if (dist_luz == 0.0f)
-              continue;
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (!(t_luz < 0.0 || t_luz > dist_luz)) {
-              TraceLog(LOG_INFO, "luz pontual bloqueada por obj%d", obj2);
-            }
-          }
-          for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.direcao;
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (!(t_luz < 0.0)) {
-              TraceLog(LOG_INFO, "luz direcional bloqueada por obj%d", obj2);
-            }
-          }
-          for (const iluminacao::FonteSpot& fonte : fontes_spot) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (!(t_luz < 0.0 || t_luz > dist_luz)) {
-              TraceLog(LOG_INFO, "luz spot bloqueada por obj%d", obj2);
-            }
-          }
-        }
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
-
         if (objeto_selecionado >= 0)
-          panel.add_tab_objeto(&objetos[objeto],
-                               TextFormat("obj%d", objeto_selecionado));
+          panel.add_tab_objeto(&objetos[objeto], objetos_labels[objeto]);
       } else {
         panel.intersecao(mouse);
       }
@@ -1134,7 +1172,6 @@ main()
     }
     EndDrawing();
   }
-  CloseWindow();
 
   UnloadRenderTexture(tela);
 

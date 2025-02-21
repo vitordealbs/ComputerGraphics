@@ -17,7 +17,7 @@ Raio::no_ponto(float t)
 }
 
 float
-Raio::intersecao(const Objeto& objeto)
+Raio::intersecao(Objeto& objeto)
 {
   // Usa std::visit para acessar dinamicamente o tipo armazenado no std::variant
   return std::visit([this](auto&& obj) -> float { return intersecao(obj); },
@@ -155,7 +155,7 @@ Raio::intersecao(const Triangulo& triangulo)
 {
   Vetor3d v = P0 - triangulo.P0;
   double a = dr.dot_product(triangulo.normal);
-  if (a >= 0.0) {
+  if (a == 0.0) {
     return -1.0f;
   }
   double b = v.dot_product(triangulo.normal);
@@ -179,13 +179,15 @@ Raio::intersecao(const Triangulo& triangulo)
 }
 
 float
-Raio::intersecao(const Malha& malha)
+Raio::intersecao(Malha& malha)
 {
   float menor_t = -1.0f;
   float t;
-  for (Triangulo triangulo : malha.faces) {
-    if ((t = intersecao(triangulo)) > 0.0f && (menor_t < 0.0f || t < menor_t)) {
+  for (size_t i = 0; i < malha.faces.size(); ++i) {
+    if ((t = intersecao(malha.faces[i])) > 0.0f &&
+        (menor_t < 0.0f || t < menor_t)) {
       menor_t = t;
+      malha.triangulo_atingido = i;
     }
   }
   return menor_t;
