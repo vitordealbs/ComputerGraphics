@@ -421,8 +421,6 @@ struct Tab
 
   void add_object_controls(Plano* plano, std::string label)
   {
-    Rectangle rect = { 0.0f, 0.0f, 260.0f, 20.0f };
-    Rectangle btn_rect = { 0.0f, 0.0f, 260.0f, 30.0f };
     add_vector_controls(&plano->normal, TextFormat("%s.normal", label.c_str()));
     add_vector_controls(&plano->ponto, TextFormat("%s.ponto", label.c_str()));
   }
@@ -544,7 +542,6 @@ struct Tab
     Switch acesa_switch("Acesa", switch_rect, &fonte->acesa);
     add_element(acesa_switch);
   }
-
   void add_light_controls(iluminacao::FonteDirecional* fonte, std::string label)
   {
     Rectangle switch_rect = { 0.0f, 0.0f, 30.0f, 20.0f };
@@ -785,8 +782,8 @@ RenderTexture2D tela;
 bool ortografica = false;
 // Inicializar câmera
 Vetor3d Eye = { 500.0f, 125.0f, 1700.0f };
-Vetor3d At = { 140.0f, 125.0f, 500.0f };
-Vetor3d Up = { 140.0f, 325.0f, 500.0f };
+Vetor3d At = { 650.0f, 10.0f, 700.0f };
+Vetor3d Up = { 500.0f, 200.0f, 1700.0f };
 Camera3de camera(Eye, At, Up);
 
 std::vector<Color>
@@ -799,6 +796,20 @@ renderizar()
 
   for (int i = 0; i < pixel_buffer.size(); ++i) {
     pixel_buffer[i] = WHITE;
+  }
+  for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+    TraceLog(LOG_INFO,
+             "pontual.pos = (%f, %f, %f)",
+             fonte.posicao.x,
+             fonte.posicao.y,
+             fonte.posicao.z);
+  }
+  for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+    TraceLog(LOG_INFO,
+             "direcional.intensidade = (%f, %f, %f)",
+             fonte.intensidade.x,
+             fonte.intensidade.y,
+             fonte.intensidade.z);
   }
 
   Matriz M_cw = camera.getMatrixCameraWorld();
@@ -830,72 +841,74 @@ renderizar()
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        if (t > 0.0f) {
-          Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
-          Vetor3d Pt = raio.no_ponto(t);
-          Vetor3d normal = objetos[objeto].normal(Pt);
-          MaterialSimples material;
+        // if (t > 0.0f) {
+        Vetor3d I_total = { 0.0f, 0.0f, 0.0f };
+        Vetor3d Pt = raio.no_ponto(t);
+        Vetor3d normal = objetos[objeto].normal(Pt);
+        MaterialSimples material;
 
-          std::visit(
-            [&](auto&& obj) {
-              using T = std::decay_t<decltype(obj)>;
-              if constexpr (std::is_same_v<T, PlanoTextura>) {
-                material = obj.material(Pt);
-              } else {
-                material = objetos[objeto].material;
-              }
-            },
-            objetos[objeto].obj);
-
-          for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            if (dist_luz == 0.0f)
-              continue;
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+        std::visit(
+          [&](auto&& obj) {
+            using T = std::decay_t<decltype(obj)>;
+            if constexpr (std::is_same_v<T, PlanoTextura>) {
+              material = obj.material(Pt);
+            } else {
+              material = objetos[objeto].material;
             }
-          }
-          for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.direcao;
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
-            }
-          }
-          for (const iluminacao::FonteSpot& fonte : fontes_spot) {
-            if (!fonte.acesa)
-              continue;
-            Vetor3d dr_luz = fonte.posicao - Pt;
-            float dist_luz = dr_luz.tamanho();
-            dr_luz = dr_luz * (1.0f / dist_luz);
-            Raio raio_luz(Pt, dr_luz);
-            auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
-            if (t_luz < 0.0 || t_luz > dist_luz) {
-              I_total =
-                I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
-            }
-          }
+          },
+          objetos[objeto].obj);
 
-          I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
-
-          pixel_buffer[i * nCol + j] = {
-            static_cast<unsigned char>(fmin(I_total.x * 255, 255)),
-            static_cast<unsigned char>(fmin(I_total.y * 255, 255)),
-            static_cast<unsigned char>(fmin(I_total.z * 255, 255)),
-            255
-          };
+        for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          if (dist_luz == 0.0f)
+            continue;
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+          }
         }
+        for (iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.direcao.normalizado();
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0) {
+            Vetor3d cor_direcional =
+              modelo_phong(Pt, raio.dr, normal, fonte, material);
+            I_total =
+              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+          }
+        }
+        for (const iluminacao::FonteSpot& fonte : fontes_spot) {
+          if (!fonte.acesa)
+            continue;
+          Vetor3d dr_luz = fonte.posicao - Pt;
+          float dist_luz = dr_luz.tamanho();
+          dr_luz = dr_luz * (1.0f / dist_luz);
+          Raio raio_luz(Pt, dr_luz);
+          auto [t_luz, _] = calcular_intersecao(raio_luz, objetos, objeto);
+          if (t_luz < 0.0 || t_luz > dist_luz) {
+            I_total =
+              I_total + modelo_phong(Pt, raio.dr, normal, fonte, material);
+          }
+        }
+
+        I_total = I_total + iluminacao::luz_ambiente(I_A, material.K_a);
+
+        pixel_buffer[i * nCol + j] = {
+          static_cast<unsigned char>(fmin(I_total.x * 255.0f, 255.0f)),
+          static_cast<unsigned char>(fmin(I_total.y * 255.0f, 255.0f)),
+          static_cast<unsigned char>(fmin(I_total.z * 255.0f, 255.0f)),
+          255
+        };
+        //}
       }
     }
 
@@ -912,18 +925,18 @@ renderizar()
 void
 inicializar_luzes()
 {
-  fontes_pontuais.push_back(iluminacao::FontePontual(
-    { 300.0f, 300.0f, 1500.0f }, { 1.0f, 1.0f, 1.0f }));
+  fontes_pontuais.push_back(
+    iluminacao::FontePontual({ 650.0f, 50.0f, 700.0f }, { 0.8f, 0.8f, 0.8f }));
   fontes_pontuais_labels.push_back("luz_pontual");
 
   fontes_direcionais.push_back(
-    iluminacao::FonteDirecional({ -1.0f, 1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f }));
+    iluminacao::FonteDirecional({ -1.0f, 1.0f, -1.0f }, { 0.5f, 0.5f, 0.5f }));
   fontes_direcionais_labels.push_back("luz_direcional");
 
   fontes_spot.push_back(iluminacao::FonteSpot({ 500.0f, 500.0f, 1000.0f },
                                               { 1.0f, 1.0f, 1.0f },
                                               PI / 6,
-                                              { 0.5f, 1.0f, 1.0f }));
+                                              { 0.5f, 0.8f, 0.8f }));
   fontes_spot_labels.push_back("luz_spot");
 }
 
@@ -1048,9 +1061,55 @@ main()
         }
         Raio raio(ortografica ? P : camera.position, dr);
         auto [t, objeto] = calcular_intersecao(raio, objetos);
-        if (t > 0.0f)
+        if (t > 0.0f) {
           objeto_selecionado = objeto;
+          Vetor3d Pt = raio.no_ponto(t);
+          Vetor3d normal = objetos[objeto].normal(Pt);
+          TraceLog(LOG_INFO,
+                   "normal(Pt) = (%f, %f, %f)",
+                   normal.x,
+                   normal.y,
+                   normal.z);
+
+          for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.posicao - Pt;
+            float dist_luz = dr_luz.tamanho();
+            if (dist_luz == 0.0f)
+              continue;
+            dr_luz = dr_luz * (1.0f / dist_luz);
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (!(t_luz < 0.0 || t_luz > dist_luz)) {
+              TraceLog(LOG_INFO, "luz pontual bloqueada por obj%d", obj2);
+            }
+          }
+          for (const iluminacao::FonteDirecional& fonte : fontes_direcionais) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.direcao;
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (!(t_luz < 0.0)) {
+              TraceLog(LOG_INFO, "luz direcional bloqueada por obj%d", obj2);
+            }
+          }
+          for (const iluminacao::FonteSpot& fonte : fontes_spot) {
+            if (!fonte.acesa)
+              continue;
+            Vetor3d dr_luz = fonte.posicao - Pt;
+            float dist_luz = dr_luz.tamanho();
+            dr_luz = dr_luz * (1.0f / dist_luz);
+            Raio raio_luz(Pt, dr_luz);
+            auto [t_luz, obj2] = calcular_intersecao(raio_luz, objetos, objeto);
+            if (!(t_luz < 0.0 || t_luz > dist_luz)) {
+              TraceLog(LOG_INFO, "luz spot bloqueada por obj%d", obj2);
+            }
+          }
+        }
         TraceLog(LOG_INFO, "objeto_selecionado = %d", objeto_selecionado);
+
         if (objeto_selecionado >= 0)
           panel.add_tab_objeto(&objetos[objeto],
                                TextFormat("obj%d", objeto_selecionado));

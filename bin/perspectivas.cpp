@@ -860,6 +860,13 @@ void
 renderizar()
 {
   TraceLog(LOG_INFO, "Renderizando");
+  for (const iluminacao::FontePontual& fonte : fontes_pontuais) {
+    TraceLog(LOG_INFO,
+             "pontual.pos = (%f, %f, %f)",
+             fonte.posicao.x,
+             fonte.posicao.y,
+             fonte.posicao.z);
+  }
 
   Matriz M_cw = camera.getMatrixCameraWorld();
 

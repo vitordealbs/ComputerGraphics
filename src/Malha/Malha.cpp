@@ -26,21 +26,21 @@ Malha::inicializar_cubo(const Vetor3d& centro,
 
   // Criar faces do cubo (6 faces, 2 triângulos por face)
   faces = {
-    Triangulo(vertices[0], vertices[1], vertices[2], K_d, K_e, K_a, m),
+    Triangulo(vertices[1], vertices[2], vertices[0], K_d, K_e, K_a, m),
     Triangulo(
-      vertices[2], vertices[3], vertices[0], K_d, K_e, K_a, m), // Frente
-    Triangulo(vertices[6], vertices[5], vertices[4], K_d, K_e, K_a, m),
-    Triangulo(vertices[4], vertices[7], vertices[6], K_d, K_e, K_a, m), // Trás
-    Triangulo(vertices[5], vertices[1], vertices[0], K_d, K_e, K_a, m),
-    Triangulo(vertices[0], vertices[4], vertices[5], K_d, K_e, K_a, m), // Baixo
-    Triangulo(vertices[7], vertices[3], vertices[2], K_d, K_e, K_a, m),
-    Triangulo(vertices[2], vertices[6], vertices[7], K_d, K_e, K_a, m), // Cima
-    Triangulo(vertices[0], vertices[3], vertices[7], K_d, K_e, K_a, m),
+      vertices[3], vertices[0], vertices[2], K_d, K_e, K_a, m), // Frente
+    Triangulo(vertices[5], vertices[4], vertices[6], K_d, K_e, K_a, m),
+    Triangulo(vertices[7], vertices[6], vertices[4], K_d, K_e, K_a, m), // Trás
+    Triangulo(vertices[1], vertices[0], vertices[5], K_d, K_e, K_a, m),
+    Triangulo(vertices[4], vertices[5], vertices[0], K_d, K_e, K_a, m), // Baixo
+    Triangulo(vertices[3], vertices[2], vertices[7], K_d, K_e, K_a, m),
+    Triangulo(vertices[6], vertices[7], vertices[2], K_d, K_e, K_a, m), // Cima
+    Triangulo(vertices[3], vertices[7], vertices[0], K_d, K_e, K_a, m),
     Triangulo(
-      vertices[7], vertices[4], vertices[0], K_d, K_e, K_a, m), // Esquerda
-    Triangulo(vertices[6], vertices[2], vertices[1], K_d, K_e, K_a, m),
+      vertices[4], vertices[0], vertices[7], K_d, K_e, K_a, m), // Esquerda
+    Triangulo(vertices[2], vertices[1], vertices[6], K_d, K_e, K_a, m),
     Triangulo(
-      vertices[1], vertices[5], vertices[6], K_d, K_e, K_a, m) // Direita
+      vertices[5], vertices[6], vertices[1], K_d, K_e, K_a, m) // Direita
   };
 }
 
