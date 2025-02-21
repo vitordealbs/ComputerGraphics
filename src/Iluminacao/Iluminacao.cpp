@@ -55,6 +55,7 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FontePontual fonte,
                          MaterialSimples material)
 {
+  n = n.normalizado();
   Vetor3d v = dr.normalizado() * -1;
   Vetor3d l = (fonte.posicao - Pt).normalizado();
   if (v.dot_product(l) <= 0.0f)
@@ -78,6 +79,7 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FonteDirecional fonte,
                          MaterialSimples material)
 {
+  n = n.normalizado();
   Vetor3d v = dr.normalizado() * -1;
   Vetor3d l = fonte.direcao.normalizado();
   if (v.dot_product(l) <= 0.0f)
@@ -101,6 +103,7 @@ iluminacao::modelo_phong(Vetor3d Pt,
                          FonteSpot fonte,
                          MaterialSimples material)
 {
+  n = n.normalizado();
   Vetor3d v = dr.normalizado() * -1;
   Vetor3d l = (fonte.posicao - Pt).normalizado();
   if (v.dot_product(l) <= 0.0f)
